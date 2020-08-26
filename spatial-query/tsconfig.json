@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "declaration": true,
+        "lib": ["es5", "es2015", "dom", "scripthost"],
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "noImplicitAny": false,
+        "outDir": "../dist/draw",
+        "target": "es5",
+        "types": ["jquery", "node", "arcgis-js-api"]
+    },
+    "include": ["./**/*.ts", "old-CLSS.js"],
+    "exclude": ["node_modules"]
+}
