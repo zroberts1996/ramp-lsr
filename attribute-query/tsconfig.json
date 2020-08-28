@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "declaration": true,
+        "lib": ["es5", "es2015", "dom", "scripthost"],
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "noImplicitAny": false,
+        "outDir": "../dist/search-plugin",
+        "target": "es5",
+        "types": ["jquery", "node"]
+    },
+    "include": ["./**/*.ts"],
+    "exclude": ["node_modules"]
+}

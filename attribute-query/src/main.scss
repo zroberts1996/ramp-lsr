@@ -1,0 +1,232 @@
+// if you need to import vendor css use @import from this file instead of import from js file
+// e.g. @import '../node_modules/nouislider/distribute/nouislider.css';
+$icons-path: '~ag-grid-community/src/styles/material-icons/';
+
+// Set the colors
+$primary-color: #607d8b;
+$accent-color: #00bcd4;
+
+// Import the ag-grid styles and ag-grid material theme
+@import 'ag-grid-community/dist/styles/ag-grid';
+@import 'ag-grid-community/src/styles/ag-theme-material';
+@import 'ag-grid-community/src/styles/ag-theme-blue';
+
+.theme-blue {
+    background-color: #00e5ff5e;
+    color: rgba(0, 0, 0, 0.87);
+    font: 400 13px "Roboto", sans-serif;
+}
+
+
+/* Style the tab */
+.tabButton {
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+    //position:fixed;
+    overflow: hidden;
+    width: 100%;
+}
+
+.tablinks {
+    //font-size: 15px;
+    text-transform: inherit;
+    background-color: inherit;
+    //padding: 0px 0px;
+    //margin: 0px 5px;
+    //display: inline-block;
+    /*float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 0px 0px;
+    transition: 0.3s;
+    text-transform: capitalize;*/
+}
+
+.tablinks:hover {
+    background-color: #ddd;
+    color: white;
+}
+
+.tablinks:active{
+    background: rgb(224, 21, 21);
+}
+
+.tablinks:focus{
+    background: olive;
+}
+  
+  /* Style the buttons inside the tab */
+.tab button1 {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-size: 17px;
+    text-transform: capitalize;
+}
+  
+  /* Change background color of buttons on hover */
+.tab button1:hover {
+    background-color: #ddd;
+    
+}
+  
+  /* Create an active/current tablink class */
+.tab button1.active {
+    background-color: #ccc;
+}
+  
+  /* Style the tab content */
+.tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+}
+
+.tabcontent2 {
+    float: left;
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    margin: 0px 0px 10px 20px;
+}
+
+
+
+.md-sidenav-plugin, 
+.md-sidenav-plugin.md-locked-open, 
+.md-sidenav-plugin.md-closed.md-locked-open-add-active {
+    min-width: 200px !important;
+    width: 85vw !important;
+    max-width: 800px !important;
+} 
+
+
+#leftBox {
+    float:left;  
+    background: white; 
+    width:180px; 
+    height:300px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    
+  .md-list-item-text {
+    margin: 0 0 2em 0;
+    list-style-type: none;
+    padding: 0;
+    width: 11em;
+    border-color: rgb(24, 23, 23);
+  }
+  .md-list-item-text span {
+    cursor: pointer;
+    position: relative;
+    left: 1em;
+    background-color: rgb(255, 255, 255);
+    margin: 0em;
+    padding: 0em 5;
+    height: 1.4em;
+    border-radius: 0px;
+    text-align: left;
+  }
+  .md-list-item-text span:hover {
+    color: #607D8B;
+    background-color: #DDD;
+    //left: .1em;
+  }
+  .md-list-item-text span.selected {
+    background-color: #0ba0e0;
+    color: white;
+  }
+  .md-list-item-text span.selected:hover {
+    background-color: #3c10db;
+    color: white;
+  }
+}
+//#middleBox{ 
+//    float:left;  
+//    background:Green; 
+//    width:25%; 
+//}
+
+
+
+.rv-mapnav-search-content {
+    margin: 0px!important;
+
+    &.hidden {
+      display: none !important;
+    }
+
+}
+
+.rv-panel-content {
+    resize: vertical;;
+
+    .md-block-horizontal{
+        padding-bottom: 22px;
+    }
+    .md-block-input-province{
+        margin: 6px 8px 6px 8px;
+    }
+
+    .md-block-input-plan{
+        margin: 6px 8px 6px 8px;;
+    }
+    
+    .bt1 {
+        padding: 0 6px 0 6px;
+        margin: 6px 8px 6px 8px;
+        min-width: 10px;
+        border-radius: 3px;
+        font-size: 14px;
+        text-align: center;
+        text-transform: capitalize;
+        text-decoration:none;
+        border: none;
+        outline: none;
+        width: 150px
+    }
+
+    .bt1:not([disabled]):hover {
+        color: white;
+    }
+
+    .bt2 {
+        padding: 0 6px 0 6px;
+        margin: 6px 8px 6px 8px;
+        min-width: 88px;
+        border-radius: 3px;
+        font-size: 14px;
+        text-align: center;
+        text-transform: capitalize;
+        text-decoration:none;
+        border: none;
+        outline: none;
+        width: 150px
+    }
+    .bt2:not([disabled]):hover {
+        color: white;
+    }
+}
+
+#plan {
+    flex: 1 1 auto;
+    width: 100%;
+    right: 52px
+}
+
+.grid-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    right: 52px;
+
+}
+
+
+

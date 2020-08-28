@@ -1,0 +1,52 @@
+{
+    "name": "search-plugin",
+    "version": "0.1.0",
+    "description": "",
+    "author": "NRCan - SGB - FGP",
+    "license": "MIT",
+    "homepage": "https://github.com/fgpv-vpgf/contributed-plugins/search-plugin#readme",
+    "keywords": [
+        "search-plugin",
+        "plugins",
+        "RAMP"
+    ],
+    "bugs": {
+        "url": "https://github.com/fgpv-vpgf/contributed-plugins/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/fgpv-vpgf/contributed-plugins.git"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "scripts": {
+        "build": "webpack --mode=production --config=webpack.config.js && npm run sass",
+        "serve": "webpack-dev-server --progress --hot --mode=development --config webpack.config.js",
+        "sass": "bash ./compileSass.sh",
+        "deploy": "gh-pages -d ../dist"
+    },
+    "dependencies": {
+        "ag-grid-community": "19.0.0",
+        "rxjs": "6.4.0",
+        "draggabilly": "^2.2.0",
+        "gh-pages": "2.2.0"
+    },
+    "devDependencies": {
+        "@types/jquery": "3.3.29",
+        "@types/node": "10.12.21",
+        "copy-webpack-plugin": "4.6.0",
+        "css-loader": "2.1.0",
+        "mini-css-extract-plugin": "0.5.0",
+        "optimize-css-assets-webpack-plugin": "5.0.3",
+        "node-sass": "4.12.0",
+        "node-sass-import": "^2.0.1",
+        "sass-loader": "7.1.0",
+        "ts-loader": "5.3.2",
+        "typescript": "3.6.2",
+        "url-loader": "2.1.0",
+        "webpack-cli": "3.1.2",
+        "webpack": "4.28.3",
+        "webpack-dev-server": "3.1.14"
+    }
+}
