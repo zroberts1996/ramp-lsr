@@ -1,6 +1,7 @@
 import { TableLoader } from './table-loader';
 import { TableManager } from './table-manager';
 import { PROVINCE } from '../templates/template';
+import { PanelStateManager } from './panel-state-manager'
 
 
 export class MakeQuery {
@@ -20,17 +21,15 @@ export class MakeQuery {
     constructor(mapApi: any, configLang: any) {
         this._mapApi = mapApi;
         this._configLang = configLang;
-
         this.openLoadingPanel(mapApi)
-
     }
 
     getProvinceAbrev() {
 
-        let selectProvinceHTML = <HTMLInputElement>document.getElementById("selectInput");
+        let selectProvinceHTML = <HTMLInputElement>document.getElementById("selectProvince");
         let selectProvinceText = selectProvinceHTML.innerText;
 
-        if (selectProvinceText === 'Province') {
+        if (selectProvinceText === 'Select Province or Territory') {
             return 'CA';
         } else {
             return PROVINCE[this._configLang][selectProvinceText];
@@ -38,7 +37,6 @@ export class MakeQuery {
     }
 
     openLoadingPanel(mapApi) {
-
         let legendBlock = {
             name: "Survey Plan Results",
             loadingPanel: {},
@@ -46,13 +44,12 @@ export class MakeQuery {
         }
 
         this.loadingPanel = new TableLoader(mapApi, legendBlock);
-        //this.loadingPanel.createPanel()
-
-        /*let loadingTimeout = setTimeout(() => {
-            legendBlock.loadingPanel = this.loadingPanel;
-            legendBlock.formattedData;
-        }, 200);*/
-
+        if (this.loadingPanel.panelManager.open) {
+            this.loadingPanel.prepareBody();
+        } else {
+         this.loadingPanel.createPanel()   
+        }
+        
         let restLayerNumber = 0
         let planInputID = "planInput"
         this.executeQuery(restLayerNumber, planInputID);
@@ -76,6 +73,7 @@ export class MakeQuery {
         this.query.returnGeometry = false;
         this.query.outFields = ["PLANNO", "P2_DESCRIPTION", "GlobalID", "PROVINCE", "P3_DATESURVEYED", "SURVEYOR", "ALTERNATEPLANNO"];
         this.queryTask.execute(this.query, this.createTable(this.loadingPanel))
+
     }
 
     createTable(panel) {

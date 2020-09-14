@@ -28,47 +28,191 @@ export const TAB_TEMPLATE = ` 
 </md-button>
 `;
 
-export const SEARCH_PANEL_TEMPLATE = ` 
+const SELECT_PROVINCE = `
+<md-input-container class="md-container">
+    <label>Select Province or Territory</label>
+    <md-select ng-model="user.province" id=selectProvince ng-change="checkProvince()">
+        <md-option ng-repeat="province in provinces" value="{{province.canada}}">{{province.canada}}</md-option>
+    </md-select>
+</md-input-container>
+`;
+
+const SELECT_RESERVE = `
+<md-input-container class="md-container">
+    <label>Canada Land (Select a province first)</label>
+    <md-select ng-model="user.reserve" id=selectReserve ng-disabled="disableSelectProvince">
+        <md-option ng-repeat="reserve in reserves" value="{{reserve.canada}}">{{reserve.canada}}</md-option>
+    </md-select>
+</md-input-container>
+`;
+
+const INPUT_PLAN = `
+<md-input-container class="md-container">
+    <label>{{ 'plugins.clssPlugin.inputText' | translate }} </label>
+    <input type="text" ng-model="color" required="" md-maxlength="10" id="planInput">
+</md-input-container>
+`;
+
+const INPUT_PARCEL = `
+<md-input-container class="md-container">
+    <label> Enter Parcel </label>
+    <input type="text" ng-model="color" required="" md-maxlength="10" id="parcelInput">
+</md-input-container>
+`;
+
+const INPUT_NTS_SHEET = `
+<md-input-container class="md-container">
+    <label> Enter NTS Map Sheet </label>
+    <input type="text" ng-model="color" required="" md-maxlength="10" id="ntsSheetInput">
+</md-input-container>
+`;
+
+const INPUT_COMMUNITY = `
+<md-input-container class="md-container">
+    <label> Enter Community Name </label>
+    <input type="text" ng-model="color" required="" md-maxlength="10" id="communityInput">
+</md-input-container>
+`;
+
+const SEARCH_BUTTON = `
+<md-button 
+    title="{{ 'plugins.clssPlugin.searchAria' | translate }}"
+    class="bt1 ng-scope md-raised md-primary rv-search-button"
+    aria-label="{{ 'plugins.clssPlugin.searchAria' | translate }}"
+    ng-click="searchFunction()">
+        {{ 'plugins.clssPlugin.buttonName' | translate }}
+</md-button>
+`;
+
+const RESET_BUTTON = `
+<md-button 
+    title="{{ 'plugins.clssPlugin.resetLabel' | translate }}"
+    class="bt2 ng-scope md-raised md-primary rv-reset-button"
+    ng-click="resetFunction()">
+        {{ 'plugins.clssPlugin.resetButton' | translate }}
+</md-button>
+`;
+
+export const SEARCH_PLAN_TEMPLATE = ` 
 
 <div class="rv-panel-content" ng-controller="SearchPanel as ctrl">
 
-    <section layout="column" layout-sm="column" layout-align="center left" layout-wrap>
-
-        <md-input-container class=md-block-input-province" flex-gt-sm>
-            <label>Province</label>
-            <md-select ng-model="user.province" id=selectInput>
-                <md-option ng-repeat="province in provinces" value="{{province.canada}}">
-                    {{province.canada}}
-                </md-option>
-            </md-select>
-        </md-input-container>
-
-        <md-input-container class="md-block-input-plan" flex-gt-sm>
-            <label>{{ 'plugins.clssPlugin.inputText' | translate }} </label>
-            <input type="text" ng-model="color" required="" md-maxlength="10" id="planInput">
-        </md-input-container>
-    </section>
-
-    <section layout="row" layout-sm="column" layout-align="center left" layout-wrap>
-        <md-button 
-            title="{{ 'plugins.clssPlugin.searchAria' | translate }}"
-            class="bt1 ng-scope md-raised md-primary rv-search-button"
-            aria-label="{{ 'plugins.clssPlugin.searchAria' | translate }}"
-            ng-click="searchFunction()">
-                {{ 'plugins.clssPlugin.buttonName' | translate }}
-        </md-button>
+    <section layout="column" class="input-section"> 
         
-        <md-button 
-            title="{{ 'plugins.clssPlugin.resetLabel' | translate }}"
-            class="bt2 ng-scope md-raised md-primary rv-reset-button"
-            ng-click="resetFunction()">
-                {{ 'plugins.clssPlugin.resetButton' | translate }}
-        </md-button>
+        ${SELECT_PROVINCE}
+
+        ${SELECT_RESERVE}
+
+        ${INPUT_PLAN}
+
+    </section>
+    
+    <section layout="row" layout-align="center left" layout-wrap>
+        ${SEARCH_BUTTON}
+        
+        ${RESET_BUTTON}
     </section>
 </div>
-
 <md-divider></md-divider>
 `;
+
+
+export const PROTECTED_AREA_TEMPLATE = ` 
+<div class="rv-panel-content" ng-controller="SearchPanel as ctrl">
+    <section layout="column" class="input-section"> 
+        ${SELECT_PROVINCE}
+
+        ${INPUT_PARCEL}
+
+        ${INPUT_PLAN}
+
+        ${INPUT_NTS_SHEET}
+    </section>
+    
+    <section layout="row" layout-align="center left" layout-wrap>
+        ${SEARCH_BUTTON}
+            
+        ${RESET_BUTTON}
+    </section>
+</div>
+<md-divider></md-divider>
+`;
+
+export const COMMUNITY_TEMPLATE = ` 
+<div class="rv-panel-content" ng-controller="SearchPanel as ctrl">
+    <section layout="column" class="input-section"> 
+        ${SELECT_PROVINCE}
+
+        ${INPUT_COMMUNITY}
+
+    </section>
+    
+    <section layout="row" layout-align="center left" layout-wrap>
+        ${SEARCH_BUTTON}
+            
+        ${RESET_BUTTON}
+    </section>
+</div>
+<md-divider></md-divider>
+`;
+
+export const MENU_BUTTON = `
+    <button class="md-icon-button black md-button ng-scope md-ink-ripple" 
+        ng-click="openSideMenu()"
+        ng-controller="MenuPanel"
+        style="float:left">
+        <md-tooltip md-direction="bottom">Open Side Menu</md-tooltip>
+
+        <md-icon md-svg-src="navigation:menu" class="ng-scope" role="img" aria-label='test'>
+            <svg xmlns="http://www.w3.org/2000/svg" fit="" height="100%" width="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24" focusable="false">
+                <g id="menu"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path></g>
+            </svg>
+        </md-icon>
+    </button>   
+
+    <md-sidenav class="md-sidenav-menu" md-component-id="sideMenu" md-disable-backdrop="" md-whiteframe="4" style="overflow: hidden;">
+
+        <md-toolbar class="theme-blue" style="display:block">
+            <h1 class="md-toolbar-tools" style="position:absolute;float:left;width:80%">Available Searches</h1>
+
+            <button class="md-icon-button black md-button ng-scope md-ink-ripple" 
+                style="height:56px;position:relative;float:right"
+                ng-click="openSideMenu()"
+                ng-controller="MenuPanel">
+                <md-tooltip md-direction="bottom">Close Side Menu</md-tooltip>
+                <md-icon md-svg-src="community:chevron-double-left" class="ng-scope" role="img" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" fit="" height="100%" width="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24" focusable="false">
+                        <g id="chevron-double-left">
+                            <path d="M 18.414,7.41398L 17,6L 11,12L 17,18L 18.414,16.586L 13.828,12L 18.414,7.41398 Z M 12.414,7.41398L 11,6L 5.00001,12L 11,18L 12.414,16.586L 7.82801,12L 12.414,7.41398 Z "></path>
+                        </g>
+                    </svg>
+                </md-icon>
+            </button>  
+
+        </md-toolbar>
+
+        <div class="menu-panel" md-whiteframe="4" style="overflow-y: scroll;"> 
+          
+          <div class="panel-middle" ng-controller="MenuPanel">
+            <form name="myForm" ng-controller="MenuPanel">
+                <label>
+                    <input type="radio" ng-model="search.name" ng-value="True" name="protected" ng-click="getSearchInfo($event.target.name); openSideMenu()">
+                    {{ 'plugins.clssPlugin.sidePanel.protected' | translate }}
+                </label><br/>
+                <label>
+                    <input type="radio" ng-model="search.name" value="community" ng-click="getSearchInfo($event.target.value); openSideMenu()">
+                    {{ 'plugins.clssPlugin.sidePanel.community' | translate }}
+                </label><br/>
+                <label>
+                    <input type="radio" ng-model="search.name" value="plan" ng-click="getSearchInfo($event.target.value); openSideMenu()">
+                    {{ 'plugins.clssPlugin.sidePanel.plan' | translate }}
+                </label><br/>
+            </form>
+
+          </div>
+        </div>
+    </md-sidenave>
+`
 
 export const GRID_TEMPLATE = `
 
@@ -87,7 +231,7 @@ export const GRID_TEMPLATE = `
                 </md-button>
             </div>
 
-            <div id="survey" class="tabcontent">
+            <div id="survey1" class="tabcontent">
                 <h3>Arpentage en cours</h3>
                 <p>Info sur les arpentages</p> 
             </div>
@@ -96,6 +240,9 @@ export const GRID_TEMPLATE = `
                 <h3>Plan d'arpentage</h3>
                 <p>Info sur les plans</p>
             </div>
+
+            
+            
 
             <div id="township" class="tabcontent">
                 <h3>Township</h3>
@@ -113,7 +260,8 @@ export const GRID_TEMPLATE = `
             </div>
         </md-toolbar>
     </div>
-    <div id="plan" style="" class="ag-theme-material">
+    <div id="plan" style="" class="ag-theme-material"></div>
+    
 </div>
 
 `;
