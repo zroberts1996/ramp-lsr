@@ -1,19 +1,106 @@
 import { TABLE_LOADING_TEMPLATE2 } from './table-template';
-import { GRID_TEMPLATE, TABS_TEMPLATE } from '../templates/template';
+import { GRID_TEMPLATE, TABS_TEMPLATE, MENU_BUTTON } from '../templates/template';
 import { Grid } from 'ag-grid-community';
+import { PanelStateManager } from './panel-state-manager'
 
 export class TableLoader {
 
     constructor(mapApi: any, legendBlock) {
         this.mapApi = mapApi;
         this.legendBlock = legendBlock;
-        this.panel = this.mapApi.panels.create('tableLoaderId');
+
+        /*let a = document.getElementById('tableLoaderId')
+        if (a) {
+            this.mapApi.panels._panels.forEach(function(element) {
+                if (element.id=='tableLoaderId') {
+                    let panel = element
+                    this.prepareBody(panel);
+                }
+            })
+        } */
+        //else {
+        /*this.panel = this.mapApi.panels.create('tableLoaderId');
         this.panel.element.css({top: '50%', left: '20%', right: '52px',});
         this.panel.allowUnderlay = true;
         this.prepareHeader();
         this.prepareBody();
+        this.open();*/
+
+        //this.createPanel()
+        //}
+
+        //this.panel.closing.subscribe(() => {
+        //    this.cleanUp();
+        //});
+
+        
+        this.createPanel()
         //this.hidden = true;
-        this.open()
+        this.panelManager = new PanelStateManager('tableLoaderId', this.legendBlock);
+        
+        
+    }
+    
+
+    
+
+    set panelStateManager(newPanelStateManager: PanelStateManager) {
+        // store the column state before replacing the state manager
+        //if (this._panelStateManager && this.tableOptions) {
+        //    this._panelStateManager.columnState = this.tableOptions.columnApi.getColumnState();
+        //}
+        this._panelStateManager = newPanelStateManager;
+    }
+
+    get panelStateManager() {
+        return this._panelStateManager;
+    }
+
+     /*openTable(baseLayer) {
+        if (baseLayer.panelStateManager === undefined) {
+            // if no PanelStateManager exists for this BaseLayer, create a new one
+            baseLayer.panelStateManager = new PanelStateManager(baseLayer, this.legendBlock);
+        }
+        this.panelManager.panelStateManager = baseLayer.panelStateManager;
+
+        const attrs = baseLayer.getAttributes();
+        this.attributeHeaders = baseLayer.attributeHeaders;
+        if (attrs.length === 0) {
+            // make sure all attributes are added before creating the table (otherwise table displays without SVGs)
+            this.mapApi.layers.attributesAdded.pipe(take(1)).subscribe(attr => {
+                if (attr.attributes.length > 0) {
+                    this.configManager = new ConfigManager(baseLayer, this.panelManager);
+                    this.panelManager.configManager = this.configManager;
+                    this.createTable(attr);
+                } else {
+                    this.openTable(baseLayer);
+                }
+            });
+        } else {
+            this.configManager = new ConfigManager(baseLayer, this.panelManager);
+            this.panelManager.configManager = this.configManager;
+
+            this.createTable({
+                attributes: attrs,
+                layer: baseLayer
+            });
+        }
+    }*/
+
+    cleanUp() {
+        //if (this.gridBody !== undefined) {
+        //    removeAccessibilityListeners(this.panel.element[0], this.gridBody);
+        //}
+        /*this.panelStateManager.isOpen = false;
+        this.panelRowsManager.destroyObservers();
+        if (this.toastInterval !== undefined) {
+            clearInterval(this.toastInterval);
+        }
+        this.currentTableLayer = undefined;
+
+        // if enhancedTable closes, set focus to close button
+        const mapNavContent = $('#' + this.mapApi.id).find('.rv-mapnav-content');
+        mapNavContent.find('button')[0].focus();*/
     }
 
     createPanel() {
@@ -36,7 +123,7 @@ export class TableLoader {
 
     prepareHeader() {
         //this.panel.header.toggleButton
-        //this.panel.header.title = this.legendBlock.name;
+        this.panel.header.title = this.legendBlock.name;
         
         const customBtn2 = new this.panel.Button('Parcel');
 
@@ -54,8 +141,9 @@ export class TableLoader {
                 tabContent.style.display = "block";
 
         });
-
-        this.panel.header.append(customBtn2);
+        
+        //this.panel.header.append(MENU_BUTTON)
+        //this.panel.header.append(customBtn2);
         this.panel.header.closeButton;
 
         this.mapApi.ui.configLegend.elementRemoved.subscribe(legendBlock => {
@@ -195,4 +283,6 @@ export interface TableLoader {
     panel: any;
     hidden: boolean;
     legendBlock: any;
+    _panelStateManager: PanelStateManager;
+    panelManager: any;
 }

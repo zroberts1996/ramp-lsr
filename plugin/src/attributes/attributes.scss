@@ -11,6 +11,147 @@ $accent-color: #00bcd4;
 @import 'ag-grid-community/src/styles/ag-theme-material';
 @import 'ag-grid-community/src/styles/ag-theme-blue';
 
+//Style for the header of the search panel
+//----------------------------------------
+#panel-header-custom{
+  display: flex;
+  white-space: nowrap;
+  border-bottom: 1px solid #e0e0e0;
+  //height: auto;
+  min-height: 49px;
+  padding: 0 0 0 5px;
+} 
+
+.custom-title {
+    line-height: 42px;
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: .005em;
+    display: block!important;
+    margin: 0;
+    display: inline-block;
+    text-overflow: ellipsis;
+    overflow: hidden
+}
+
+.md-sidenav-menu, 
+.md-sidenav-menu.md-locked-open, 
+.md-sidenav-menu.md-closed.md-locked-open-add-active {
+    min-width: 200px !important;
+    width: 85vw !important;
+    max-width: 300px !important;
+} 
+
+.panel-middle {
+  color: #404040;
+  font-size: 1.2rem;
+  font-weight: 400;
+  line-height: 1.0;
+  font-family: "Roboto", Arial, Helvetica, sans-serif;
+  box-sizing: border-box;
+  padding: 30px;
+  height: 758px;
+}
+.form-list {
+  color: #404040;
+  font-size: 1.0rem;
+  font-weight: 400;
+  line-height: 1.8;
+  box-sizing: border-box;
+  margin: 0 0 1.25em 0;
+  padding: 0;
+  list-style: none;
+  background: #efefef;
+  border: 1px solid #312929;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0;
+}
+
+.form-list li {
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  padding:5px 20px 0px 20px;
+  text-decoration:none;
+  border-bottom:0.5px solid gray;
+}
+.form-list, .first{
+    border-bottom:0.5px solid gray;
+}
+
+.form-list, .last{
+  border-bottom:0.0px;
+  cursor: pointer;
+}
+
+.btn-group {
+  color: #404040;
+  font-size: 1.0rem;
+  font-weight: 400;
+  line-height: 1.8;
+  font-family: "Roboto", Arial, Helvetica, sans-serif;
+  box-sizing: border-box;
+  margin: 0 0 1.25em 0;
+  padding: 0;
+  list-style: none;
+  background: #efefef;
+  border: 1px solid #312929;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0;
+}
+.btn-group button {
+  border-bottom:0.5px solid #bdc3c4;
+  border-left-width: 0px;
+  border-right-width: 0px;
+  border-top-width: 0px;
+  padding-left: 24px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+  display: block;
+}
+.btn-group button:hover{
+  background-color: #93ced8;
+  -webkit-box-shadow: 0px 5px 40px -10px rgba(0,0,0,0.57);
+  -moz-box-shadow: 0px 5px 40px -10px rgba(0,0,0,0.57);
+  box-shadow: 5px 40px -10px rgba(0,0,0,0.57);
+  transition: all 0.4s ease 0s;
+}
+
+//----------------------------------------
+
+//----------------------------------------
+
+
+
+.container {
+    display: inline-block;
+    cursor: pointer;
+  }
+  
+  .bar1, .bar2, .bar3 {
+    width: 35px;
+    height: 5px;
+    background-color: #333;
+    margin: 6px 0;
+    transition: 0.4s;
+  }
+  
+  .change .bar1 {
+    -webkit-transform: rotate(-45deg) translate(-9px, 6px);
+    transform: rotate(-45deg) translate(-9px, 6px);
+  }
+  
+  .change .bar2 {opacity: 0;}
+  
+  .change .bar3 {
+    -webkit-transform: rotate(45deg) translate(-8px, -8px);
+    transform: rotate(45deg) translate(-8px, -8px);
+  }
+
 .theme-blue {
     background-color: #00e5ff5e;
     color: rgba(0, 0, 0, 0.87);
@@ -129,7 +270,7 @@ $accent-color: #00bcd4;
     background-color: rgb(255, 255, 255);
     margin: 0em;
     padding: 0em 5;
-    height: 1.4em;
+    //height: 1.4em;
     border-radius: 0px;
     text-align: left;
   }
@@ -165,19 +306,15 @@ $accent-color: #00bcd4;
 }
 
 .rv-panel-content {
-    resize: vertical;;
+  margin: 10px 10px 10px 10px;
 
-    .md-block-horizontal{
-        padding-bottom: 22px;
+    .input-section {
+      margin: 20px 10px 0px 10px;
     }
-    .md-block-input-province{
-        margin: 6px 8px 6px 8px;
+    .md-container{
+      margin: 20px 8px 10px 8px;
     }
-
-    .md-block-input-plan{
-        margin: 6px 8px 6px 8px;;
-    }
-    
+  
     .bt1 {
         padding: 0 6px 0 6px;
         margin: 6px 8px 6px 8px;
@@ -215,6 +352,12 @@ $accent-color: #00bcd4;
 }
 
 #plan {
+    flex: 1 1 auto;
+    width: 100%;
+    right: 52px;
+}
+
+#survey {
     flex: 1 1 auto;
     width: 100%;
     right: 52px
