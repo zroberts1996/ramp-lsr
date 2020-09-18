@@ -36,7 +36,7 @@ export class PanelManager {
 
         this.customPanel = customPanel
 
-
+        /*
         this.mapApi.agControllerRegister('SelectTabMenu', ['$scope', '$mdSidenav', function($scope, $mdSidenav) {
             $scope.toggleLeft = buildToggler('leftPanel');
 
@@ -45,7 +45,7 @@ export class PanelManager {
                 $mdSidenav(componentId).toggle();
               }
             }
-
+            
             $scope.getSearchInfo = function(tabName) {
                 
                 let tabContent = <HTMLElement>document.getElementById(tabName);
@@ -60,57 +60,52 @@ export class PanelManager {
                 tabContent.style.display = "block";
             }
             
-        }])
+            
+        }])*/
+        this.mapApi.agControllerRegister('SearchPanel',  ['$scope', function($scope) {
+            this.provinces = Object.keys(PROVINCE[configLang]);
+            this.isDisabled = true;
 
-        this.mapApi.agControllerRegister('SearchPanel', ['$scope', function($scope) {
-            $scope.searchFunction = function() {
-
-                let inputBox = <HTMLInputElement>document.getElementById("planInput");
-                if (inputBox.checkValidity()) {
-                    let query = new MakeQuery(mapApi, configLang);
+            this.updateReserveBox = function(province) {
+                this.isDisabled = false;
+                if (province == this.selectedProvince) {
+                    console.log('Same province clicked')
                 } else {
-                    inputBox.style.borderColor = 'red'
+                    this.selectedProvince = province;
+                    this.abbrevProvince = PROVINCE[configLang][province];
+                    this.reserves = ADMIN_DATA[configLang][this.abbrevProvince];
+                     
                 }
             }
 
-            $scope.resetFunction = function() {
+            this.setSelectedReserve = function(reserve) {
+                this.selectedReserve = reserve;
+            }
 
-                let inputBox = <HTMLInputElement>document.getElementById("planInput");
-                inputBox.value = ''
-                inputBox.style.borderColor = ''
+            this.resetFunction = function() {
+                if ($scope.user) {
+                    $scope.user = {};
+                    this.isDisabled = true; 
+                }
 
+                // a revoir
                 let resultsGrid =  <HTMLElement>document.getElementById("tableLoaderId");
-
                 if (resultsGrid) {
                     resultsGrid.remove()
                 }
-
-                if ($scope.user) {
-                    $scope.user.province = ''
-                    $scope.user.reserve = ''
-                }
-                $scope.disableSelectProvince = true;
-
             }
 
-            $scope.provinces = Object.keys(PROVINCE[configLang]).map(function(province) {
-                return {canada:province}
-            })
-
-            $scope.disableSelectProvince = true;
-
-            $scope.checkProvince = function() {
-
-                if (typeof $scope.user.province=== "string") {
+            this.lauchSearchAction = function() {
+                if ($scope.user) {
+                    if ($scope.user.planNumber) {
+                        new MakeQuery(mapApi, configLang);
+                    }
                     
-                    let province = PROVINCE[configLang][$scope.user.province]
-                    $scope.reserves = ADMIN_DATA[configLang][province].map(function(reserve) {
-                        return {canada:reserve}
-                    })
-                    $scope.disableSelectProvince = false;
                 }
-            };
+            }
+
         }]);
+
 
         this.mapApi.agControllerRegister('ResultsTabsCtrl', ['$scope','$mdSidenav', function($scope, $mdSidenav) {
         
@@ -157,14 +152,6 @@ export class PanelManager {
                 tabContent.className += ' active';
                 tabContent.style.display = "block";
             }
-
-            /*$scope.toggleLeft = buildToggler('leftPanel');
-
-            function buildToggler(componentId) {
-              return function() {
-                $mdSidenav(componentId).toggle();
-              }
-            }*/
 
             $scope.getSearchInfo = function(tabName) {
                 console.log('a')

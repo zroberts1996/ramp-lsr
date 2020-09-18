@@ -30,47 +30,53 @@ export const TAB_TEMPLATE = ` 
 
 const SELECT_PROVINCE = `
 <md-input-container class="md-container">
-    <label>Select Province or Territory</label>
-    <md-select ng-model="user.province" id=selectProvince ng-change="checkProvince()">
-        <md-option ng-repeat="province in provinces" value="{{province.canada}}">{{province.canada}}</md-option>
+    <md-select ng-model="user.province" id=selectProvince ng-change="checkProvince()" placeholder="Select Province or Territory">
+        <md-option ng-repeat="province in ctrl.provinces" value="{{province}}" ng-click="ctrl.updateReserveBox(province)">{{province}}</md-option>
     </md-select>
 </md-input-container>
 `;
 
 const SELECT_RESERVE = `
 <md-input-container class="md-container">
-    <label>Canada Land (Select a province first)</label>
-    <md-select ng-model="user.reserve" id=selectReserve ng-disabled="disableSelectProvince">
-        <md-option ng-repeat="reserve in reserves" value="{{reserve.canada}}">{{reserve.canada}}</md-option>
+    <md-select ng-model="user.reserve" id=selectReserve ng-disabled="ctrl.isDisabled"  placeholder="Canada Land (Select a province first)">
+        <md-option ng-repeat="reserve in ctrl.reserves" value="{{reserve}}" ng-click="ctrl.setSelectedReserve(reserve)">{{reserve}}</md-option>
     </md-select>
 </md-input-container>
+`;
+
+const INFINITE_SELECT_RESERVE = `
+<md-virtual-repeat-container class="md-container">
+    <div md-virtual-repeat="reserve in ctrl.reserves" md-on-demand class="repeated-item" flex>
+        {{reserve}}
+    </div>
+</md-virtual-repeat-container>
 `;
 
 const INPUT_PLAN = `
 <md-input-container class="md-container">
     <label>{{ 'plugins.clssPlugin.inputText' | translate }} </label>
-    <input type="text" ng-model="color" required="" md-maxlength="10" id="planInput">
+    <input type="text" ng-model="user.planNumber" required="" md-maxlength="10" id="planInput">
 </md-input-container>
 `;
 
 const INPUT_PARCEL = `
 <md-input-container class="md-container">
     <label> Enter Parcel </label>
-    <input type="text" ng-model="color" required="" md-maxlength="10" id="parcelInput">
+    <input type="text" ng-model="user.parcelNumber" required="" md-maxlength="10" id="parcelInput">
 </md-input-container>
 `;
 
 const INPUT_NTS_SHEET = `
 <md-input-container class="md-container">
     <label> Enter NTS Map Sheet </label>
-    <input type="text" ng-model="color" required="" md-maxlength="10" id="ntsSheetInput">
+    <input type="text" ng-model="user.ntsSheetNumber" required="" md-maxlength="10" id="ntsSheetInput">
 </md-input-container>
 `;
 
 const INPUT_COMMUNITY = `
 <md-input-container class="md-container">
     <label> Enter Community Name </label>
-    <input type="text" ng-model="color" required="" md-maxlength="10" id="communityInput">
+    <input type="text" ng-model="user.communityName" required="" md-maxlength="10" id="communityInput">
 </md-input-container>
 `;
 
@@ -79,7 +85,7 @@ const SEARCH_BUTTON = `
     title="{{ 'plugins.clssPlugin.searchAria' | translate }}"
     class="bt1 ng-scope md-raised md-primary rv-search-button"
     aria-label="{{ 'plugins.clssPlugin.searchAria' | translate }}"
-    ng-click="searchFunction()">
+    ng-click="ctrl.lauchSearchAction()">
         {{ 'plugins.clssPlugin.buttonName' | translate }}
 </md-button>
 `;
@@ -88,7 +94,7 @@ const RESET_BUTTON = `
 <md-button 
     title="{{ 'plugins.clssPlugin.resetLabel' | translate }}"
     class="bt2 ng-scope md-raised md-primary rv-reset-button"
-    ng-click="resetFunction()">
+    ng-click="ctrl.resetFunction()">
         {{ 'plugins.clssPlugin.resetButton' | translate }}
 </md-button>
 `;
@@ -96,7 +102,6 @@ const RESET_BUTTON = `
 export const SEARCH_PLAN_TEMPLATE = ` 
 
 <div class="rv-panel-content" ng-controller="SearchPanel as ctrl">
-
     <section layout="column" class="input-section"> 
         
         ${SELECT_PROVINCE}
@@ -156,6 +161,18 @@ export const COMMUNITY_TEMPLATE = ` 
 <md-divider></md-divider>
 `;
 
+export const zoom_BUTTON = `
+    <button class="md-icon-button black md-button ng-scope md-ink-ripple" 
+        ng-click="zoom()"
+        ng-controller = "test">
+        <md-icon md-svg-src="navigation:menu" class="ng-scope" role="img" aria-label='test'>
+            <svg xmlns="http://www.w3.org/2000/svg" fit="" height="100%" width="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24" focusable="false">
+                <g id="menu"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path></g>
+            </svg>
+        </md-icon>
+    </button> 
+    `;
+
 export const MENU_BUTTON = `
     <button class="md-icon-button black md-button ng-scope md-ink-ripple" 
         ng-click="openSideMenu()"
@@ -214,6 +231,13 @@ export const MENU_BUTTON = `
     </md-sidenave>
 `
 
+export const ZOOM_TEMPLATE = (oid) =>
+    `<button  ng-click='ctrl.zoomToFeature(${oid})'  md-ink-ripple class='md-icon-button rv-icon-16 md-button ng-scope enhanced-table-zoom' aria-label="{{ 'plugins.enhancedTable.detailsAndZoom.zoom' | translate }}">
+        <md-icon md-svg-src="action:zoom_in" aria-hidden='false'>
+            <md-tooltip  md-direction="top">{{ 'plugins.enhancedTable.detailsAndZoom.zoom' | translate }}</md-tooltip>
+        </md-icon>
+    </button>`;
+
 export const GRID_TEMPLATE = `
 
 <div class="grid-wrapper">
@@ -240,9 +264,6 @@ export const GRID_TEMPLATE = `
                 <h3>Plan d'arpentage</h3>
                 <p>Info sur les plans</p>
             </div>
-
-            
-            
 
             <div id="township" class="tabcontent">
                 <h3>Township</h3>
@@ -543,7 +564,7 @@ export const SIDE_NAV_TEMPLATE = `
 
 
 export const PROVINCE = {
-    'fr-CA' :{
+    'fr-CA' : {
         'Canada': 'CA',
         'Alberta': 'AB',
         'Colombie-Britannique': 'BC',

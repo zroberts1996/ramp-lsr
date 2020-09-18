@@ -1,48 +1,18 @@
 import { TABLE_LOADING_TEMPLATE2 } from './table-template';
-import { GRID_TEMPLATE, TABS_TEMPLATE, MENU_BUTTON } from '../templates/template';
+import { GRID_TEMPLATE, TABS_TEMPLATE, zoom_BUTTON, ZOOM_TEMPLATE } from '../templates/template';
 import { Grid } from 'ag-grid-community';
 import { PanelStateManager } from './panel-state-manager'
+import { ZoomToElement } from './button-test'
 
 export class TableLoader {
 
     constructor(mapApi: any, legendBlock) {
         this.mapApi = mapApi;
-        this.legendBlock = legendBlock;
-
-        /*let a = document.getElementById('tableLoaderId')
-        if (a) {
-            this.mapApi.panels._panels.forEach(function(element) {
-                if (element.id=='tableLoaderId') {
-                    let panel = element
-                    this.prepareBody(panel);
-                }
-            })
-        } */
-        //else {
-        /*this.panel = this.mapApi.panels.create('tableLoaderId');
-        this.panel.element.css({top: '50%', left: '20%', right: '52px',});
-        this.panel.allowUnderlay = true;
-        this.prepareHeader();
-        this.prepareBody();
-        this.open();*/
-
-        //this.createPanel()
-        //}
-
-        //this.panel.closing.subscribe(() => {
-        //    this.cleanUp();
-        //});
-
-        
+        this.legendBlock = legendBlock;   
         this.createPanel()
         //this.hidden = true;
-        this.panelManager = new PanelStateManager('tableLoaderId', this.legendBlock);
-        
-        
+        this.panelManager = new PanelStateManager('tableLoaderId', this.legendBlock);  
     }
-    
-
-    
 
     set panelStateManager(newPanelStateManager: PanelStateManager) {
         // store the column state before replacing the state manager
@@ -56,58 +26,12 @@ export class TableLoader {
         return this._panelStateManager;
     }
 
-     /*openTable(baseLayer) {
-        if (baseLayer.panelStateManager === undefined) {
-            // if no PanelStateManager exists for this BaseLayer, create a new one
-            baseLayer.panelStateManager = new PanelStateManager(baseLayer, this.legendBlock);
-        }
-        this.panelManager.panelStateManager = baseLayer.panelStateManager;
-
-        const attrs = baseLayer.getAttributes();
-        this.attributeHeaders = baseLayer.attributeHeaders;
-        if (attrs.length === 0) {
-            // make sure all attributes are added before creating the table (otherwise table displays without SVGs)
-            this.mapApi.layers.attributesAdded.pipe(take(1)).subscribe(attr => {
-                if (attr.attributes.length > 0) {
-                    this.configManager = new ConfigManager(baseLayer, this.panelManager);
-                    this.panelManager.configManager = this.configManager;
-                    this.createTable(attr);
-                } else {
-                    this.openTable(baseLayer);
-                }
-            });
-        } else {
-            this.configManager = new ConfigManager(baseLayer, this.panelManager);
-            this.panelManager.configManager = this.configManager;
-
-            this.createTable({
-                attributes: attrs,
-                layer: baseLayer
-            });
-        }
-    }*/
-
-    cleanUp() {
-        //if (this.gridBody !== undefined) {
-        //    removeAccessibilityListeners(this.panel.element[0], this.gridBody);
-        //}
-        /*this.panelStateManager.isOpen = false;
-        this.panelRowsManager.destroyObservers();
-        if (this.toastInterval !== undefined) {
-            clearInterval(this.toastInterval);
-        }
-        this.currentTableLayer = undefined;
-
-        // if enhancedTable closes, set focus to close button
-        const mapNavContent = $('#' + this.mapApi.id).find('.rv-mapnav-content');
-        mapNavContent.find('button')[0].focus();*/
-    }
-
     createPanel() {
         this.panel = this.mapApi.panels.create('tableLoaderId');
         this.panel.element.css({top: '50%', left: '20%', right: '52px',});
+        this.panel.element.addClass('ag-theme-material mobile-fullscreen tablet-fullscreen');
         this.panel.allowUnderlay = true;
-        this.prepareHeader();
+        this.prepareHeader(this.mapApi);
         this.prepareBody();
         //this.hidden = true;
         this.open()
@@ -121,36 +45,16 @@ export class TableLoader {
         }
     }
 
-    prepareHeader() {
+    prepareHeader(mapApi) {
         //this.panel.header.toggleButton
         this.panel.header.title = this.legendBlock.name;
         
+        /*
         const customBtn2 = new this.panel.Button('Parcel');
-
-        customBtn2.$.on('click', function() {
-    
-                let tabContent = <HTMLElement>document.getElementById('info');
-                let tabContentActive = document.getElementsByClassName(' active') as HTMLCollectionOf<HTMLElement>
-
-                if (tabContentActive.length >0) {
-                    tabContentActive[0].style.display = "none";
-                    tabContentActive[0].classList.remove("active")
-                }
-
-                tabContent.className += ' active';
-                tabContent.style.display = "block";
-
-        });
-        
-        //this.panel.header.append(MENU_BUTTON)
-        //this.panel.header.append(customBtn2);
+        customBtn2.$.on('click', function() { });
+        this.panel.header.append(customBtn2);
+        */
         this.panel.header.closeButton;
-
-        this.mapApi.ui.configLegend.elementRemoved.subscribe(legendBlock => {
-            if (legendBlock === this.panel.legendBlock) {
-                this.panel.panel.close();
-            }
-        });
     }
 
     open() {
@@ -164,9 +68,7 @@ export class TableLoader {
     }
 
     setSpatialGrid(results) {
-        //this.panel.open(); 
         this.panel.body = this.compileTemplate(GRID_TEMPLATE);
-        //let gridDiv = <HTMLElement>document.querySelector('#resultsGrid')
         let gridDiv = <HTMLElement>document.querySelector('#plan')
 
 
@@ -205,8 +107,8 @@ export class TableLoader {
         new Grid(gridDiv, gridOptions);
     }
 
-    setResultsGrid(results) {
-        
+    setResultsGrid(results, mapApi) {
+        const self = this;
         this.panel.body = this.compileTemplate(GRID_TEMPLATE);
         
         let tabElement = document.getElementsByName('plan')[0]
@@ -216,22 +118,25 @@ export class TableLoader {
         } else {
             tabElement.innerHTML = tabElement.innerText + ' (' + results.length + ')';
         }
+        
 
         let gridOptions = {
             columnDefs: [
-                {headerName: 'Plan Number', field:'planNumber', headerTooltip: 'Plan Number', 
-                    cellRenderer: function(params){
-                        return '<a href="https://www.google.com" target="_blank" rel="noopener">' + params.value + '</a>'
-                        //return "<a title='Click to zoom to " + params.attributes['PLANNO'] + "' href=javascript:zoomFeature('" + params.attributes["GlobalID"] + "','" + escape(params.attributes["PROVINCE"]) + "'); onmouseover=javascript:highlightFeature('" + params.attributes["GlobalID"] + "') onmouseout=javascript:map.graphics.clear() onmouseout=javascript:map.graphics.clear() onfocus=javascript:highlightFeature('" + params.attributes["GlobalID"] + "') onblur=javascript:map.graphics.clear()>" + params.attributes["PROJECTNUMBER"] + "</a>"
-                    }
+                {
+                    headerName: 'Plan Number', 
+                    field:'planNumber',
+                    headerTooltip: 'Plan Number', 
+                    cellRenderer: function (cell) {
+                        return cell.value
+                    },
                 },
                 {headerName: 'Description', field:'description', headerTooltip: 'Description'},
                 {headerName: 'Date of Survey', field:'dateSurvey', headerTooltip: 'Date of Survey'},
                 {headerName: 'Plan Detail', field:'planDetail', headerTooltip: 'Plan Detail'},
-                {headerName: 'LTO', field:'lto', headerTooltip: 'List of survey document (plan) results from the attributes and map searches'}
+                {headerName: 'LTO', field:'lto', headerTooltip: 'List of survey document (plan) results from the attributes and map searches'},
             ],
 
-            rowData: [],
+            rowData:[],
 
             onGridReady: function(params) {
                 params.api.sizeColumnsToFit();
@@ -244,7 +149,6 @@ export class TableLoader {
             pagination: true,
 
             enableColResize: true,
-
         }
         
         results.forEach(function(result) {
@@ -259,10 +163,31 @@ export class TableLoader {
                 description: result.attributes['P2_DESCRIPTION'],
                 dateSurvey: newDate,
                 planDetail: result.attributes[''],
-                lto: result.attributes['ALTERNATEPLANNO']
+                lto: result.attributes['ALTERNATEPLANNO'],
+                globalid: result.attributes['GlobalID'],
+                province:result.attributes['PROVINCE']
             })
         })
-        
+
+        gridOptions.columnDefs[0].cellRenderer = function(params) {
+            var eDiv = document.createElement('div');
+            eDiv.innerHTML = '<span class="my-css-class" style="cursor:pointer"><a href="#">' + params.value + '</a></span>';
+            //eDiv.innerHTML = '<span class="my-css-class"><button class="btn-simple">Push Me</button></span>';
+            //var eButton = eDiv.querySelectorAll('.btn-simple')[0];
+            eDiv.addEventListener('click', function() {
+                new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'click')
+            });
+            eDiv.addEventListener('mouseover', function() {
+                new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'mouseover')
+                //mapApi.esriMap.graphics.clear();
+            });
+            eDiv.addEventListener('mouseout', function() {
+                
+                mapApi.esriMap.graphics.clear();
+            });
+            return eDiv;
+        }
+
         let gridDiv = <HTMLElement>document.querySelector('#plan')
         new Grid(gridDiv, gridOptions);
     }
@@ -276,7 +201,86 @@ export class TableLoader {
     close() {
         this.panel.close();
     }
+    
 }
+
+function setUpSymbolsAndInteractive(columnName: string, colDef: any, cols: any, mapApi: any, layerProxy: any) {
+    if (columnName === 'rvSymbol' || columnName === 'rvInteractive') {
+        // symbols and interactive columns don't have options for sort, filter and have default widths
+        colDef.suppressSorting = true;
+        colDef.suppressFilter = true;
+        colDef.lockPosition = true;
+
+        if (columnName === 'rvSymbol') {
+            colDef.maxWidth = 82;
+            // set svg symbol for the symbol column
+            colDef.cellRenderer = function (cell) {
+                return cell.value;
+            };
+            colDef.cellStyle = function (cell) {
+                return {
+                    paddingTop: '7px'
+                };
+            };
+        } else if (columnName === 'rvInteractive') {
+            colDef.maxWidth = 40;
+            // sets details and zoom buttons for the row
+            let zoomDef = (<any>Object).assign({}, colDef);
+            zoomDef.field = 'zoom';
+            zoomDef.cellRenderer = function (params) {
+                var eSpan = $(ZOOM_TEMPLATE(params.data[layerProxy.oidField]));
+                mapApi.$compile(eSpan);
+                params.eGridCell.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter') {
+                        eSpan.click();
+                    }
+                });
+                params.eGridCell.style.padding = 0;
+                return eSpan[0];
+            };
+            cols.splice(0, 0, zoomDef);
+            /*
+            colDef.cellRenderer = function (params) {
+                var eSpan = $(DETAILS_TEMPLATE(params.data[layerProxy.oidField]));
+                mapApi.$compile(eSpan);
+                params.eGridCell.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter') {
+                        eSpan.click();
+                    }
+                });
+                params.eGridCell.style.padding = 0;
+                return eSpan[0];
+            };*/
+        }
+        cols.splice(0, 0, colDef);
+    } else {
+        cols.push(colDef);
+    }
+}
+interface ColumnDefinition {
+    headerName: string;
+    headerTooltip: string;
+    minWidth?: number;
+    maxWidth?: number;
+    width?: number;
+    field: string;
+    //headerComponent?: { new(): CustomHeader };
+    //headerComponentParams?: HeaderComponentParams;
+    //filter: string;
+    //filterParams?: any;
+    //floatingFilterComponent?: undefined;
+    //floatingFilterComponentParams: FloatingFilterComponentParams;
+    cellRenderer?: (cellParams: any) => string | Element;
+    //suppressSorting: boolean;
+    //suppressFilter: boolean;
+    lockPosition?: boolean;
+    getQuickFilterText?: (cellParams: any) => string;
+    sort?: string;
+    hide?: boolean;
+    cellStyle?: any;
+    suppressMovable?: any;
+}
+
 
 export interface TableLoader {
     mapApi: any;

@@ -72,14 +72,14 @@ export class MakeQuery {
         this.query.where = this.whereclause;
         this.query.returnGeometry = false;
         this.query.outFields = ["PLANNO", "P2_DESCRIPTION", "GlobalID", "PROVINCE", "P3_DATESURVEYED", "SURVEYOR", "ALTERNATEPLANNO"];
-        this.queryTask.execute(this.query, this.createTable(this.loadingPanel))
+        this.queryTask.execute(this.query, this.createTable(this.loadingPanel, this._mapApi))
 
     }
 
-    createTable(panel) {
+    createTable(panel, mapApi) {
         return function(queryResults) {
             const columns = ['Plan Number', 'Description', 'Date of Survey','Plan Detail', 'LTO']
-            panel.setResultsGrid(queryResults.features);
+            panel.setResultsGrid(queryResults.features, mapApi);
         }
     }
 }
