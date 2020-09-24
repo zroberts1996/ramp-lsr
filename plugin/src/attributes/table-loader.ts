@@ -132,12 +132,13 @@ export class TableLoader {
     }
 
     setSpatialGrid(results) {
+        let mapApi = this.mapApi;
         this.panel.body = this.compileTemplate(GRID_TEMPLATE);
         let gridDiv = <HTMLElement>document.querySelector('#plan')
 
         let gridOptions = {
             columnDefs: [
-                {headerName: 'Plan Designator', field:'parcelDesignator', sort:'asc', filter: 'agTextColumnFilter', headerTooltip: 'Plan Designator'},
+                {headerName: 'Plan Designator', field:'parcelDesignator', headerTooltip: 'Plan Designator', cellRenderer: function(cell){return cell.value}},
                 {headerName: 'Plan Number', field:'planNumber', headerTooltip: 'Plan Number'},
                 {headerName: 'Plan Detail', field:'planDetail', headerTooltip: 'Plan Detail'},
                 {headerName: 'Remainder', field:'remainder', headerTooltip: 'Remainder'},
@@ -155,8 +156,8 @@ export class TableLoader {
 
             //pagination: true,
             enableColResize: true,
-
-        }
+            enableSorting: true,
+        };
         
         results.forEach(function(result) {
             gridOptions.rowData.push({
@@ -164,14 +165,38 @@ export class TableLoader {
                 planNumber: result.attributes['PLANNO'],
                 planDetail: result.attributes['PARCELFC_ENG'],
                 remainder: result.attributes['REMAINDERIND_ENG'],
+                globalid: result.attributes['GlobalID'],
+
            })
         })
+
+        gridOptions.columnDefs[0].cellRenderer = function(params) {
+            
+            var eDiv = document.createElement('div');
+            /*
+            eDiv.onmouseover=function() {
+                let delay = setTimeout(function() {
+                    new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'mouseover');
+                }, 500);
+                eDiv.onmouseout = function() {clearTimeout(delay);};
+            };
+            eDiv.addEventListener('click', function() {
+                new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'click')
+            });
+            eDiv.addEventListener('mouseout', function() {
+                mapApi.esriMap.graphics.clear();
+            });
+            */
+            eDiv.innerHTML = '<span class="my-css-class" style="cursor:pointer"><a href="#">' + params.value + '</a></span>';
+            
+            return eDiv;
+        }
 
         new Grid(gridDiv, gridOptions);
     }
 
     setResultsGrid(results, mapApi) {
-        const self = this;
+        //const self = this;
         this.panel.body = this.compileTemplate(GRID_TEMPLATE);
         
         /*let tabElement = document.getElementsByName('plan')[0]
