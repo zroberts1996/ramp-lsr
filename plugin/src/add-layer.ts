@@ -1,4 +1,4 @@
-import { LEGEND_TEMPLATE } from './templates/template'
+//import { LEGEND_TEMPLATE } from './templates/template'
 
 export class AddLayer {
     
