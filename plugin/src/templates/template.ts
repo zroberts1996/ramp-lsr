@@ -1,6 +1,4 @@
 // Add all needed html template
-// ng-controller will link to a controller in one of your ts file
-// to access translation, use {{ 'plugins.YOUR PLUGIN NAME.YOUR TRANSLATION VALUE' | translate }}
 
 export const MAPNAV_TOOL_TOOLBAR_TEMPLATE = `
 <div class="" ng-nom-text="TextCtrl as text">
@@ -39,23 +37,15 @@ const SELECT_PROVINCE = `
 const SELECT_RESERVE = `
 <md-input-container class="md-container">
     <md-select ng-model="user.reserve" id=selectReserve ng-disabled="ctrl.isDisabled"  placeholder="Canada Land (Select a province first)">
-        <md-option ng-repeat="reserve in ctrl.reserves" value="{{reserve}}" ng-click="ctrl.setSelectedReserve(reserve)">{{reserve}}</md-option>
+        <md-option ng-repeat="reserve in ctrl.reserves" value="{{reserve[1]}}" ng-click="ctrl.setSelectedReserve(reserve[1])">{{reserve[0]}}</md-option>
     </md-select>
 </md-input-container>
-`;
-
-const INFINITE_SELECT_RESERVE = `
-<md-virtual-repeat-container class="md-container">
-    <div md-virtual-repeat="reserve in ctrl.reserves" md-on-demand class="repeated-item" flex>
-        {{reserve}}
-    </div>
-</md-virtual-repeat-container>
 `;
 
 const INPUT_PLAN = `
 <md-input-container class="md-container">
     <label>{{ 'plugins.clssPlugin.inputText' | translate }} </label>
-    <input type="text" ng-model="user.planNumber" required="" md-maxlength="10" id="planInput">
+    <input type="text" ng-model="user.planNumber" required="" md-maxlength="10" id="planInput" name="input">
 </md-input-container>
 `;
 
@@ -80,12 +70,13 @@ const INPUT_COMMUNITY = `
 </md-input-container>
 `;
 
-const SEARCH_BUTTON = `
+const SEARCH_BUTTON  = (oid) => `
 <md-button 
     title="{{ 'plugins.clssPlugin.searchAria' | translate }}"
     class="bt1 ng-scope md-raised md-primary rv-search-button"
     aria-label="{{ 'plugins.clssPlugin.searchAria' | translate }}"
-    ng-click="ctrl.lauchSearchAction()">
+    ng-click="ctrl.launchSearchAction('${oid}')">
+    <md-tooltip md-direction="bottom">Search</md-tooltip>
         {{ 'plugins.clssPlugin.buttonName' | translate }}
 </md-button>
 `;
@@ -103,17 +94,17 @@ export const SEARCH_PLAN_TEMPLATE = ` 
 
 <div class="rv-panel-content" ng-controller="SearchPanel as ctrl">
     <section layout="column" class="input-section"> 
-        
+      
         ${SELECT_PROVINCE}
 
         ${SELECT_RESERVE}
 
         ${INPUT_PLAN}
-
+      
     </section>
     
     <section layout="row" layout-align="center left" layout-wrap>
-        ${SEARCH_BUTTON}
+        ${SEARCH_BUTTON('plan')}
         
         ${RESET_BUTTON}
     </section>
@@ -121,7 +112,7 @@ export const SEARCH_PLAN_TEMPLATE = ` 
 <md-divider></md-divider>
 `;
 
-
+//${INPUT_NTS_SHEET}
 export const PROTECTED_AREA_TEMPLATE = ` 
 <div class="rv-panel-content" ng-controller="SearchPanel as ctrl">
     <section layout="column" class="input-section"> 
@@ -131,11 +122,10 @@ export const PROTECTED_AREA_TEMPLATE = ` 
 
         ${INPUT_PLAN}
 
-        ${INPUT_NTS_SHEET}
     </section>
     
     <section layout="row" layout-align="center left" layout-wrap>
-        ${SEARCH_BUTTON}
+        ${SEARCH_BUTTON('protected')}
             
         ${RESET_BUTTON}
     </section>
@@ -153,25 +143,28 @@ export const COMMUNITY_TEMPLATE = ` 
     </section>
     
     <section layout="row" layout-align="center left" layout-wrap>
-        ${SEARCH_BUTTON}
+        ${SEARCH_BUTTON('community')}
             
         ${RESET_BUTTON}
     </section>
 </div>
 <md-divider></md-divider>
 `;
+    
+export const MENU_BUTTON_RESULT = `
+<button class="md-icon-button black md-button ng-scope md-ink-ripple" 
+    ng-click="openSideMenu2()"
+    ng-controller="MenuPanel2"
+    style="float:left">
+    <md-tooltip md-direction="bottom">Open Side Menu</md-tooltip>
 
-export const zoom_BUTTON = `
-    <button class="md-icon-button black md-button ng-scope md-ink-ripple" 
-        ng-click="zoom()"
-        ng-controller = "test">
-        <md-icon md-svg-src="navigation:menu" class="ng-scope" role="img" aria-label='test'>
-            <svg xmlns="http://www.w3.org/2000/svg" fit="" height="100%" width="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24" focusable="false">
-                <g id="menu"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path></g>
-            </svg>
-        </md-icon>
-    </button> 
-    `;
+    <md-icon md-svg-src="navigation:menu" class="ng-scope" role="img" aria-label='test'>
+        <svg xmlns="http://www.w3.org/2000/svg" fit="" height="100%" width="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24" focusable="false">
+            <g id="menu"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path></g>
+        </svg>
+    </md-icon>
+</button> 
+`;
 
 export const MENU_BUTTON = `
     <button class="md-icon-button black md-button ng-scope md-ink-ripple" 
@@ -185,7 +178,7 @@ export const MENU_BUTTON = `
                 <g id="menu"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path></g>
             </svg>
         </md-icon>
-    </button>   
+    </button> 
 
     <md-sidenav class="md-sidenav-menu" md-component-id="sideMenu" md-disable-backdrop="" md-whiteframe="4" style="overflow: hidden;">
 
@@ -205,23 +198,21 @@ export const MENU_BUTTON = `
                     </svg>
                 </md-icon>
             </button>  
-
         </md-toolbar>
 
         <div class="menu-panel" md-whiteframe="4" style="overflow-y: scroll;"> 
-          
           <div class="panel-middle" ng-controller="MenuPanel">
-            <form name="myForm" ng-controller="MenuPanel">
+            <form name="myForm">
                 <label>
-                    <input type="radio" ng-model="search.name" ng-value="True" name="protected" ng-click="getSearchInfo($event.target.name); openSideMenu()">
+                    <input type="radio" ng-model="user.name" value="protected" ng-click="getSearchInfo($event.target.value); openSideMenu()">
                     {{ 'plugins.clssPlugin.sidePanel.protected' | translate }}
                 </label><br/>
                 <label>
-                    <input type="radio" ng-model="search.name" value="community" ng-click="getSearchInfo($event.target.value); openSideMenu()">
+                    <input type="radio" ng-model="user.name" value="community" ng-click="getSearchInfo($event.target.value); openSideMenu()">
                     {{ 'plugins.clssPlugin.sidePanel.community' | translate }}
                 </label><br/>
                 <label>
-                    <input type="radio" ng-model="search.name" value="plan" ng-click="getSearchInfo($event.target.value); openSideMenu()">
+                    <input type="radio" ng-model="user.name"  ng-value="plan" name="surveyPlan" ng-click="getSearchInfo($event.target.name); openSideMenu()">
                     {{ 'plugins.clssPlugin.sidePanel.plan' | translate }}
                 </label><br/>
             </form>
@@ -229,14 +220,7 @@ export const MENU_BUTTON = `
           </div>
         </div>
     </md-sidenave>
-`
-
-export const ZOOM_TEMPLATE = (oid) =>
-    `<button  ng-click='ctrl.zoomToFeature(${oid})'  md-ink-ripple class='md-icon-button rv-icon-16 md-button ng-scope enhanced-table-zoom' aria-label="{{ 'plugins.enhancedTable.detailsAndZoom.zoom' | translate }}">
-        <md-icon md-svg-src="action:zoom_in" aria-hidden='false'>
-            <md-tooltip  md-direction="top">{{ 'plugins.enhancedTable.detailsAndZoom.zoom' | translate }}</md-tooltip>
-        </md-icon>
-    </button>`;
+`;
 
 export const GRID_TEMPLATE = `
 
@@ -244,13 +228,13 @@ export const GRID_TEMPLATE = `
     <div ng-controller="ResultsTabsCtrl as ctrl" layout="column" class="ng-scope">
     
         <md-toolbar class="md-accent">
-            <div class="tabButton">
+        <div class="tabButton">
                 <md-button ng-repeat="control in ctrl.tabs" 
                     name="{{ control.name }}"
                     title="{{ control.title | translate }}"
                     class="tablinks"
                     ng-click="openTab(control.name)">
-                    {{ control.title | translate }} 
+                    {{ control.title | translate }}
                 
                 </md-button>
             </div>
@@ -265,12 +249,16 @@ export const GRID_TEMPLATE = `
                 <p>Info sur les plans</p>
             </div>
 
+            <div id="admin" class="tabcontent">
+                <div id="admin" style="display:block" class="ag-theme-material">test</div>
+            </div>
+
             <div id="township" class="tabcontent">
                 <h3>Township</h3>
                 <p>Info sur les townships</p>
             </div>
 
-            <div id="admin" class="tabcontent">
+            <div id="admin1" class="tabcontent">
                 <h3>Administrative Area</h3>
                 <p>Info sur les townships</p>
             </div>
@@ -282,89 +270,10 @@ export const GRID_TEMPLATE = `
         </md-toolbar>
     </div>
     <div id="plan" style="" class="ag-theme-material"></div>
-    
 </div>
-
-`;
-
-export const LEGEND_TEMPLATE = `
-	<div class="tabpanels" ng-controller="LegendPanel as ctrl">
-        <div class="tgl-panel" aria-labelledby="wb-auto-2" aria-expanded="true" aria-hidden="false">
-			<div>
-                <form id="legend" action="javascript:void(0)" method="post" class="form-horizontal mrgn-rght-0 mrgn-lft-0">
-	                <h3>Légende</h3>
-		            <details class="row mrgn-lft-0 mrgn-rght-0" open="">
-		            <summary>Pétrole et gaz</summary>
-					<div class="checkbox">
-                        <label for="legend-4">
-                            <input type="checkbox" value="4" id="legend-4" checked="" ng-click="toggleLayerVisibility(97)">
-                            <span>
-                                <img class="image-actual" src="./images/legend-97.png" alt="Rectangle bleu" style="width:auto !important">
-                            </span>
-                            Réseau de pétrole et de gaz
-                        </label>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-`;
-
-export const SIDE_NAV_TEMPLATE1 = `
-<div>
-    <ul class="heroes">
-        <li>Aire protégée</li>
-        <li>Arpentage en cours</li>
-        <li>Communauté</li>
-        <li>Coordonées</li>
-        <li>Cri-Naskapi</li>
-        <li>Limite municipale</li>
-        <li>Plan d'arpentage</li>
-        <li>Parc national</li>
-        <li>Parcelle</li>
-        <li>Quadrilatère</li>
-        <li>Réserve indienne</li>
-        <li>Township</li>
-    </ul>
-</div>
-
-<div>
-  <select class="form-control" multiple="multiple" size="12" id="selQueryType">
-    <option value="queryProtectedArea">Aire protégée</option>
-    <option value="querySurveyProject">Arpentage en cours</option>
-    <option value="queryCommunity">Communauté</option>
-    <option value="queryCreeNaskapi">Cri-Naskapi</option>
-    <option value="queryMunicipalBoundary">Limite municipale</option>
-    <option value="querySurveyPlan">Plan d'arpentage</option>
-    <option value="queryNationalPark">Parc national</option>
-    <option value="queryParcel">Parcelle</option>
-    <option value="queryQuad">Quadrilatère</option>
-    <option value="queryIndianReserve">Réserve indienne</option>
-    <option value="queryTownship">Township</option>
-    <option value="queryCoordinate">Coordonnées</option>
-  </select>
-
-  <select class="form-control" multiple="multiple" size="12" id="selQueryType">
-            <option value="queryProtectedArea">Aire protégée</option>
-            <option value="querySurveyProject">Arpentage en cours</option>
-            <option value="queryCommunity">Communauté</option>
-            <option value="queryCreeNaskapi">Cri-Naskapi</option>
-            <option value="queryMunicipalBoundary">Limite municipale</option>
-            <option value="querySurveyPlan">Plan d'arpentage</option>
-            <option value="queryNationalPark">Parc national</option>
-            <option value="queryParcel">Parcelle</option>
-            <option value="queryQuad">Quadrilatère</option>
-            <option value="queryIndianReserve">Réserve indienne</option>
-            <option value="queryTownship">Township</option>
-            <option value="queryCoordinate">Coordonnées</option>
-    </select>
-
-</div>
-
 `;
 
 export const TABS_TEMPLATE = `
-
 <div ng-controller="ResultsTabsCtrl as ctrl" layout="column" class="ng-scope">
 
     <div class="tabButton">
@@ -381,10 +290,10 @@ export const TABS_TEMPLATE = `
         <p>Info sur les parcelles</p>
     </div>
 
-      <div id="survey" class="tabcontent">
+    <div id="survey" class="tabcontent">
         <h3>Arpentage en cours</h3>
         <p>Info sur les arpentages</p> 
-     </div>
+    </div>
 
     <div id="plan" class="tabcontent">
         <h3>Plan d'arpentage</h3>
@@ -407,101 +316,12 @@ export const TABS_TEMPLATE = `
     </div>
 
     <section layout="row" flex></section>
-
 </div>
 `;
 
-export const TOWNSHIP_SEARCH = ` 
-<section layout="column" layout-sm="column" layout-align="center left" layout-wrap>
-    <md-input-container class="md-block-input-section" flex-gt-sm>
-        <label>{{ 'plugins.clssPlugin.inputSection' | translate }}</label>
-        <input type="text" ng-model="color" required="" md-maxlength="10" id="sectionInput">
-    </md-input-container>
-    <md-input-container class="md-block-input-township" flex-gt-sm>
-        <label>{{ 'plugins.clssPlugin.inputTownship' | translate }}</label>
-        <input type="text" ng-model="color" required="" md-maxlength="10" id="townshipInput">
-    </md-input-container>
-    <md-input-container class="md-block-input-range" flex-gt-sm>
-        <label>{{ 'plugins.clssPlugin.inputRange' | translate }}</label>
-        <input type="text" ng-model="color" required="" md-maxlength="10" id="rangeInput">
-    </md-input-container>
-    <md-input-container class=md-block-input-direction" flex-gt-sm>
-        <label>Direction</label>
-        <md-select ng-model="user.direction" id=selectDirection>
-            <md-option ng-repeat="direction in directions" value="{{direction.township}}">{{direction.township}}</md-option>
-        </md-select>
-    </md-input-container>
-    <md-input-container class="md-block-input-meridian" flex-gt-sm>
-        <label>{{ 'plugins.clssPlugin.inputMeridian' | translate }}</label>
-        <input type="text" ng-model="color" required="" md-maxlength="10" id="meridianInput">
-    </md-input-container>
-</section>
-
-<section layout="row" layout-sm="column" layout-align="center left" layout-wrap>
-    <md-button 
-        title="{{ 'plugins.clssPlugin.searchAria' | translate }}"
-        class="bt1 ng-scope md-raised md-primary rv-search-button"
-        aria-label="{{ 'plugins.clssPlugin.searchAria' | translate }}"
-        ng-click="searchFunction()">
-        {{ 'plugins.clssPlugin.buttonName' | translate }}
-    </md-button>s
-            
-    <md-button 
-        title="{{ 'plugins.clssPlugin.resetLabel' | translate }}"
-        class="bt2 ng-scope md-raised md-primary rv-reset-button"
-        ng-click="resetFunction()">
-        {{ 'plugins.clssPlugin.resetButton' | translate }}
-    </md-button>
-</section>
-`
-
-export const PLAN_SEARCH = ` 
-<section layout="column" layout-sm="column" layout-align="center left" layout-wrap>
-
-    <md-input-container class=md-block-input-province" flex-gt-sm>
-        <label>Province</label>
-        <md-select ng-model="user.province" id=selectInput1>
-            <md-option ng-repeat="province in provinces" value="{{province.canada}}">{{province.canada}}</md-option>
-        </md-select>
-    </md-input-container>
-
-    <md-input-container class="md-block-input-land" flex-gt-sm>
-        <label>{{ 'plugins.clssPlugin.canadaLand' | translate }}</label>
-        <md-select ng-model="user.province" id=selectInput>
-            <md-option ng-repeat="province in provinces" value="{{province.canada}}">{{province.canada}}</md-option>
-        </md-select>
-    </md-input-container>
-
-    <md-input-container class="md-block-input-plan" flex-gt-sm>
-        <label>{{ 'plugins.clssPlugin.inputText' | translate }}</label>
-        <input type="text" ng-model="color" required="" md-maxlength="10" id="planInput1">
-    </md-input-container>
-</section>
-
-<section layout="row" layout-sm="column" layout-align="center left" layout-wrap>
-    <md-button 
-        title="{{ 'plugins.clssPlugin.searchAria' | translate }}"
-        class="bt1 ng-scope md-raised md-primary rv-search-button"
-        aria-label="{{ 'plugins.clssPlugin.searchAria' | translate }}"
-        ng-click="searchFunction()">
-        {{ 'plugins.clssPlugin.buttonName' | translate }}
-    </md-button>
-            
-    <md-button 
-        title="{{ 'plugins.clssPlugin.resetLabel' | translate }}"
-        class="bt2 ng-scope md-raised md-primary rv-reset-button"
-        ng-click="resetFunction()">
-        {{ 'plugins.clssPlugin.resetButton' | translate }}
-    </md-button>
-</section>
-`
-
-export const SIDE_NAV_TEMPLATE = `
-
+/*export const SIDE_NAV_TEMPLATE = `
 <div ng-controller="SelectTabMenu as ctrl" layout="column" class="ng-scope">
-
     <md-sidenav class="md-sidenav-plugin" md-component-id="leftPanel" md-disable-backdrop="" md-whiteframe="4">
-
       <md-toolbar class="theme-blue">
         <h1 class="md-toolbar-tools"> Available Searches</h1>
       </md-toolbar>
@@ -551,17 +371,13 @@ export const SIDE_NAV_TEMPLATE = `
           Developers can also disable the backdrop of the sidenav.<br/>
           This will disable the functionality to click outside to close the sidenav.
         </p>
-
         <div>
           <md-button ng-click="toggleLeft()" class="md-raised">Toggle Sidenav</md-button>
         </div>
-
       </div>
     </md-content>
-
 </div>
-`;
-
+`;*/
 
 export const PROVINCE = {
     'fr-CA' : {

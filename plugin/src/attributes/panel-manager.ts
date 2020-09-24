@@ -4,7 +4,7 @@ import * as data from '../resources/admin_area.json'
 const ADMIN_DATA = data
 
 const Draggabilly = require('draggabilly');
-const PANEL_OPTIONS_CSS = {top: '35%', left: '35%', width:'550px', height: '400px', right: '52px',}
+const PANEL_OPTIONS_CSS = {top: '35%', left: '35%', width:'550px', height: '375px', right: '52px',}
 //const SIDEPANEL_OPTIONS_CSS = {top: '10%', left: '20%',  right: '52px', height: '360px',};
 
 export class PanelManager {
@@ -64,17 +64,25 @@ export class PanelManager {
         }])*/
         this.mapApi.agControllerRegister('SearchPanel',  ['$scope', function($scope) {
             this.provinces = Object.keys(PROVINCE[configLang]);
+
             this.isDisabled = true;
 
             this.updateReserveBox = function(province) {
+
                 this.isDisabled = false;
+
                 if (province == this.selectedProvince) {
                     console.log('Same province clicked')
-                } else {
+                } 
+                else {
                     this.selectedProvince = province;
                     this.abbrevProvince = PROVINCE[configLang][province];
-                    this.reserves = ADMIN_DATA[configLang][this.abbrevProvince];
-                     
+                    
+                    let reserveBox = <HTMLElement>document.getElementById("selectReserve");
+                    
+                    if (reserveBox) {
+                        this.reserves = ADMIN_DATA[configLang][this.abbrevProvince];
+                    }
                 }
             }
 
@@ -88,19 +96,18 @@ export class PanelManager {
                     this.isDisabled = true; 
                 }
 
-                // a revoir
-                let resultsGrid =  <HTMLElement>document.getElementById("tableLoaderId");
+                let resultsGrid =  <HTMLElement>document.getElementById("resultsPanel");
                 if (resultsGrid) {
                     resultsGrid.remove()
                 }
             }
+            this.user = $scope.user
 
-            this.lauchSearchAction = function() {
+            this.launchSearchAction = function(oid:string) {
                 if ($scope.user) {
-                    if ($scope.user.planNumber) {
-                        new MakeQuery(mapApi, configLang);
-                    }
-                    
+                    this.user = $scope.user
+                    $scope.user.type = oid
+                    new MakeQuery(mapApi, configLang, $scope.user)
                 }
             }
 
@@ -138,7 +145,6 @@ export class PanelManager {
 
             this.sideTab = {}
 
-
             $scope.openTab = function(tabName) {
 
                 let tabContent = <HTMLElement>document.getElementById(tabName);
@@ -153,25 +159,8 @@ export class PanelManager {
                 tabContent.style.display = "block";
             }
 
-            $scope.getSearchInfo = function(tabName) {
-                console.log('a')
-                let tabContent = <HTMLElement>document.getElementById(tabName);
-                let tabContentActive = document.getElementsByClassName(' active') as HTMLCollectionOf<HTMLElement>
-
-                if (tabContentActive.length >0) {
-                    tabContentActive[0].style.display = "none";
-                    tabContentActive[0].classList.remove("active")
-                }
-
-                tabContent.className += ' active';
-                tabContent.style.display = "block";
-            }
         }])
 
-        //let panelTemplate = $(SEARCH_PANEL_TEMPLATE);
-        //this.mapApi.$compile(panelTemplate);
-        //customPanel.body.empty();
-        //customPanel.body.prepend(panelTemplate);
         this.setBody(customPanel)
         
 
@@ -209,10 +198,8 @@ export class PanelManager {
     }
 
     setBody(panel) {
-        
         panel.body.empty();
         panel.body.prepend(this.compileTemplate(SEARCH_PLAN_TEMPLATE));
-  
     }
 
     compileTemplate(template: string): JQuery<HTMLElement> {
@@ -243,18 +230,17 @@ export class PanelManager {
                         this.template = COMMUNITY_TEMPLATE;
                         break;
                     }
-                    case 'plan':{
+                    case 'surveyPlan':{
                         this.template = SEARCH_PLAN_TEMPLATE;
+                        
                         break;
                     }
                 }
 
-                customPanel.body.empty()
-
                 let temp = $(this.template);
                 mapApi.$compile(temp);
+                customPanel.body.empty()
                 customPanel.body.prepend(temp)
-                console.log('test')
             }
         }])
         

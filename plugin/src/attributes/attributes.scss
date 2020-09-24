@@ -161,17 +161,21 @@ $accent-color: #00bcd4;
 
 /* Style the tab */
 .tabButton {
-    border: 1px solid #ccc;
-    background-color: #f1f1f1;
-    //position:fixed;
-    overflow: hidden;
-    width: 100%;
+    //border: 1px solid #ccc;
+    //background-color: #f1f1f1;
+    ////position:fixed;
+    //overflow: hidden;
+    //width: 100%;
+    background-color: #ccc;
+    overflow: auto;
+    white-space: nowrap;
 }
 
 .tablinks {
-    //font-size: 15px;
+    font-size: 15px;
     text-transform: inherit;
-    background-color: inherit;
+    //text-transform: inherit;
+    //background-color: inherit;
     //padding: 0px 0px;
     //margin: 0px 5px;
     //display: inline-block;

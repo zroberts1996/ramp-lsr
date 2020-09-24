@@ -1,24 +1,25 @@
 import { TABLE_LOADING_TEMPLATE2 } from './table-template';
-import { GRID_TEMPLATE, TABS_TEMPLATE, zoom_BUTTON, ZOOM_TEMPLATE } from '../templates/template';
+import { GRID_TEMPLATE, MENU_BUTTON_RESULT } from '../templates/template';
 import { Grid } from 'ag-grid-community';
 import { PanelStateManager } from './panel-state-manager'
 import { ZoomToElement } from './button-test'
+import { param } from 'jquery';
+
+const Draggabilly = require('draggabilly');
 
 export class TableLoader {
+    private panelId: string;
 
     constructor(mapApi: any, legendBlock) {
         this.mapApi = mapApi;
         this.legendBlock = legendBlock;   
-        this.createPanel()
+        this.resetPanel();
+        this.createPanel('resultsPanel')
         //this.hidden = true;
-        this.panelManager = new PanelStateManager('tableLoaderId', this.legendBlock);  
+        //this.panelManager = new PanelStateManager('tableLoaderId', this.legendBlock);  
     }
 
     set panelStateManager(newPanelStateManager: PanelStateManager) {
-        // store the column state before replacing the state manager
-        //if (this._panelStateManager && this.tableOptions) {
-        //    this._panelStateManager.columnState = this.tableOptions.columnApi.getColumnState();
-        //}
         this._panelStateManager = newPanelStateManager;
     }
 
@@ -26,11 +27,20 @@ export class TableLoader {
         return this._panelStateManager;
     }
 
-    createPanel() {
-        this.panel = this.mapApi.panels.create('tableLoaderId');
-        this.panel.element.css({top: '50%', left: '20%', right: '52px',});
+    onHideResultPanel(e) {
+        const { panel, code } = e;
+        panel.element.addClass('hidden');
+        panel.destroy();
+    }
+
+    createPanel(panelID) {
+        this.panelId = panelID;
+        this.panel = this.mapApi.panels.create(panelID);
+        this.panel.element.css({top: '50%', left: '20%', right: '52px', bottom: '30px'});
         this.panel.element.addClass('ag-theme-material mobile-fullscreen tablet-fullscreen');
         this.panel.allowUnderlay = true;
+        this.panel.closing.subscribe(this.onHideResultPanel.bind(this));
+        
         this.prepareHeader(this.mapApi);
         this.prepareBody();
         //this.hidden = true;
@@ -46,21 +56,75 @@ export class TableLoader {
     }
 
     prepareHeader(mapApi) {
+        const headerClass =  this.panel.header._header
+        const titleElem = headerClass.find('header').first()
+        const titleText = `<h3 class="custom-title" style="display:none;">{{ 'plugins.clssPlugin.buttonName' | translate }}</h3>`
+        const panelElem = document.getElementById(this.panelId)
+        const newID = 'panel-header-custom'
+        panelElem.getElementsByClassName('rv-header')[0].setAttribute("id", newID)
+
+        const headerElem =  document.getElementById(newID)
+        //headerElem.getElementsByClassName("tagline")[0].remove()
+        //headerElem.getElementsByClassName("md-title")[0].remove()
+
+        //const close = this.panel.header.closeButton;
+        //close.removeClass('primary');
+        //close.addClass('black md-ink-ripple');
+
+        //panel.element.addClass('draggable');
+        //const draggable = new Draggabilly(panel.element.get(0), {handle: '.rv-header'});
+
+        //this.setAngular(this.mapApi, panel);
+        this.mapApi.agControllerRegister('MenuPanel2', ['$scope','$mdSidenav', function($scope ,$mdSidenav) {
+            
+            $scope.openSideMenu = buildToggler('sideMenu');
+
+            function buildToggler(componentId) {
+                return function() {
+                    $mdSidenav(componentId).toggle();
+                }
+            }
+        }])
+        titleElem.append(this.compileTemplate(MENU_BUTTON_RESULT));
+
+        const test1 = `<md-button name="test1" style="padding:0px; margin:0px;">Parcel</md-button>`
+        const test2 = `<md-button name="test2" style="padding:0px; margin:0px;">Survey</md-button>`
+        const test3 = `<md-button name="test3" style="padding:0px; margin:0px;">Plan</md-button>`;
+        const test4 = `<md-button name="test3" style="padding:0px; margin:0px;">Township</md-button>`;
+        const test5 = `<md-button name="test3" style="padding:0px 6px 0px 20px; margin:0px;">Administrative</md-button>`;
+        const test6 = `<md-button name="test3" style="padding:0px; margin:0px;">Info</md-button>`;
+
+        titleElem.append(this.compileTemplate(test1));
+        titleElem.append(this.compileTemplate(test2));
+        titleElem.append(this.compileTemplate(test3));
+        titleElem.append(this.compileTemplate(test4));
+        titleElem.append(this.compileTemplate(test5));
+        titleElem.append(this.compileTemplate(test6));
+
+        //titleElem.append(this.compileTemplate(titleText));
         //this.panel.header.toggleButton
-        this.panel.header.title = this.legendBlock.name;
+        //this.panel.header.title = this.legendBlock.name;
+        this.panel.element.addClass('draggable');
+        const draggable = new Draggabilly(this.panel.element.get(0), {handle: '.rv-header'});
         
-        /*
-        const customBtn2 = new this.panel.Button('Parcel');
-        customBtn2.$.on('click', function() { });
-        this.panel.header.append(customBtn2);
-        */
-        this.panel.header.closeButton;
+        const close = this.panel.header.closeButton;
+        close.removeClass('primary');
+        close.addClass('black md-ink-ripple');
     }
 
     open() {
         this.panel.open();
         this.hidden = false;
     }
+
+    resetPanel() {
+        let panelID = 'resultsPanel';
+        let resultsGrid = <HTMLElement>document.getElementById(panelID);
+
+        if (resultsGrid) {
+            resultsGrid.remove()
+        }
+    }; 
 
     prepareBody() {
         let template = TABLE_LOADING_TEMPLATE2(this.legendBlock);
@@ -70,7 +134,6 @@ export class TableLoader {
     setSpatialGrid(results) {
         this.panel.body = this.compileTemplate(GRID_TEMPLATE);
         let gridDiv = <HTMLElement>document.querySelector('#plan')
-
 
         let gridOptions = {
             columnDefs: [
@@ -82,15 +145,15 @@ export class TableLoader {
 
             rowData: [],
 
-            onGridReady: function(params) {
-                params.api.sizeColumnsToFit();
-            },
+            //onGridReady: function(params) {
+            //    params.api.sizeColumnsToFit();
+            //},
 
             rowStyle: {
                 background: 'white'
             },
 
-            pagination: true,
+            //pagination: true,
             enableColResize: true,
 
         }
@@ -111,58 +174,65 @@ export class TableLoader {
         const self = this;
         this.panel.body = this.compileTemplate(GRID_TEMPLATE);
         
-        let tabElement = document.getElementsByName('plan')[0]
+        /*let tabElement = document.getElementsByName('plan')[0]
 
         if (results.length >= 1000) {
             tabElement.innerHTML = tabElement.innerText + ' (1000+) '
         } else {
             tabElement.innerHTML = tabElement.innerText + ' (' + results.length + ')';
-        }
+        }*/
         
-
         let gridOptions = {
             columnDefs: [
                 {
                     headerName: 'Plan Number', 
                     field:'planNumber',
                     headerTooltip: 'Plan Number', 
+                    cellEditor: 'agRichSelectCellEditor',
+                    unSortIcon: true,
+                    width: 160,
                     cellRenderer: function (cell) {
                         return cell.value
                     },
                 },
-                {headerName: 'Description', field:'description', headerTooltip: 'Description'},
-                {headerName: 'Date of Survey', field:'dateSurvey', headerTooltip: 'Date of Survey'},
-                {headerName: 'Plan Detail', field:'planDetail', headerTooltip: 'Plan Detail'},
+                {headerName: 'Description', field:'description', headerTooltip: 'Description', width: 300, },
+                {headerName: 'Date of Survey', field:'dateSurvey', headerTooltip: 'Date of Survey',  width: 150},
+                {headerName: 'Detail', field:'planDetail', headerTooltip: 'Detail', width: 100},
                 {headerName: 'LTO', field:'lto', headerTooltip: 'List of survey document (plan) results from the attributes and map searches'},
             ],
+
+            rowSelection: 'multiple',
 
             rowData:[],
 
             onGridReady: function(params) {
-                params.api.sizeColumnsToFit();
+                //params.api.sizeColumnsToFit();
+                params.api.refreshCells(params);
+                
             },
 
             rowStyle: {
                 background: 'white'
             },
 
-            pagination: true,
-
+            //pagination: true,
+            
             enableColResize: true,
+            enableSorting: true,
+
+            //allowContextMenuWithControlKey: true,
         }
+
         
         results.forEach(function(result) {
             let date = result.attributes['P3_DATESURVEYED'];
-            let year = date.substr(0,4);
-            let month = date.substr(4,2);
-            let day = date.substr(6,2);
-            let newDate = new Date(year, month, day).toLocaleString();
+            let newDate = date.substr(0,4) + '-' + date.substr(4,2) + '-' + date.substr(6,2);
 
             gridOptions.rowData.push({
                 planNumber: result.attributes['PLANNO'],
                 description: result.attributes['P2_DESCRIPTION'],
                 dateSurvey: newDate,
-                planDetail: result.attributes[''],
+                planDetail: 'View',
                 lto: result.attributes['ALTERNATEPLANNO'],
                 globalid: result.attributes['GlobalID'],
                 province:result.attributes['PROVINCE']
@@ -171,25 +241,39 @@ export class TableLoader {
 
         gridOptions.columnDefs[0].cellRenderer = function(params) {
             var eDiv = document.createElement('div');
+            eDiv.onmouseover=function() {
+                let delay = setTimeout(function() {
+                    new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'mouseover');
+                    console.log('a')
+                }, 500);
+                eDiv.onmouseout = function() {clearTimeout(delay);
+                };
+            };
+            
             eDiv.innerHTML = '<span class="my-css-class" style="cursor:pointer"><a href="#">' + params.value + '</a></span>';
             //eDiv.innerHTML = '<span class="my-css-class"><button class="btn-simple">Push Me</button></span>';
             //var eButton = eDiv.querySelectorAll('.btn-simple')[0];
             eDiv.addEventListener('click', function() {
                 new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'click')
             });
-            eDiv.addEventListener('mouseover', function() {
-                new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'mouseover')
-                //mapApi.esriMap.graphics.clear();
-            });
             eDiv.addEventListener('mouseout', function() {
-                
                 mapApi.esriMap.graphics.clear();
             });
             return eDiv;
         }
 
+        gridOptions.columnDefs[3].cellRenderer = function(params) {
+            let eDiv = document.createElement('div');
+            eDiv.innerHTML= '<span class="my-css-class"><a href="' + 'https://clss.nrcan-rncan.gc.ca/plan-fra.php?id=' + params.data.planNumber.replace(/\s/g, '%20') + '"target=_blank>' + params.value + '</a></span>';
+            return eDiv
+        }
+
         let gridDiv = <HTMLElement>document.querySelector('#plan')
+        //let gridDiv1 = <HTMLElement>document.querySelector('#admin')
+
         new Grid(gridDiv, gridOptions);
+        //new Grid(gridDiv1, gridOptions);
+
     }
 
     compileTemplate(template): JQuery<HTMLElement> {
@@ -203,84 +287,6 @@ export class TableLoader {
     }
     
 }
-
-function setUpSymbolsAndInteractive(columnName: string, colDef: any, cols: any, mapApi: any, layerProxy: any) {
-    if (columnName === 'rvSymbol' || columnName === 'rvInteractive') {
-        // symbols and interactive columns don't have options for sort, filter and have default widths
-        colDef.suppressSorting = true;
-        colDef.suppressFilter = true;
-        colDef.lockPosition = true;
-
-        if (columnName === 'rvSymbol') {
-            colDef.maxWidth = 82;
-            // set svg symbol for the symbol column
-            colDef.cellRenderer = function (cell) {
-                return cell.value;
-            };
-            colDef.cellStyle = function (cell) {
-                return {
-                    paddingTop: '7px'
-                };
-            };
-        } else if (columnName === 'rvInteractive') {
-            colDef.maxWidth = 40;
-            // sets details and zoom buttons for the row
-            let zoomDef = (<any>Object).assign({}, colDef);
-            zoomDef.field = 'zoom';
-            zoomDef.cellRenderer = function (params) {
-                var eSpan = $(ZOOM_TEMPLATE(params.data[layerProxy.oidField]));
-                mapApi.$compile(eSpan);
-                params.eGridCell.addEventListener('keydown', function (e) {
-                    if (e.key === 'Enter') {
-                        eSpan.click();
-                    }
-                });
-                params.eGridCell.style.padding = 0;
-                return eSpan[0];
-            };
-            cols.splice(0, 0, zoomDef);
-            /*
-            colDef.cellRenderer = function (params) {
-                var eSpan = $(DETAILS_TEMPLATE(params.data[layerProxy.oidField]));
-                mapApi.$compile(eSpan);
-                params.eGridCell.addEventListener('keydown', function (e) {
-                    if (e.key === 'Enter') {
-                        eSpan.click();
-                    }
-                });
-                params.eGridCell.style.padding = 0;
-                return eSpan[0];
-            };*/
-        }
-        cols.splice(0, 0, colDef);
-    } else {
-        cols.push(colDef);
-    }
-}
-interface ColumnDefinition {
-    headerName: string;
-    headerTooltip: string;
-    minWidth?: number;
-    maxWidth?: number;
-    width?: number;
-    field: string;
-    //headerComponent?: { new(): CustomHeader };
-    //headerComponentParams?: HeaderComponentParams;
-    //filter: string;
-    //filterParams?: any;
-    //floatingFilterComponent?: undefined;
-    //floatingFilterComponentParams: FloatingFilterComponentParams;
-    cellRenderer?: (cellParams: any) => string | Element;
-    //suppressSorting: boolean;
-    //suppressFilter: boolean;
-    lockPosition?: boolean;
-    getQuickFilterText?: (cellParams: any) => string;
-    sort?: string;
-    hide?: boolean;
-    cellStyle?: any;
-    suppressMovable?: any;
-}
-
 
 export interface TableLoader {
     mapApi: any;
