@@ -206,6 +206,71 @@ export class TableLoader {
         new Grid(gridDiv, gridOptions);
     }
 
+    setSpatialGridSIP(results) {
+        let mapApi = this.mapApi;
+        this.panel.body = this.compileTemplate(GRID_TEMPLATE);
+        let gridDiv = <HTMLElement>document.querySelector('#plan')
+
+        let gridOptions = {
+            columnDefs: [
+                {headerName: 'Project Number', field:'projectNumber', headerTooltip: 'Project Number', cellRenderer: function(cell){return cell.value}},
+                {headerName: 'Description', field:'description', headerTooltip: 'Description'},
+                //{headerName: 'Global ID', field:'globalID', headerTooltip: 'Global ID'},
+                {headerName: 'Project Detail', field:'url', headerTooltip: 'Project Detail'},
+                //{headerName: 'Province', field:'province', headerTooltip: 'Province'},
+            ],
+
+            rowData: [],
+
+            //onGridReady: function(params) {
+            //    params.api.sizeColumnsToFit();
+            //},
+
+            rowStyle: {
+                background: 'white'
+            },
+
+            //pagination: true,
+            enableColResize: true,
+            enableSorting: true,
+        };
+        
+        results.forEach(function(result) {
+            gridOptions.rowData.push({
+                projectNumber: result.attributes['PROJECTNUMBER'], 
+                description: result.attributes['DESCRIPTION'],
+                globalID: result.attributes['GlobalID'],
+                url: result.attributes['URL'],
+                province: result.attributes['PROVINCE'],
+
+           })
+        })
+
+        gridOptions.columnDefs[0].cellRenderer = function(params) {
+            
+            var eDiv = document.createElement('div');
+            
+            eDiv.onmouseover=function() {
+                let delay = setTimeout(function() {
+                    new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'mouseover');
+                }, 500);
+                eDiv.onmouseout = function() {clearTimeout(delay);};
+            };
+            eDiv.addEventListener('click', function() {
+                new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'click')
+            });
+            eDiv.addEventListener('mouseout', function() {
+                mapApi.esriMap.graphics.clear();
+            });
+            
+            eDiv.innerHTML = '<span class="my-css-class" style="cursor:pointer"><a href="#">' + params.value + '</a></span>';
+            
+            return eDiv;
+        }
+
+        new Grid(gridDiv, gridOptions);
+    }
+    
     setSpatialGridPlan(results) {
         let mapApi = this.mapApi;
                 //const self = this;
@@ -310,6 +375,133 @@ export class TableLoader {
         
                 new Grid(gridDiv, gridOptions);
                 //new Grid(gridDiv1, gridOptions);
+            }
+
+            setSpatialGridTown(results) {
+                let mapApi = this.mapApi;
+                this.panel.body = this.compileTemplate(GRID_TEMPLATE);
+                let gridDiv = <HTMLElement>document.querySelector('#plan')
+                let gridOptions = {
+                    columnDefs: [
+                        {headerName: 'Section', field:'townshipSection', headerTooltip: 'Section', cellRenderer: function(cell){return cell.value}},
+                        {headerName: 'Township', field:'township', headerTooltip: 'Township'},
+                        //{headerName: 'TP', field:'tP', headerTooltip: 'TP'},
+                        {headerName: 'Range', field:'range', headerTooltip: 'Range'},
+                        //{headerName: 'Direction', field:'direction', headerTooltip: 'Direction'},
+                        {headerName: 'Meridian', field:'meridian', headerTooltip: 'Meridian'},
+                        //{headerName: 'Global ID', field:'globalID', headerTooltip: 'Global ID'},
+                        //{headerName: 'Province', field:'province', headerTooltip: 'Province'},
+                    ],
+        
+                    rowData: [],
+        
+                    //onGridReady: function(params) {
+                    //    params.api.sizeColumnsToFit();
+                    //},
+        
+                    rowStyle: {
+                        background: 'white'
+                    },
+        
+                    //pagination: true,
+                    enableColResize: true,
+                    enableSorting: true,
+                };
+                results.forEach(function(result) {
+                    gridOptions.rowData.push({
+                        townshipSection: result.attributes['TOWNSHIPSECTION'], 
+                        //tP: result.attributes['TP'],
+                        township: result.attributes['TOWNSHIP'],
+                        range: result.attributes['RANGE'],
+                        //direction: result.attributes['DIRECTION'],
+                        meridian: result.attributes['MERIDIAN'],
+                        //globalID: result.attributes['GlobalID'],
+                        //province: result.attributes['PROVINCE'],
+        
+                   })
+                })
+        
+                gridOptions.columnDefs[0].cellRenderer = function(params) {
+                    
+                    var eDiv = document.createElement('div');
+                    /*
+                    eDiv.onmouseover=function() {
+                        let delay = setTimeout(function() {
+                            new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'mouseover');
+                        }, 500);
+                        eDiv.onmouseout = function() {clearTimeout(delay);};
+                    };
+                    eDiv.addEventListener('click', function() {
+                        new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'click')
+                    });
+                    eDiv.addEventListener('mouseout', function() {
+                        mapApi.esriMap.graphics.clear();
+                    });
+                    */
+                    eDiv.innerHTML = '<span class="my-css-class" style="cursor:pointer"><a href="#">' + params.value + '</a></span>';
+                    
+                    return eDiv;
+                }
+        
+                new Grid(gridDiv, gridOptions);
+            }
+        
+            setSpatialGridAdminArea(results) {
+                let mapApi = this.mapApi;
+                this.panel.body = this.compileTemplate(GRID_TEMPLATE);
+                let gridDiv = <HTMLElement>document.querySelector('#plan')
+                let gridOptions = {
+                    columnDefs: [
+                        {headerName: 'Name', field:'name', headerTooltip: 'name', cellRenderer: function(cell){return cell.value}},
+                       // {headerName: 'Province', field:'province', headerTooltip: 'Province'},
+                       // {headerName: 'Global ID', field:'globalID', headerTooltip: 'Global ID'},
+                    ],
+        
+                    rowData: [],
+        
+                    //onGridReady: function(params) {
+                    //    params.api.sizeColumnsToFit();
+                    //},
+        
+                    rowStyle: {
+                        background: 'white'
+                    },
+        
+                    //pagination: true,
+                    enableColResize: true,
+                    enableSorting: true,
+                };
+                results.forEach(function(result) {
+                    gridOptions.rowData.push({
+                        name: result.attributes['ENGLISHNAME'], 
+                        //province: result.attributes['PROVINCE'],
+                        //globalID: result.attributes['GlobalID'],
+                   })
+                })
+        
+                gridOptions.columnDefs[0].cellRenderer = function(params) {
+                    
+                    var eDiv = document.createElement('div');
+                    eDiv.onmouseover=function() {
+                        let delay = setTimeout(function() {
+                            new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'mouseover');
+                            console.log('a')
+                        }, 500);
+                        eDiv.onmouseout = function() {clearTimeout(delay);
+                        };
+                    };
+        
+                    eDiv.innerHTML = '<span class="my-css-class" style="cursor:pointer"><a href="#">' + params.value + '</a></span>';
+                    eDiv.addEventListener('click', function() {
+                        new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'click')
+                    });
+                    eDiv.addEventListener('mouseout', function() {
+                        mapApi.esriMap.graphics.clear();
+                    });
+                    return eDiv;
+                }
+        
+                new Grid(gridDiv, gridOptions);
             }
 
     setFieldInfo(value) {
