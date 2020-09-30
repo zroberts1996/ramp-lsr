@@ -1,0 +1,379 @@
+// if you need to import vendor css use @import from this file instead of import from js file
+// e.g. @import '../node_modules/nouislider/distribute/nouislider.css';
+$icons-path: '~ag-grid-community/src/styles/material-icons/';
+
+// Set the colors
+$primary-color: #607d8b;
+$accent-color: #00bcd4;
+
+// Import the ag-grid styles and ag-grid material theme
+@import '../node_modules/ag-grid-community/dist/styles/ag-grid';
+@import '../node_modules/ag-grid-community/src/styles/ag-theme-material';
+@import '../node_modules/ag-grid-community/src/styles/ag-theme-blue';
+
+//Style for the header of the search panel
+//----------------------------------------
+#panel-header-custom{
+  display: flex;
+  white-space: nowrap;
+  border-bottom: 1px solid #e0e0e0;
+  //height: auto;
+  min-height: 49px;
+  padding: 0 0 0 5px;
+} 
+
+.custom-title {
+    line-height: 42px;
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: .005em;
+    display: block!important;
+    margin: 0;
+    display: inline-block;
+    text-overflow: ellipsis;
+    overflow: hidden
+}
+
+.md-sidenav-menu, 
+.md-sidenav-menu.md-locked-open, 
+.md-sidenav-menu.md-closed.md-locked-open-add-active {
+    min-width: 200px !important;
+    width: 85vw !important;
+    max-width: 300px !important;
+} 
+
+.panel-middle {
+  color: #404040;
+  font-size: 1.2rem;
+  font-weight: 400;
+  line-height: 1.0;
+  font-family: "Roboto", Arial, Helvetica, sans-serif;
+  box-sizing: border-box;
+  padding: 30px;
+  height: 758px;
+}
+.form-list {
+  color: #404040;
+  font-size: 1.0rem;
+  font-weight: 400;
+  line-height: 1.8;
+  box-sizing: border-box;
+  margin: 0 0 1.25em 0;
+  padding: 0;
+  list-style: none;
+  background: #efefef;
+  border: 1px solid #312929;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0;
+}
+
+.form-list li {
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  padding:5px 20px 0px 20px;
+  text-decoration:none;
+  border-bottom:0.5px solid gray;
+}
+.form-list, .first{
+    border-bottom:0.5px solid gray;
+}
+
+.form-list, .last{
+  border-bottom:0.0px;
+  cursor: pointer;
+}
+
+.btn-group {
+  color: #404040;
+  font-size: 1.0rem;
+  font-weight: 400;
+  line-height: 1.8;
+  font-family: "Roboto", Arial, Helvetica, sans-serif;
+  box-sizing: border-box;
+  margin: 0 0 1.25em 0;
+  padding: 0;
+  list-style: none;
+  background: #efefef;
+  border: 1px solid #312929;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0;
+}
+.btn-group button {
+  border-bottom:0.5px solid #bdc3c4;
+  border-left-width: 0px;
+  border-right-width: 0px;
+  border-top-width: 0px;
+  padding-left: 24px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+  display: block;
+}
+.btn-group button:hover{
+  background-color: #93ced8;
+  -webkit-box-shadow: 0px 5px 40px -10px rgba(0,0,0,0.57);
+  -moz-box-shadow: 0px 5px 40px -10px rgba(0,0,0,0.57);
+  box-shadow: 5px 40px -10px rgba(0,0,0,0.57);
+  transition: all 0.4s ease 0s;
+}
+
+//----------------------------------------
+
+//----------------------------------------
+
+
+
+.container {
+    display: inline-block;
+    cursor: pointer;
+  }
+  
+  .bar1, .bar2, .bar3 {
+    width: 35px;
+    height: 5px;
+    background-color: #333;
+    margin: 6px 0;
+    transition: 0.4s;
+  }
+  
+  .change .bar1 {
+    -webkit-transform: rotate(-45deg) translate(-9px, 6px);
+    transform: rotate(-45deg) translate(-9px, 6px);
+  }
+  
+  .change .bar2 {opacity: 0;}
+  
+  .change .bar3 {
+    -webkit-transform: rotate(45deg) translate(-8px, -8px);
+    transform: rotate(45deg) translate(-8px, -8px);
+  }
+
+.theme-blue {
+    background-color: #00e5ff5e;
+    color: rgba(0, 0, 0, 0.87);
+    font: 400 13px "Roboto", sans-serif;
+}
+
+
+/* Style the tab */
+.tabButton {
+    //border: 1px solid #ccc;
+    //background-color: #f1f1f1;
+    ////position:fixed;
+    //overflow: hidden;
+    //width: 100%;
+    background-color: #ccc;
+    overflow: auto;
+    white-space: nowrap;
+}
+
+.tablinks {
+    font-size: 15px;
+    text-transform: inherit;
+    //text-transform: inherit;
+    //background-color: inherit;
+    //padding: 0px 0px;
+    //margin: 0px 5px;
+    //display: inline-block;
+    /*float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 0px 0px;
+    transition: 0.3s;
+    text-transform: capitalize;*/
+}
+
+.tablinks:hover {
+    background-color: #ddd;
+    color: white;
+}
+
+.tablinks:active{
+    background: rgb(224, 21, 21);
+}
+
+.tablinks:focus{
+    background: olive;
+}
+  
+  /* Style the buttons inside the tab */
+.tab button1 {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-size: 17px;
+    text-transform: capitalize;
+}
+  
+  /* Change background color of buttons on hover */
+.tab button1:hover {
+    background-color: #ddd;
+    
+}
+  
+  /* Create an active/current tablink class */
+.tab button1.active {
+    background-color: #ccc;
+}
+  
+  /* Style the tab content */
+.tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+}
+
+.tabcontent2 {
+    float: left;
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    margin: 0px 0px 10px 20px;
+}
+
+
+
+.md-sidenav-plugin, 
+.md-sidenav-plugin.md-locked-open, 
+.md-sidenav-plugin.md-closed.md-locked-open-add-active {
+    min-width: 200px !important;
+    width: 85vw !important;
+    max-width: 800px !important;
+} 
+
+
+#leftBox {
+    float:left;  
+    background: white; 
+    width:180px; 
+    height:300px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    
+  .md-list-item-text {
+    margin: 0 0 2em 0;
+    list-style-type: none;
+    padding: 0;
+    width: 11em;
+    border-color: rgb(24, 23, 23);
+  }
+  .md-list-item-text span {
+    cursor: pointer;
+    position: relative;
+    left: 1em;
+    background-color: rgb(255, 255, 255);
+    margin: 0em;
+    padding: 0em 5;
+    //height: 1.4em;
+    border-radius: 0px;
+    text-align: left;
+  }
+  .md-list-item-text span:hover {
+    color: #607D8B;
+    background-color: #DDD;
+    //left: .1em;
+  }
+  .md-list-item-text span.selected {
+    background-color: #0ba0e0;
+    color: white;
+  }
+  .md-list-item-text span.selected:hover {
+    background-color: #3c10db;
+    color: white;
+  }
+}
+//#middleBox{ 
+//    float:left;  
+//    background:Green; 
+//    width:25%; 
+//}
+
+
+
+.rv-mapnav-search-content {
+    margin: 0px!important;
+
+    &.hidden {
+      display: none !important;
+    }
+
+}
+
+.rv-panel-content {
+  margin: 10px 10px 10px 10px;
+
+    .input-section {
+      margin: 20px 10px 0px 10px;
+    }
+    .md-container{
+      margin: 20px 8px 10px 8px;
+    }
+  
+    .bt1 {
+        padding: 0 6px 0 6px;
+        margin: 6px 8px 6px 8px;
+        min-width: 10px;
+        border-radius: 3px;
+        font-size: 14px;
+        text-align: center;
+        text-transform: capitalize;
+        text-decoration:none;
+        border: none;
+        outline: none;
+        width: 150px
+    }
+
+    .bt1:not([disabled]):hover {
+        color: white;
+    }
+
+    .bt2 {
+        padding: 0 6px 0 6px;
+        margin: 6px 8px 6px 8px;
+        min-width: 88px;
+        border-radius: 3px;
+        font-size: 14px;
+        text-align: center;
+        text-transform: capitalize;
+        text-decoration:none;
+        border: none;
+        outline: none;
+        width: 150px
+    }
+    .bt2:not([disabled]):hover {
+        color: white;
+    }
+}
+
+#plan {
+    flex: 1 1 auto;
+    width: 100%;
+    right: 52px;
+}
+
+#survey {
+    flex: 1 1 auto;
+    width: 100%;
+    right: 52px
+}
+
+.grid-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    right: 52px;
+
+}
+
+
+

@@ -1,0 +1,55 @@
+// if you need to import vendor css use @import from this file instead of import from js file
+// e.g. @import '../node_modules/nouislider/distribute/nouislider.css';
+$icons-path: '~ag-grid-community/src/styles/material-icons/';
+
+// Set the colors
+$primary-color: #607d8b;
+$accent-color: #00bcd4;
+
+// Import the ag-grid styles and ag-grid material theme
+@import 'ag-grid-community/dist/styles/ag-grid';
+@import 'ag-grid-community/src/styles/ag-theme-material';
+
+
+.rv-control-active {
+    background-color: rgba(200, 200, 200, 0.5);
+    clip-path: circle(15px at center);
+  }
+
+  .mat-tab-group {
+    margin-bottom: 48px;
+  }
+  
+  .rv-mapnav-draw-content {
+    .rv-draw-button {
+      margin: 0px!important;
+    }
+  }
+  
+  // overrides vanilla-picker
+  .popup.popup_left {
+    top:  -170px!important;
+  
+    .picker_arrow {
+      top: 60%!important;
+    }
+  }
+  
+  // hide measures
+  .rv-draw-text-hide {
+    visibility: hidden;
+  }
+  
+#resultsGrid {
+    flex: 1 1 auto;
+    width: 100%;
+    right: 52px
+    
+}
+
+.grid-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    right: 52px;
+}
