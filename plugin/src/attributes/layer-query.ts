@@ -2,7 +2,6 @@ import { TableLoader } from './table-loader';
 import { TableManager } from './table-manager';
 import { PROVINCE } from '../templates/template';
 
-
 export class MakeQuery {
     private _mapApi: any;
     private _configLang: any;
@@ -21,7 +20,7 @@ export class MakeQuery {
         this.queryType = searchInfo.type;
 
         this.setQueryInfo(this.queryType);
-        this.openLoadingPanel(mapApi)
+        this.openLoadingPanel();
         this.executeQuery();
     }
 
@@ -37,24 +36,26 @@ export class MakeQuery {
         }
     }
 
-    openLoadingPanel(mapApi) {
+    openLoadingPanel() {
+        const mapApi = this._mapApi;
         let headerTitle = {name: this.queryType};
         this.loadingPanel = new TableLoader(mapApi, headerTitle);
     };
 
     setQueryInfo(type) {
 
-        if (type == 'community') {
+        if (type == 'communityName') {
             this.layer = 2;
             this.outFields = ["ADMINAREAID", "FRENCHNAME", "ENGLISHNAME", "PROVINCE", "GlobalID"];
-            this.whereclause = "ENGLISHNAME like '%" + this._searchInfo.communityName.toUpperCase().replace("'", "''") + "%'"  //%' "FRENCHNAME like '%" +  this._searchInfo.communityName.toUpperCase().replace("'", "''") + "% OR ENGLISHNAME like '%" +  this._searchInfo.communityName.toUpperCase().replace("'", "''") + "%'";
+            this.orderByField = ['ENGLISHNAME'];
+            this.whereclause = "ENGLISHNAME like '%" + this._searchInfo.communityName.toUpperCase().replace("'", "''") + "%'" ;
         }
         else if (type == 'protected') {
             this.layer = 7;
             this.outFields = ["ADMINAREAID", "FRENCHNAME", "ENGLISHNAME", "PROVINCE", "GlobalID"];
             this.whereclause = "planno like '%" + this._searchInfo.protected.toUpperCase().replace("'", "''") + "%'";
         }
-        else if (type == 'plan') {
+        else if (type == 'planNumber') {
             this.layer = 0;
             this.orderByField = ['planno'];
             this.outFields = ["PLANNO", "P2_DESCRIPTION", "GlobalID", "PROVINCE", "P3_DATESURVEYED", "SURVEYOR", "ALTERNATEPLANNO"];
@@ -63,9 +64,17 @@ export class MakeQuery {
                 this.whereclause +=  "AND GEOADMINCODE LIKE '%" + this._searchInfo.reserve + "%'"
             }
         }
-
+        else if (type == 'surveyProgress') {
+            this.layer = 9;
+            this.orderByField = ['PROJECTNUMBER'];
+            this.outFields = ["PROJECTNUMBER", "DESCRIPTION", "PROVINCE", "URL", "GlobalID"];
+            this.whereclause =  "projectNumber like '%" + this._searchInfo.surveyProject.toUpperCase().replace("'", "''") + "%'";
+            if (this._searchInfo.reserve) {
+                this.whereclause +=  "AND GEOADMINCODE LIKE '%" + this._searchInfo.reserve + "%'"
+            }
+        }
     }
-
+ 
     executeQuery() {
         let query = new (<any>window).RAMP.GAPI.esriBundle.Query();
         let curProv = this.getProvinceAbrev();
@@ -76,15 +85,16 @@ export class MakeQuery {
         query.returnGeometry = false;
         query.outFields = this.outFields
         query.orderByFields = this.orderByField;
-        queryTask.execute(query, this.createTable(this.loadingPanel, this._mapApi))
+        queryTask.execute(query, this.createTable(this.loadingPanel))
     }
 
-    createTable(panel, mapApi) {
+    createTable(panel) {
+        const mapApi = this._mapApi;
+        let type = [this.queryType];
         return function(queryResults) {
-            panel.setResultsGrid(queryResults.features, mapApi);
+            panel.setResultsGrid(queryResults.features, mapApi, type);
         }
     }
-
 }
 
 export interface MakeQuery {
@@ -99,28 +109,4 @@ export interface MakeQuery {
     loadingTimeout: any;
     layerAdded: any;
     tableManager: TableManager;
-}
-
-interface ColumnDefinition {
-    //headerName: string;
-    //headerTooltip: string;
-    minWidth?: number;
-    maxWidth?: number;
-    width?: number;
-    field: string;
-    //headerComponent?: { new(): CustomHeader };
-    //headerComponentParams?: HeaderComponentParams;
-    //filter: string;
-    //filterParams?: any;
-    //floatingFilterComponent?: undefined;
-    //floatingFilterComponentParams: FloatingFilterComponentParams;
-    cellRenderer?: (cellParams: any) => string | Element;
-    suppressSorting: boolean;
-    suppressFilter: boolean;
-    lockPosition?: boolean;
-    getQuickFilterText?: (cellParams: any) => string;
-    sort?: string;
-    hide?: boolean;
-    cellStyle?: any;
-    suppressMovable: any;
 }

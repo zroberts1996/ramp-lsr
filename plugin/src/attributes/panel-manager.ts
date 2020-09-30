@@ -1,6 +1,7 @@
-import { SEARCH_PLAN_TEMPLATE, PROTECTED_AREA_TEMPLATE, COMMUNITY_TEMPLATE, PROVINCE, MENU_BUTTON } from '../templates/template';
+import { SEARCH_PLAN_TEMPLATE, PROTECTED_AREA_TEMPLATE, COMMUNITY_TEMPLATE, SURVEY_PROGRESS_TEMPLATE, PROVINCE, MENU_BUTTON } from '../templates/template';
 import { MakeQuery } from './layer-query';
 import * as data from '../resources/admin_area.json'
+import { _ } from 'ag-grid-community';
 const ADMIN_DATA = data
 
 const Draggabilly = require('draggabilly');
@@ -19,22 +20,17 @@ export class PanelManager {
         this.configLang = configLang
         this.createPanel(this.mapApi, this.configLang)
     }
-
+    
     createPanel(mapApi, configLang) {
 
         const customPanel = this.mapApi.panels.create('searchPlanPanel');
         customPanel.element.addClass('ag-theme-material mobile-fullscreen tablet-fullscreen');
         customPanel.element.css(PANEL_OPTIONS_CSS);
         customPanel.allowOffscreen = true;
+
+        this.customPanel = customPanel;
+
         this.setHeader(customPanel, "searchPlanPanel");
-
-        /*const sidePanel = this.mapApi.panels.create('SidePanel');
-        sidePanel.element.css(SIDEPANEL_OPTIONS_CSS);
-        sidePanel.allowOffscreen = true;
-        sidePanel.header.toggleButton
-        const close2 = sidePanel.header.closeButton;*/
-
-        this.customPanel = customPanel
 
         /*
         this.mapApi.agControllerRegister('SelectTabMenu', ['$scope', '$mdSidenav', function($scope, $mdSidenav) {
@@ -101,16 +97,18 @@ export class PanelManager {
                     resultsGrid.remove()
                 }
             }
-            this.user = $scope.user
 
             this.launchSearchAction = function(oid:string) {
+                
                 if ($scope.user) {
-                    this.user = $scope.user
-                    $scope.user.type = oid
-                    new MakeQuery(mapApi, configLang, $scope.user)
+                    if (Object.keys($scope.user).length!=0) {
+                        $scope.user.type = "";
+                        this.user = $scope.user
+                        $scope.user.type = oid
+                        new MakeQuery(mapApi, configLang, $scope.user)
+                    }
                 }
             }
-
         }]);
 
 
@@ -143,7 +141,7 @@ export class PanelManager {
                 }
             };
 
-            this.sideTab = {}
+            this.sideTab = {};
 
             $scope.openTab = function(tabName) {
 
@@ -161,16 +159,11 @@ export class PanelManager {
 
         }])
 
-        this.setBody(customPanel)
-        
+        this.setBody(customPanel);
 
-        //let sideTemplate = $(SIDE_NAV_TEMPLATE);
-        //this.mapApi.$compile(sideTemplate);
-        //sidePanel.body.empty();
-        //sidePanel.body.prepend(sideTemplate);
-        //sidePanel.open();
+        return customPanel
     }
- 
+
 
     setHeader(panel, id) {
         const headerClass =  panel.header._header
@@ -192,7 +185,7 @@ export class PanelManager {
         panel.element.addClass('draggable');
         const draggable = new Draggabilly(panel.element.get(0), {handle: '.rv-header'});
 
-        this.setAngular(this.mapApi, panel);
+        this.setAngular(panel);
         titleElem.append(this.compileTemplate(MENU_BUTTON));
         titleElem.append(this.compileTemplate(titleText));
     }
@@ -208,8 +201,10 @@ export class PanelManager {
         return temp;
     }
 
-    setAngular(mapApi, customPanel) {
-        this.mapApi.agControllerRegister('MenuPanel', ['$scope','$mdSidenav', function($scope ,$mdSidenav) {
+    setAngular(customPanel) {
+        const mapApi = this.mapApi;
+
+        mapApi.agControllerRegister('MenuPanel', ['$scope','$mdSidenav', function($scope ,$mdSidenav) {
             
             $scope.openSideMenu = buildToggler('sideMenu');
 
@@ -232,7 +227,10 @@ export class PanelManager {
                     }
                     case 'surveyPlan':{
                         this.template = SEARCH_PLAN_TEMPLATE;
-                        
+                        break;
+                    }
+                    case 'project':{
+                        this.template = SURVEY_PROGRESS_TEMPLATE;
                         break;
                     }
                 }

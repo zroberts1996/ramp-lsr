@@ -2,12 +2,8 @@ import { AddLayer } from './add-layer';
 import { PanelManager } from './attributes/panel-manager';
 import { DrawManager } from './spatial/draw-manager';
 
-
 export default class ClssPlugin {
 
-    //private button: any;
-    //private panel: any;
-    
     /**
     * Plugin init
     * @function init
@@ -15,46 +11,43 @@ export default class ClssPlugin {
     */
     init(mapApi: any) {
         this.mapApi = mapApi;
-
-        mapApi.getTranslatedText = function (stringId) {
-
-            const template = `<div>{{ '` + stringId + `' | translate }}</div>`;
-      
-            let $el = $(template);
-            this.$compile($el);
-    
-            const text = $el.text();
-            $el = null;
-      
-            return text;
-        }
          
-        // how to get config
+        // Get config
         this.config = this._RV.getConfig('plugins').clssPlugin;
         this.config.language = this._RV.getCurrentLang();
         this.config.url = this._RV.getConfig('services').geometryUrl;
 
-        
+        // Get draw tool
         this.drawManager = new DrawManager(mapApi, this.config);
         //this.drawManager.setInactive();
 
-        // create side menu button to toggle toolbar
+        // Create side menu button to toggle toolbar
         this.button = this.mapApi.mapI.addPluginButton(
             ClssPlugin.prototype.translations[this._RV.getCurrentLang()].placeHolder, 
             this.onMenuItemClick()
         );
 
-        // set toolbar state
+        // Set toolbar state
         this.button.isActive = true;
 
-        //Add layer to page
-        let testLayer = new AddLayer(mapApi, this.config);
+        // Add layer to page
+        new AddLayer(mapApi, this.config);
 
-        // create mapnav panel
+        // Create search panel
         this.panelManager = new PanelManager(mapApi, this.config.language);
         this.panelManager.showPanel()
+        this.panelManager.customPanel.closing.subscribe(this.onHideResultPanel.bind(this));
     }
     
+    /**
+    * Plugin init
+    * @function onHideResultPanel
+    * @param {Object} e the close button action
+    */
+    onHideResultPanel(e) {
+        this.button.isActive = false;
+    }
+
     /**
      * Event to fire on side menu item click
      * @function onMenuItemClick
@@ -69,7 +62,6 @@ export default class ClssPlugin {
     }
 }
 
-
 export default interface ClssPlugin {
     mapApi: any,
     _RV: any,
@@ -80,7 +72,6 @@ export default interface ClssPlugin {
     button: any;
 }
 
-
 ClssPlugin.prototype.translations = {
     'en-CA': {
         placeHolder: 'CLSS Plugin',
@@ -89,6 +80,7 @@ ClssPlugin.prototype.translations = {
         pluginName: 'Plan Search Service',
         buttonName: 'Search',
         inputText: 'Enter Plan Number',
+        inputProject: 'Enter Projet Number',
         canadaLand: 'Canada Land',
         searchAria: 'Search Plan',
         resetLabel: 'Reset search',
@@ -144,6 +136,7 @@ ClssPlugin.prototype.translations = {
         pluginName: 'Recherche de plans',
         buttonName: 'Rechercher',
         inputText: 'Numéro de plan',
+        inputProject: 'Numéro de projet',
         canadaLand: 'Terre du Canada',
         searchAria: 'Chercher un plan',
         resetLabel: 'Réinitialiser la recherche',

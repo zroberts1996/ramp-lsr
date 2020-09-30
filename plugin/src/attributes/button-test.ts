@@ -5,30 +5,33 @@ export class ZoomToElement {
     constructor(mapApi: any, globalId: string, province: string, eventType) {
         this.mapApi = mapApi;
         this.eventType = eventType;
+        this.province = province;
+        this.globalId = globalId;
         this._esriBundle = (<any>window).RAMP.GAPI.esriBundle;
-        this.getResult(this.mapApi, globalId, province);
+        this.getResult();
     }
 
-    getResult(mapApi, globalid, queryprov) {
+    getResult() {
         let query = new this._esriBundle.Query();
-        let queryURL = this.baseURL + "WMB_Highlight_" + queryprov.substring(0,2) + "/MapServer/0";
+        let queryURL = this.baseURL + "WMB_Highlight_" + this.province.substring(0,2) + "/MapServer/0";
         let queryTask = new this._esriBundle.QueryTask(queryURL);
-        let whereclause = "GlobalID = '" + globalid + "'" 
+        let whereclause = "GlobalID = '" + this.globalId + "'" 
 
         query.where = whereclause;
         query.returnGeometry = true;
         query.outFields = ["GlobalID"];
 
         if (this.eventType == 'click') {
-            queryTask.execute(query, this.zoomFeature(mapApi))
+            queryTask.execute(query, this.zoomFeature())
         }
         else if (this.eventType == 'mouseover') {
-            queryTask.execute(query, this.highlightFeature(mapApi))
+            queryTask.execute(query, this.highlightFeature())
         }
     };
 
-    zoomFeature(mapApi) {
+    zoomFeature() {
         const esriBundle = this._esriBundle;
+        const mapApi = this.mapApi;
 
         return function(featureSet) {
             if (featureSet.features.length > 0) {
@@ -53,8 +56,9 @@ export class ZoomToElement {
         }
     }
 
-    highlightFeature(mapApi) {
+    highlightFeature() {
         const esriBundle = this._esriBundle;
+        const mapApi = this.mapApi;
         
         return function(featureSet) {
             let feature = featureSet.features[0];
