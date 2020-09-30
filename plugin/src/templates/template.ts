@@ -49,6 +49,13 @@ const INPUT_PLAN = `
 </md-input-container>
 `;
 
+const INPUT_PROJECT = `
+<md-input-container class="md-container">
+    <label>{{ 'plugins.clssPlugin.inputProject' | translate }} </label>
+    <input type="text" ng-model="user.surveyProject" required="" md-maxlength="10" id="surveyInput">
+</md-input-container>
+`;
+
 const INPUT_PARCEL = `
 <md-input-container class="md-container">
     <label> Enter Parcel </label>
@@ -104,7 +111,7 @@ export const SEARCH_PLAN_TEMPLATE = ` 
     </section>
     
     <section layout="row" layout-align="center left" layout-wrap>
-        ${SEARCH_BUTTON('plan')}
+        ${SEARCH_BUTTON('planNumber')}
         
         ${RESET_BUTTON}
     </section>
@@ -132,6 +139,26 @@ export const PROTECTED_AREA_TEMPLATE = ` 
 </div>
 <md-divider></md-divider>
 `;
+export const SURVEY_PROGRESS_TEMPLATE = ` 
+<div class="rv-panel-content" ng-controller="SearchPanel as ctrl">
+    <section layout="column" class="input-section"> 
+      
+        ${SELECT_PROVINCE}
+
+        ${SELECT_RESERVE}
+
+        ${INPUT_PROJECT}
+      
+    </section>
+    
+    <section layout="row" layout-align="center left" layout-wrap>
+        ${SEARCH_BUTTON('surveyProgress')}
+        
+        ${RESET_BUTTON}
+    </section>
+</div>
+<md-divider></md-divider>
+`;
 
 export const COMMUNITY_TEMPLATE = ` 
 <div class="rv-panel-content" ng-controller="SearchPanel as ctrl">
@@ -143,7 +170,7 @@ export const COMMUNITY_TEMPLATE = ` 
     </section>
     
     <section layout="row" layout-align="center left" layout-wrap>
-        ${SEARCH_BUTTON('community')}
+        ${SEARCH_BUTTON('communityName')}
             
         ${RESET_BUTTON}
     </section>
@@ -214,6 +241,10 @@ export const MENU_BUTTON = `
                 <label>
                     <input type="radio" ng-model="user.name"  ng-value="plan" name="surveyPlan" ng-click="getSearchInfo($event.target.name); openSideMenu()">
                     {{ 'plugins.clssPlugin.sidePanel.plan' | translate }}
+                </label><br/>
+                <label>
+                    <input type="radio" ng-model="user.name" value="project" ng-click="getSearchInfo($event.target.value); openSideMenu()">
+                    {{ 'plugins.clssPlugin.sidePanel.survey' | translate }}
                 </label><br/>
             </form>
 
@@ -388,7 +419,7 @@ export const PROVINCE = {
         'Manitoba': 'MB',
         'Nouveau-Brunswick': 'NB',
         'Nouvelle-Écosse': 'NS',
-        'Nunavut': 'NT',
+        'Nunavut': 'NU',
         'Ontario': 'ON',
         'Québec': 'QC',
         'Saskatchewan': 'SK',
@@ -403,13 +434,13 @@ export const PROVINCE = {
         'Prince Edward Island': 'PE',
         'Manitoba': 'MB',
         'New Brunswick': 'NB',
+        'Newfoundland and Labrador': 'NL',
+        'Northwest Territories': 'NT',
         'Nova Scotia': 'NS',
-        'Nunavut': 'NT',
+        'Nunavut': 'NU',
         'Ontario': 'ON',
         'Quebec': 'QC',
         'Saskatchewan': 'SK',
-        'Newfoundland and Labrador': 'NL',
-        'Northwest Territories': 'NT',
         'Yukon': 'YT'
     }    
 } 
