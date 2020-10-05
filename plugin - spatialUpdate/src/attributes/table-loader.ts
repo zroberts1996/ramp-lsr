@@ -96,12 +96,12 @@ export class TableLoader {
 
         }])
 
-        const test1 = `<md-button ng-controller="TabController as ctrl"; ng-click="openSelectedTab('planGrid')"; name="test1" style="padding:0px; margin:0px;">Parcel</md-button>`
-        const test2 = `<md-button ng-controller="TabController as ctrl"; ng-click="openSelectedTab('projectGrid')"; name="test2" style="padding:0px; margin:0px;">Survey</md-button>`
-        const test3 = `<md-button name="test3" style="padding:0px; margin:0px;">Plan</md-button>`;
-        const test4 = `<md-button name="test4" style="padding:0px; margin:0px;">Township</md-button>`;
-        const test5 = `<md-button name="test5" style="padding:0px 6px 0px 20px; margin:0px;">Administrative</md-button>`;
-        const test6 = `<md-button name="test6" style="padding:0px; margin:0px;">Info</md-button>`;
+        const test1 = `<md-button id='parcelTab' ng-controller="TabController as ctrl"; ng-click="openSelectedTab('parcel')"; name="test1" style="padding:0px; margin:0px;">Parcel</md-button>`
+        const test2 = `<md-button id='surveyTab' ng-controller="TabController as ctrl"; ng-click="openSelectedTab('survey')"; name="test2" style="padding:0px; margin:0px;">Survey</md-button>`
+        const test3 = `<md-button id='planTab' ng-controller="TabController as ctrl"; ng-click="openSelectedTab('plan')";name="test3" style="padding:0px; margin:0px;">Plan</md-button>`;
+        const test4 = `<md-button id='townTab' ng-controller="TabController as ctrl"; ng-click="openSelectedTab('town')";name="test4" style="padding:0px; margin:0px;">Township</md-button>`;
+        const test5 = `<md-button id='adminTab' ng-controller="TabController as ctrl"; ng-click="openSelectedTab('admin')";name="test5" style="padding:0px 6px 0px 20px; margin:0px;">Administrative</md-button>`;
+        const test6 = `<md-button ng-controller="TabController as ctrl"; ng-click="openSelectedTab('projectGrid')";name="test6" style="padding:0px; margin:0px;">Info</md-button>`;
 
 
         titleElem.append(this.compileTemplate(test1));
@@ -120,6 +120,8 @@ export class TableLoader {
         const close = this.panel.header.closeButton;
         close.removeClass('primary');
         close.addClass('black md-ink-ripple');
+
+
     }
 
     open() {
@@ -139,12 +141,22 @@ export class TableLoader {
     prepareBody() {
         let template = TABLE_LOADING_TEMPLATE2(this.legendBlock);
         this.panel.body = template;
+        this.panel.body = this.compileTemplate(GRID_TEMPLATE);
     }
+
+
 
     setSpatialGrid(results) {
         let mapApi = this.mapApi;
-        this.panel.body = this.compileTemplate(GRID_TEMPLATE);
-        let gridDiv = <HTMLElement>document.querySelector('#plan')
+        //this.panel.body = this.compileTemplate(GRID_TEMPLATE);
+        let tabElement = document.getElementById('parcelTab')
+        
+        if (results.length >= 1000) {
+            tabElement.innerHTML = tabElement.innerText + ' (1000+) '
+        } else {
+            tabElement.innerHTML = tabElement.innerText + ' (' + results.length + ')';
+        }
+        let gridDiv = <HTMLElement>document.querySelector('#parcel')
 
         let gridOptions = {
             columnDefs: [
@@ -156,9 +168,9 @@ export class TableLoader {
 
             rowData: [],
 
-            //onGridReady: function(params) {
-            //    params.api.sizeColumnsToFit();
-            //},
+            onGridReady: function(params) {
+                params.api.sizeColumnsToFit();
+            },
 
             rowStyle: {
                 background: 'white'
@@ -184,7 +196,7 @@ export class TableLoader {
         gridOptions.columnDefs[0].cellRenderer = function(params) {
             
             var eDiv = document.createElement('div');
-            /*
+            
             eDiv.onmouseover=function() {
                 let delay = setTimeout(function() {
                     new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'mouseover');
@@ -197,7 +209,7 @@ export class TableLoader {
             eDiv.addEventListener('mouseout', function() {
                 mapApi.esriMap.graphics.clear();
             });
-            */
+            
             eDiv.innerHTML = '<span class="my-css-class" style="cursor:pointer"><a href="#">' + params.value + '</a></span>';
             
             return eDiv;
@@ -208,8 +220,16 @@ export class TableLoader {
 
     setSpatialGridSIP(results) {
         let mapApi = this.mapApi;
-        this.panel.body = this.compileTemplate(GRID_TEMPLATE);
-        let gridDiv = <HTMLElement>document.querySelector('#plan')
+        //this.panel.body = this.compileTemplate(GRID_TEMPLATE);
+        let tabElement = document.getElementById('surveyTab')
+        
+        if (results.length >= 1000) {
+            tabElement.innerHTML = tabElement.innerText + ' (1000+) '
+        } else {
+            tabElement.innerHTML = tabElement.innerText + ' (' + results.length + ')';
+        }
+
+        let gridDiv = <HTMLElement>document.querySelector('#survey')
 
         let gridOptions = {
             columnDefs: [
@@ -239,7 +259,7 @@ export class TableLoader {
             gridOptions.rowData.push({
                 projectNumber: result.attributes['PROJECTNUMBER'], 
                 description: result.attributes['DESCRIPTION'],
-                globalID: result.attributes['GlobalID'],
+                globalid: result.attributes['GlobalID'],
                 url: result.attributes['URL'],
                 province: result.attributes['PROVINCE'],
 
@@ -274,15 +294,15 @@ export class TableLoader {
     setSpatialGridPlan(results) {
         let mapApi = this.mapApi;
                 //const self = this;
-                this.panel.body = this.compileTemplate(GRID_TEMPLATE);
+                //this.panel.body = this.compileTemplate(GRID_TEMPLATE);
         
-                /*let tabElement = document.getElementsByName('plan')[0]
+                let tabElement = document.getElementById('planTab')
         
                 if (results.length >= 1000) {
                     tabElement.innerHTML = tabElement.innerText + ' (1000+) '
                 } else {
                     tabElement.innerHTML = tabElement.innerText + ' (' + results.length + ')';
-                }*/
+                }
                 
                 let gridOptions = {
                     columnDefs: [
@@ -308,8 +328,8 @@ export class TableLoader {
                     rowData:[],
         
                     onGridReady: function(params) {
-                        //params.api.sizeColumnsToFit();
-                        params.api.refreshCells(params);
+                        params.api.sizeColumnsToFit();
+                        //params.api.refreshCells(params);
                         
                     },
         
@@ -379,8 +399,16 @@ export class TableLoader {
 
             setSpatialGridTown(results) {
                 let mapApi = this.mapApi;
-                this.panel.body = this.compileTemplate(GRID_TEMPLATE);
-                let gridDiv = <HTMLElement>document.querySelector('#plan')
+                //this.panel.body = this.compileTemplate(GRID_TEMPLATE);
+                let tabElement = document.getElementById('townTab')
+        
+                if (results.length >= 1000) {
+                    tabElement.innerHTML = tabElement.innerText + ' (1000+) '
+                } else {
+                    tabElement.innerHTML = tabElement.innerText + ' (' + results.length + ')';
+                }
+
+                let gridDiv = <HTMLElement>document.querySelector('#town')
                 let gridOptions = {
                     columnDefs: [
                         {headerName: 'Section', field:'townshipSection', headerTooltip: 'Section', cellRenderer: function(cell){return cell.value}},
@@ -395,9 +423,9 @@ export class TableLoader {
         
                     rowData: [],
         
-                    //onGridReady: function(params) {
-                    //    params.api.sizeColumnsToFit();
-                    //},
+                    onGridReady: function(params) {
+                        params.api.sizeColumnsToFit();
+                    },
         
                     rowStyle: {
                         background: 'white'
@@ -415,7 +443,7 @@ export class TableLoader {
                         range: result.attributes['RANGE'],
                         //direction: result.attributes['DIRECTION'],
                         meridian: result.attributes['MERIDIAN'],
-                        //globalID: result.attributes['GlobalID'],
+                        //globalid: result.attributes['GlobalID'],
                         //province: result.attributes['PROVINCE'],
         
                    })
@@ -424,7 +452,7 @@ export class TableLoader {
                 gridOptions.columnDefs[0].cellRenderer = function(params) {
                     
                     var eDiv = document.createElement('div');
-                    /*
+                    
                     eDiv.onmouseover=function() {
                         let delay = setTimeout(function() {
                             new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'mouseover');
@@ -437,7 +465,7 @@ export class TableLoader {
                     eDiv.addEventListener('mouseout', function() {
                         mapApi.esriMap.graphics.clear();
                     });
-                    */
+                    
                     eDiv.innerHTML = '<span class="my-css-class" style="cursor:pointer"><a href="#">' + params.value + '</a></span>';
                     
                     return eDiv;
@@ -448,8 +476,15 @@ export class TableLoader {
         
             setSpatialGridAdminArea(results) {
                 let mapApi = this.mapApi;
-                this.panel.body = this.compileTemplate(GRID_TEMPLATE);
-                let gridDiv = <HTMLElement>document.querySelector('#plan')
+                //this.panel.body = this.compileTemplate(GRID_TEMPLATE);
+                let tabElement = document.getElementById('adminTab')
+        
+                if (results.length >= 1000) {
+                    tabElement.innerHTML = tabElement.innerText + ' (1000+) '
+                } else {
+                    tabElement.innerHTML = tabElement.innerText + ' (' + results.length + ')';
+                }
+                let gridDiv = <HTMLElement>document.querySelector('#admin')
                 let gridOptions = {
                     columnDefs: [
                         {headerName: 'Name', field:'name', headerTooltip: 'name', cellRenderer: function(cell){return cell.value}},
@@ -474,8 +509,8 @@ export class TableLoader {
                 results.forEach(function(result) {
                     gridOptions.rowData.push({
                         name: result.attributes['ENGLISHNAME'], 
-                        //province: result.attributes['PROVINCE'],
-                        //globalID: result.attributes['GlobalID'],
+                        province: result.attributes['PROVINCE'],
+                        globalid: result.attributes['GlobalID'],
                    })
                 })
         
@@ -567,7 +602,7 @@ export class TableLoader {
                 columnDefs.push(fieldInfo['plandetail']);
                 columnDefs.push(fieldInfo['parceltype']);
                 break;
-            case 'surveyProgress':
+            case 'survey':
                 //columnDefs["projectnumber"] = {headerName: "Project Detail", field: "projectdetail", headerToolTip: "Project Detail"};
                 //columnDefs["description"] = {headerName: "Description", field: "description", headerToolTip: "Description"};
                 //columnDefs["projectdetail"] = {headerName: "Project Detail", field: "projectdetail", headerToolTip: "Project Detail"};
@@ -575,7 +610,7 @@ export class TableLoader {
                 columnDefs.push(fieldInfo['description']);
                 columnDefs.push(fieldInfo['projectdetail']);
                 break;
-            case 'planNumber':
+            case 'plan':
                 //columnDefs["plannumber"] = {headerName: "Plan Number", field: "plannumber", headerToolTip: "Plan Number", cellRenderer: function (cell) {return cell.value}};
                 //columnDefs["description"] = {headerName: "Description", field: "description", headerToolTip: "Description"};
                 //columnDefs["dateofsurvey"] = {headerName: "Date of Survey", field: "dateofsurvey",headerToolTip: "Date of Survey"};
@@ -587,7 +622,7 @@ export class TableLoader {
                 columnDefs.push(fieldInfo['plandetail']);
                 columnDefs.push(fieldInfo['lto']);
                 break;
-            case 'township': 
+            case 'town': 
                 //columnDefs["section"] = {headerName: "Section", field: "section", headerToolTip: "Section"};
                 //columnDefs["township"] = {headerName: "Township", field: "township", headerToolTip: "Township"};
                 //columnDefs["range"] = {headerName: "Range", field: "range", headerToolTip: "Range"};
@@ -597,7 +632,7 @@ export class TableLoader {
                 columnDefs.push(fieldInfo['ranger']);
                 columnDefs.push(fieldInfo['meridian']);
                 break;
-            case 'communityName':
+            case 'admin':
                 //columnDefs["name"] = {headerName: "Name", field: "name", headerToolTip: "Name"};
                 columnDefs.push(fieldInfo['name']);
                 columnDefs.push(fieldInfo["description"]);
@@ -614,6 +649,18 @@ export class TableLoader {
     setResultsGrid(results, mapApi, type) {
 
         let fieldInfo = this.setFieldInfo(type[0]);
+
+        let tabElement = document.getElementById(type[0] + 'Tab')
+        
+        if (results.length >= 1000) {
+            tabElement.innerHTML = tabElement.innerText + ' (1000+) '
+        } else {
+            tabElement.innerHTML = tabElement.innerText + ' (' + results.length + ')';
+        }
+
+        let gridDiv = <HTMLElement>document.querySelector('#' + type[0])
+
+
         //this.panel.body = this.compileTemplate(GRID_TEMPLATE);
         /*let tabElement = document.getElementsByName('plan')[0]
 
@@ -675,7 +722,7 @@ export class TableLoader {
             }
         })
 
-        if (type == 'communityName') {
+        if (type == 'admin') {
             results.forEach(function(result) {
 
                 gridOptions.rowData.push({
@@ -686,7 +733,7 @@ export class TableLoader {
                 })
             })
         }
-        else if (type=='planNumber') {
+        else if (type=='plan') {
 
             results.forEach(function(result) {
                 let date = result.attributes['P3_DATESURVEYED'];
@@ -708,7 +755,7 @@ export class TableLoader {
                 return eDiv
             }
         }
-        else if (type=='surveyProgress') {
+        else if (type=='survey') {
 
             results.forEach(function(result) {
                 gridOptions.rowData.push({
@@ -755,18 +802,18 @@ export class TableLoader {
             return eDiv
         }*/
 
-        let gridDiv = '<div id ="planGrid" class="hidden" style="height: 100%;"></div>';
-        let gridDiv2 = '<div id ="projectGrid" class="hidden" style="height: 100%;"></div>';
+        //let gridDiv = '<div id ="planGrid" class="hidden" style="height: 100%;"></div>';
+        //let gridDiv2 = '<div id ="projectGrid" class="hidden" style="height: 100%;"></div>';
         
 
-        this.panel.body = this.compileTemplate(gridDiv);
-        this.panel.body.append(this.compileTemplate(gridDiv2));
-        let gridDivHtml = <HTMLElement>document.querySelector('#planGrid')
-        let gridDivHtml2 = <HTMLElement>document.querySelector('#projectGrid')
+        //this.panel.body = this.compileTemplate(gridDiv);
+        //this.panel.body.append(this.compileTemplate(gridDiv2));
+        //let gridDivHtml = <HTMLElement>document.querySelector('#planGrid')
+        //let gridDivHtml2 = <HTMLElement>document.querySelector('#projectGrid')
 
 
-        new Grid(gridDivHtml, gridOptions);
-        new Grid(gridDivHtml2, gridOptions);
+        new Grid(gridDiv, gridOptions);
+        //new Grid(gridDivHtml2, gridOptions);
 
 
         //let gridDiv = <HTMLElement>document.querySelector('#plan')

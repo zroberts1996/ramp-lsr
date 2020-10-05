@@ -44,31 +44,31 @@ export class MakeQuery {
 
     setQueryInfo(type) {
 
-        if (type == 'communityName') {
+        if (type == 'admin') {
             this.layer = 2;
             this.outFields = ["ADMINAREAID", "FRENCHNAME", "ENGLISHNAME", "PROVINCE", "GlobalID"];
             this.orderByField = ['ENGLISHNAME'];
-            this.whereclause = "ENGLISHNAME like '%" + this._searchInfo.communityName.toUpperCase().replace("'", "''") + "%'" ;
+            this.whereclause = "ENGLISHNAME like '%" + this._searchInfo.admin.toUpperCase().replace("'", "''") + "%'" ;
         }
         else if (type == 'protected') {
             this.layer = 7;
             this.outFields = ["ADMINAREAID", "FRENCHNAME", "ENGLISHNAME", "PROVINCE", "GlobalID"];
             this.whereclause = "planno like '%" + this._searchInfo.protected.toUpperCase().replace("'", "''") + "%'";
         }
-        else if (type == 'planNumber') {
+        else if (type == 'plan') {
             this.layer = 0;
             this.orderByField = ['planno'];
             this.outFields = ["PLANNO", "P2_DESCRIPTION", "GlobalID", "PROVINCE", "P3_DATESURVEYED", "SURVEYOR", "ALTERNATEPLANNO"];
-            this.whereclause =  "planno like '%" + this._searchInfo.planNumber.toUpperCase().replace("'", "''") + "%'";
+            this.whereclause =  "planno like '%" + this._searchInfo.plan.toUpperCase().replace("'", "''") + "%'";
             if (this._searchInfo.reserve) {
                 this.whereclause +=  "AND GEOADMINCODE LIKE '%" + this._searchInfo.reserve + "%'"
             }
         }
-        else if (type == 'surveyProgress') {
+        else if (type == 'survey') {
             this.layer = 9;
             this.orderByField = ['PROJECTNUMBER'];
             this.outFields = ["PROJECTNUMBER", "DESCRIPTION", "PROVINCE", "URL", "GlobalID"];
-            this.whereclause =  "projectNumber like '%" + this._searchInfo.surveyProject.toUpperCase().replace("'", "''") + "%'";
+            this.whereclause =  "projectNumber like '%" + this._searchInfo.survey.toUpperCase().replace("'", "''") + "%'";
             if (this._searchInfo.reserve) {
                 this.whereclause +=  "AND GEOADMINCODE LIKE '%" + this._searchInfo.reserve + "%'"
             }

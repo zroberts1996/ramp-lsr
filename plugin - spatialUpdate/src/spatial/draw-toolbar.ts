@@ -593,7 +593,7 @@ export class DrawToolbar {
         parcelQuery.geometry = ext;
         parcelQuery.where = this.whereclause;
         parcelQuery.returnGeometry = false;
-        parcelQuery.outFields = ["PARCELDESIGNATOR", "PLANNO", "PARCELFC_ENG", "REMAINDERIND_ENG"];
+        parcelQuery.outFields = ["PARCELDESIGNATOR", "PLANNO", "PARCELFC_ENG", "REMAINDERIND_ENG", "GlobalID"];
         //parcelQueryTask.execute(parcelQuery, this.createTable(this.panel))
         parcelQueryTask.execute(parcelQuery, this.createTable(this.loadingPanel))
         //var updatedInput = parcelQueryTask.execute(parcelQuery, this.createTable(this.panel))
@@ -733,11 +733,11 @@ export class DrawToolbar {
             case 'extent':
                 // trigger observable
                 (<any>window).drawObs.subsDrawExtent(evt.geometry);
-                //this.QueryLayer(evt.geometry)
-                //this.QueryLayerSIP(evt.geometry)
+                this.QueryLayer(evt.geometry)
+                this.QueryLayerSIP(evt.geometry)
                 this.QueryLayerPlan(evt.geometry)
-                //this.QueryLayerTownship(evt.geometry)
-                //this.QueryLayerAdminArea(evt.geometry)
+                this.QueryLayerTownship(evt.geometry)
+                this.QueryLayerAdminArea(evt.geometry)
                 this.deleteGraphics(evt.geometry)
 
                 this.deleteGraphics(evt.geometry);

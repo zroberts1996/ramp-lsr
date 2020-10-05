@@ -45,21 +45,21 @@ const SELECT_RESERVE = `
 const INPUT_PLAN = `
 <md-input-container class="md-container">
     <label>{{ 'plugins.clssPlugin.inputText' | translate }} </label>
-    <input type="text" ng-model="user.planNumber" required="" md-maxlength="10" id="planInput" name="input">
+    <input type="text" ng-model="user.plan" required="" md-maxlength="10" id="planInput" name="input">
 </md-input-container>
 `;
 
 const INPUT_PROJECT = `
 <md-input-container class="md-container">
     <label>{{ 'plugins.clssPlugin.inputProject' | translate }} </label>
-    <input type="text" ng-model="user.surveyProject" required="" md-maxlength="10" id="surveyInput">
+    <input type="text" ng-model="user.survey" required="" md-maxlength="10" id="surveyInput">
 </md-input-container>
 `;
 
 const INPUT_PARCEL = `
 <md-input-container class="md-container">
     <label> Enter Parcel </label>
-    <input type="text" ng-model="user.parcelNumber" required="" md-maxlength="10" id="parcelInput">
+    <input type="text" ng-model="user.parcel" required="" md-maxlength="10" id="parcelInput">
 </md-input-container>
 `;
 
@@ -73,7 +73,7 @@ const INPUT_NTS_SHEET = `
 const INPUT_COMMUNITY = `
 <md-input-container class="md-container">
     <label> Enter Community Name </label>
-    <input type="text" ng-model="user.communityName" required="" md-maxlength="10" id="communityInput">
+    <input type="text" ng-model="user.admin" required="" md-maxlength="10" id="communityInput">
 </md-input-container>
 `;
 
@@ -111,7 +111,7 @@ export const SEARCH_PLAN_TEMPLATE = ` 
     </section>
     
     <section layout="row" layout-align="center left" layout-wrap>
-        ${SEARCH_BUTTON('planNumber')}
+        ${SEARCH_BUTTON('plan')}
         
         ${RESET_BUTTON}
     </section>
@@ -152,7 +152,7 @@ export const SURVEY_PROGRESS_TEMPLATE = ` 
     </section>
     
     <section layout="row" layout-align="center left" layout-wrap>
-        ${SEARCH_BUTTON('surveyProgress')}
+        ${SEARCH_BUTTON('survey')}
         
         ${RESET_BUTTON}
     </section>
@@ -170,7 +170,7 @@ export const COMMUNITY_TEMPLATE = ` 
     </section>
     
     <section layout="row" layout-align="center left" layout-wrap>
-        ${SEARCH_BUTTON('communityName')}
+        ${SEARCH_BUTTON('admin')}
             
         ${RESET_BUTTON}
     </section>
@@ -254,6 +254,20 @@ export const MENU_BUTTON = `
 `;
 
 export const GRID_TEMPLATE = `
+
+<div class="grid-wrapper">
+    <div id="parcel" class="hidden" style="height: 100%;display:none"></div>
+    <div id="survey" class="hidden" style="height: 100%;display:none"></div>
+    <div id="plan" class="hidden" style="height: 100%;display:none"></div>
+    <div id="town" class="hidden" style="height: 100%;display:none"></div>
+    <div id="admin" class=" active" style="height: 100%;display:block"></div>
+    <div id="info" class="hidden" style="height: 100%;display:none"></div>
+
+</div>
+`;
+
+
+export const GRID_TEMPLATE1 = `
 
 <div class="grid-wrapper">
     <div ng-controller="ResultsTabsCtrl as ctrl" layout="column" class="ng-scope">
