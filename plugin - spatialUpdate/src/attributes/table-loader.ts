@@ -3,6 +3,7 @@ import { GRID_TEMPLATE, MENU_BUTTON_RESULT } from '../templates/template';
 import { Grid } from 'ag-grid-community';
 import { PanelStateManager } from './panel-state-manager'
 import { ZoomToElement } from './button-test'
+import { ZoomNoProv } from './zoom-no-prov'
 
 const Draggabilly = require('draggabilly');
 
@@ -164,6 +165,7 @@ export class TableLoader {
                 {headerName: 'Plan Number', field:'planNumber', headerTooltip: 'Plan Number'},
                 {headerName: 'Plan Detail', field:'planDetail', headerTooltip: 'Plan Detail'},
                 {headerName: 'Remainder', field:'remainder', headerTooltip: 'Remainder'},
+                {headerName: 'Parcel Type', field:'parceltype', headerTooltip: 'Parcel Type'},
             ],
 
             rowData: [],
@@ -186,12 +188,20 @@ export class TableLoader {
             gridOptions.rowData.push({
                 parcelDesignator: result.attributes['PARCELDESIGNATOR'], 
                 planNumber: result.attributes['PLANNO'],
-                planDetail: result.attributes['PARCELFC_ENG'],
+                parceltype: result.attributes['PARCELFC_ENG'],
+                planDetail: 'View',
                 remainder: result.attributes['REMAINDERIND_ENG'],
                 globalid: result.attributes['GlobalID'],
+                //province: result.attributes['PROVINCE'],
 
            })
         })
+
+        gridOptions.columnDefs[2].cellRenderer = function(params) {
+            let eDiv = document.createElement('div');
+            eDiv.innerHTML= '<span class="my-css-class"><a href="' + 'https://clss.nrcan-rncan.gc.ca/plan-fra.php?id=' + params.data.planNumber.replace(/\s/g, '%20') + '"target=_blank>' + params.value + '</a></span>';
+            return eDiv
+        }
 
         gridOptions.columnDefs[0].cellRenderer = function(params) {
             
@@ -199,12 +209,34 @@ export class TableLoader {
             
             eDiv.onmouseover=function() {
                 let delay = setTimeout(function() {
-                    new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'mouseover');
+                    new ZoomNoProv(mapApi, params.data.globalid, 'mouseover');
                 }, 500);
                 eDiv.onmouseout = function() {clearTimeout(delay);};
             };
             eDiv.addEventListener('click', function() {
-                new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'click')
+                new ZoomNoProv(mapApi, params.data.globalid, 'click')
+            });
+            eDiv.addEventListener('mouseout', function() {
+                mapApi.esriMap.graphics.clear();
+            });
+            
+            eDiv.innerHTML = '<span class="my-css-class" style="cursor:pointer"><a href="#">' + params.value + '</a></span>';
+            
+            return eDiv;
+        }
+
+        gridOptions.columnDefs[1].cellRenderer = function(params) {
+            
+            var eDiv = document.createElement('div');
+            
+            eDiv.onmouseover=function() {
+                let delay = setTimeout(function() {
+                    new ZoomNoProv(mapApi, params.data.globalid, 'mouseover');
+                }, 500);
+                eDiv.onmouseout = function() {clearTimeout(delay);};
+            };
+            eDiv.addEventListener('click', function() {
+                new ZoomNoProv(mapApi, params.data.globalid, 'click')
             });
             eDiv.addEventListener('mouseout', function() {
                 mapApi.esriMap.graphics.clear();
@@ -265,6 +297,85 @@ export class TableLoader {
 
            })
         })
+
+        gridOptions.columnDefs[0].cellRenderer = function(params) {
+            
+            var eDiv = document.createElement('div');
+            
+            eDiv.onmouseover=function() {
+                let delay = setTimeout(function() {
+                    new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'mouseover');
+                }, 500);
+                eDiv.onmouseout = function() {clearTimeout(delay);};
+            };
+            eDiv.addEventListener('click', function() {
+                new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'click')
+            });
+            eDiv.addEventListener('mouseout', function() {
+                mapApi.esriMap.graphics.clear();
+            });
+            
+            eDiv.innerHTML = '<span class="my-css-class" style="cursor:pointer"><a href="#">' + params.value + '</a></span>';
+            
+            return eDiv;
+        }
+
+        new Grid(gridDiv, gridOptions);
+    }
+
+    setSpatialGridSIP2(results) {
+        let mapApi = this.mapApi;
+        //this.panel.body = this.compileTemplate(GRID_TEMPLATE);
+        let tabElement = document.getElementById('surveyTab')
+        
+        if (results.length >= 1000) {
+            tabElement.innerHTML = tabElement.innerText + ' (1000+) '
+        } else {
+            tabElement.innerHTML = tabElement.innerText + ' (' + results.length + ')';
+        }
+
+        let gridDiv = <HTMLElement>document.querySelector('#survey')
+
+        let gridOptions = {
+            columnDefs: [
+                {headerName: 'Project Number', field:'projectNumber', headerTooltip: 'Project Number', cellRenderer: function(cell){return cell.value}},
+                {headerName: 'Description', field:'description', headerTooltip: 'Description'},
+                //{headerName: 'Global ID', field:'globalID', headerTooltip: 'Global ID'},
+                {headerName: 'Project Detail', field:'url', headerTooltip: 'Project Detail'},
+                //{headerName: 'Province', field:'province', headerTooltip: 'Province'},
+            ],
+
+            rowData: [],
+
+            //onGridReady: function(params) {
+            //    params.api.sizeColumnsToFit();
+            //},
+
+            rowStyle: {
+                background: 'white'
+            },
+
+            //pagination: true,
+            enableColResize: true,
+            enableSorting: true,
+        };
+        
+        results.forEach(function(result) {
+            gridOptions.rowData.push({
+                projectNumber: result.attributes['PROJECTNUMBER'], 
+                description: result.attributes['DESCRIPTION'],
+                globalid: result.attributes['GlobalID'],
+                url: 'View',
+                province: result.attributes['PROVINCE'],
+
+           })
+        })
+
+        gridOptions.columnDefs[2].cellRenderer = function(params) {
+            let eDiv = document.createElement('div');
+            eDiv.innerHTML= '<span class="my-css-class"><a href="' + 'https://clss.nrcan-rncan.gc.ca/plan-fra.php?id=' + params.data.url.replace(/\s/g, '%20') + '"target=_blank>' + params.value + '</a></span>';
+            return eDiv
+        }
 
         gridOptions.columnDefs[0].cellRenderer = function(params) {
             
@@ -439,12 +550,12 @@ export class TableLoader {
                     gridOptions.rowData.push({
                         townshipSection: result.attributes['TOWNSHIPSECTION'], 
                         //tP: result.attributes['TP'],
-                        township: result.attributes['TOWNSHIP'],
+                        township: result.attributes['TP'],
                         range: result.attributes['RANGE'],
                         //direction: result.attributes['DIRECTION'],
-                        meridian: result.attributes['MERIDIAN'],
-                        //globalid: result.attributes['GlobalID'],
-                        //province: result.attributes['PROVINCE'],
+                        meridian: result.attributes['DIRECTION']+ result.attributes['MERIDIAN'],
+                        globalid: result.attributes['GlobalID'],
+                        province: result.attributes['PROVINCE'],
         
                    })
                 })
@@ -452,25 +563,90 @@ export class TableLoader {
                 gridOptions.columnDefs[0].cellRenderer = function(params) {
                     
                     var eDiv = document.createElement('div');
-                    
                     eDiv.onmouseover=function() {
                         let delay = setTimeout(function() {
                             new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'mouseover');
+                            console.log('a')
                         }, 500);
-                        eDiv.onmouseout = function() {clearTimeout(delay);};
+                        eDiv.onmouseout = function() {clearTimeout(delay);
+                        };
                     };
+        
+                    eDiv.innerHTML = '<span class="my-css-class" style="cursor:pointer"><a href="#">' + params.value + '</a></span>';
                     eDiv.addEventListener('click', function() {
                         new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'click')
                     });
                     eDiv.addEventListener('mouseout', function() {
                         mapApi.esriMap.graphics.clear();
                     });
+                    return eDiv;
+                }
+
+                gridOptions.columnDefs[1].cellRenderer = function(params) {
                     
+                    var eDiv = document.createElement('div');
+                    eDiv.onmouseover=function() {
+                        let delay = setTimeout(function() {
+                            new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'mouseover');
+                            console.log('a')
+                        }, 500);
+                        eDiv.onmouseout = function() {clearTimeout(delay);
+                        };
+                    };
+        
                     eDiv.innerHTML = '<span class="my-css-class" style="cursor:pointer"><a href="#">' + params.value + '</a></span>';
+                    eDiv.addEventListener('click', function() {
+                        new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'click')
+                    });
+                    eDiv.addEventListener('mouseout', function() {
+                        mapApi.esriMap.graphics.clear();
+                    });
+                    return eDiv;
+                }
+
+                gridOptions.columnDefs[2].cellRenderer = function(params) {
                     
+                    var eDiv = document.createElement('div');
+                    eDiv.onmouseover=function() {
+                        let delay = setTimeout(function() {
+                            new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'mouseover');
+                            console.log('a')
+                        }, 500);
+                        eDiv.onmouseout = function() {clearTimeout(delay);
+                        };
+                    };
+        
+                    eDiv.innerHTML = '<span class="my-css-class" style="cursor:pointer"><a href="#">' + params.value + '</a></span>';
+                    eDiv.addEventListener('click', function() {
+                        new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'click')
+                    });
+                    eDiv.addEventListener('mouseout', function() {
+                        mapApi.esriMap.graphics.clear();
+                    });
                     return eDiv;
                 }
         
+                gridOptions.columnDefs[3].cellRenderer = function(params) {
+                    
+                    var eDiv = document.createElement('div');
+                    eDiv.onmouseover=function() {
+                        let delay = setTimeout(function() {
+                            new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'mouseover');
+                            console.log('a')
+                        }, 500);
+                        eDiv.onmouseout = function() {clearTimeout(delay);
+                        };
+                    };
+        
+                    eDiv.innerHTML = '<span class="my-css-class" style="cursor:pointer"><a href="#">' + params.value + '</a></span>';
+                    eDiv.addEventListener('click', function() {
+                        new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'click')
+                    });
+                    eDiv.addEventListener('mouseout', function() {
+                        mapApi.esriMap.graphics.clear();
+                    });
+                    return eDiv;
+                }
                 new Grid(gridDiv, gridOptions);
             }
         
