@@ -539,7 +539,7 @@ export class DrawToolbar {
     createTableSIP(panel) {
         return function(queryResults) {  
             const columns = ['Project Number', 'Description', 'Global ID', 'Url', 'Province']
-            panel.setSpatialGridSIP(queryResults.features);
+            panel.setSpatialGridSIP2(queryResults.features);
             console.log(queryResults.features)
         }
 
