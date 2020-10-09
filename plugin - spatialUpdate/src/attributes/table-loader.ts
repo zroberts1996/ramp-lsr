@@ -365,6 +365,7 @@ export class TableLoader {
                 projectNumber: result.attributes['PROJECTNUMBER'], 
                 description: result.attributes['DESCRIPTION'],
                 globalid: result.attributes['GlobalID'],
+                urlUse: result.attributes['URL'],
                 url: 'View',
                 province: result.attributes['PROVINCE'],
 
@@ -373,7 +374,7 @@ export class TableLoader {
 
         gridOptions.columnDefs[2].cellRenderer = function(params) {
             let eDiv = document.createElement('div');
-            eDiv.innerHTML= '<span class="my-css-class"><a href="' + 'https://clss.nrcan-rncan.gc.ca/plan-fra.php?id=' + params.data.url.replace(/\s/g, '%20') + '"target=_blank>' + params.value + '</a></span>';
+            eDiv.innerHTML= '<span class="my-css-class"><a href="' + 'https://clss.nrcan-rncan.gc.ca/project-projet/detail?id=' + params.data.urlUse.replace(/\s/g, '%20') + '"target=_blank>' + params.value + '</a></span>';
             return eDiv
         }
 
