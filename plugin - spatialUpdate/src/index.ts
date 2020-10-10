@@ -1,8 +1,10 @@
 import { AddLayer } from './add-layer';
 import { PanelManager } from './attributes/panel-manager';
 import { DrawManager } from './spatial/draw-manager';
+import { OptionsManager } from './attributes/options-manager'
 
 export default class ClssPlugin {
+    private searchPanel: any;
 
     /**
     * Plugin init
@@ -34,9 +36,25 @@ export default class ClssPlugin {
         new AddLayer(mapApi, this.config);
 
         // Create search panel
+        let clssDiv = document.getElementById("clssOptionsPlugin");
+        if (clssDiv) {
+            clssDiv.remove()
+        }
+        this.searchPanel = new OptionsManager(mapApi, this.config.language);
+        this.searchPanel.createPanel();
+        this.searchPanel.addButton()
+
+        //
         this.panelManager = new PanelManager(mapApi, this.config.language);
-        this.panelManager.showPanel()
-        this.panelManager.customPanel.closing.subscribe(this.onHideResultPanel.bind(this));
+        //this.panelManager.customPanel.closing.subscribe(this.onHideResultPanel.bind(this));
+        //this.panelManager.showPanel()
+        
+    }
+
+    compileTemplate(template: string): JQuery<HTMLElement> {
+        let temp = $(template);
+        this.mapApi.$compile(temp);
+        return temp;
     }
     
     /**
@@ -54,10 +72,11 @@ export default class ClssPlugin {
      * @return {function} the function to run
      */
     onMenuItemClick() {
+
         return () => {
             this.button.isActive = !this.button.isActive;
+            this.button.isActive ? this.searchPanel.addButton() : this.searchPanel.removeButton();
             this.button.isActive ? this.panelManager.showPanel() : this.panelManager.closePanel();
-            console.log('side menu clicked');
         };
     }
 }
@@ -99,7 +118,7 @@ ClssPlugin.prototype.translations = {
             polygon: 'Draw polygon',
             edit: 'Edit existing drawing',
             measure: 'Show/Hide distances',
-            extent: 'Erase selected graphics',
+            extent: 'Select by rectangle',
             write: 'Save graphics file',
             read: 'Upload graphics file',
         },
@@ -155,7 +174,7 @@ ClssPlugin.prototype.translations = {
             polygon: 'Dessiner polygon',
             edit: 'Éditer les dessins existant',
             measure: 'Afficher/Cacher les distances',
-            extent: 'Effacer les graphiques sélectionnés',
+            extent: 'Sélection par rectangle',
             write: 'Sauvegarder le fichier de graphiques',
             read: 'Charger le fichier de graphiques',
         },

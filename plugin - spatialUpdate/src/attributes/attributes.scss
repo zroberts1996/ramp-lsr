@@ -13,6 +13,15 @@ $accent-color: #00bcd4;
 
 //Style for the header of the search panel
 //----------------------------------------
+.md-container .md-errors-spacer{
+  md-input-container .md-errors-spacer {
+    float: right;
+    min-height: 24px;
+    min-width: 1px;
+    margin:0px;
+    width:70% 
+  }
+}
 #panel-header-custom{
   display: flex;
   white-space: nowrap;

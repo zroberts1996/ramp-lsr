@@ -28,7 +28,7 @@ export const TAB_TEMPLATE = ` 
 
 const SELECT_PROVINCE = `
 <md-input-container class="md-container">
-    <md-select ng-model="user.province" id=selectProvince ng-change="checkProvince()" placeholder="Select Province or Territory">
+    <md-select ng-model="user.province" id=selectProvince1 ng-change="checkProvince()" placeholder="Province">
         <md-option ng-repeat="province in ctrl.provinces" value="{{province}}" ng-click="ctrl.updateReserveBox(province)">{{province}}</md-option>
     </md-select>
 </md-input-container>
@@ -119,7 +119,74 @@ export const SEARCH_PLAN_TEMPLATE = ` 
 <md-divider></md-divider>
 `;
 
-//${INPUT_NTS_SHEET}
+`<md-autocomplete flex class="rv-no-message-input rv-clearable-input"
+            md-autofocus="true"
+            md-menu-class="{{ ::self.geosearchMenuClass }}"
+            md-search-text-change="self.service.searchValue.length === 0 ? self.onUpdateDebounce() : null"
+            md-selected-item-change="self.onUpdateDebounce()"
+            placeholder="{{ 'geosearch.text.placeholder' | translate }}"
+            md-no-cache="true"
+            md-selected-item="self.selectedOption"
+            md-search-text="self.service.searchValue"
+            md-items="option in self.onUpdateDebounce()"
+            md-item-text="option">
+            <md-item-template>
+                <span md-highlight-text="self.service.searchValue">{{ option }}</span>
+            </md-item-template>
+        </md-autocomplete>`
+
+export const SEARCH_TEMPLATE = ` 
+
+<div class="rv-clss-top-filters" style="padding:0px; box-sizing: border-box;letter-spacing: .01em" ng-controller="SearchPanel as ctrl">
+
+    <div layout-gt-sm="row" style="padding-bottom: 0px; padding-top: 10px;padding-left: 10px;height: 50px"; display:flex>
+        
+        <md-input-container md-no-float="" style="margin:0px;width: 70%;">
+            <md-tooltip md-direction="bottom">Text</md-tooltip>
+            <input ng-model="user.input" placeholder="Search" aria-label="Search" id='inputClss'>
+        </md-input-container>
+        
+        <button style="margin-bottom: 20px" class="md-icon-button black md-button ng-scope md-ink-ripple" type="button" aria-label="CLSS Search" ng-click="ctrl.launchSearchAction(user.type)">
+            <md-tooltip md-direction="bottom">Find</md-tooltip>
+            <md-icon md-svg-src="action:search" class="ng-scope" role="img" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" fit="" height="100%" width="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24" focusable="false"><g id="search"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></g></svg></md-icon>
+        </button>
+        
+        <button style="margin-bottom: 20px" class="md-icon-button black md-button md-ink-ripple" type="button" aria-label="Clear filters" ng-click="ctrl.resetFunction()">
+            <md-tooltip md-direction="bottom">Clear filters</md-tooltip>
+            <md-icon md-svg-src="community:filter-remove" class="ng-scope" role="img" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" fit="" height="100%" width="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24" focusable="false"><g id="filter-remove"><path d="M 14.7574,20.8284L 17.6036,17.9822L 14.7574,15.1716L 16.1716,13.7574L 19.0178,16.568L 21.8284,13.7574L 23.2426,15.1716L 20.432,17.9822L 23.2426,20.8284L 21.8284,22.2426L 19.0178,19.3964L 16.1716,22.2426L 14.7574,20.8284 Z M 2,2L 19.9888,2.00001L 20,2.00001L 20,2.01122L 20,3.99999L 19.9207,3.99999L 13,10.9207L 13,22.909L 8.99999,18.909L 8.99999,10.906L 2.09405,3.99999L 2,3.99999L 2,2 Z "></path></g></svg></md-icon>
+        </button>
+    </div>
+
+    <md-divider class="rv-divider ng-scope"></md-divider>
+
+    <div class="clss-block-options" style="background-color: beige;padding-left: 10px;">
+        <div layout-gt-sm="row" style="padding-bottom: 10px; padding-top: 10px">
+            <md-input-container class="md-container" style="width:55%; padding=2; margin:0px; font-size: 14px">
+                <md-select ng-model="user.province" id=selectProvince ng-change="checkProvince()" placeholder="Province">
+                <md-option ng-repeat="province in ctrl.provinces" value="{{province}}" ng-click="ctrl.updateReserveBox(province)">{{province}}</md-option>
+                </md-select>
+            </md-input-container>
+            <md-input-container class="md-container" style="width:40%; padding=2px; margin:0px; font-size: 14px">
+                <md-select ng-model="user.type" id=selectType  placeholder="Type">
+                    <md-option ng-repeat="type in ctrl.types" value="{{type[1]}}" ng-click="ctrl.setSelectedType(type[1])">{{type[0]}}</md-option>
+                </md-select>
+            </md-input-container>
+        </div>
+
+        <div layout-gt-sm="row" style="padding-bottom: 10px; padding-top: 10px">
+            <md-input-container class="md-container" style="width:96%;padding=2;margin:0px;font-size: 14px">
+                <md-select ng-model="user.reserve" id=selectReserve ng-disabled="ctrl.isDisabled"  placeholder="Canada Land (Select a province first)">
+                    <md-option ng-repeat="reserve in ctrl.reserves" value="{{reserve[1]}}" ng-click="ctrl.setSelectedReserve(reserve[1])">{{reserve[0]}}</md-option>
+                </md-select>
+            </md-input-container>
+            
+        </div>
+    </div>
+
+</div>
+
+`;
+
 export const PROTECTED_AREA_TEMPLATE = ` 
 <div class="rv-panel-content" ng-controller="SearchPanel as ctrl">
     <section layout="column" class="input-section"> 
@@ -160,6 +227,7 @@ export const SURVEY_PROGRESS_TEMPLATE = ` 
 <md-divider></md-divider>
 `;
 
+
 export const COMMUNITY_TEMPLATE = ` 
 <div class="rv-panel-content" ng-controller="SearchPanel as ctrl">
     <section layout="column" class="input-section"> 
@@ -172,6 +240,27 @@ export const COMMUNITY_TEMPLATE = ` 
     <section layout="row" layout-align="center left" layout-wrap>
         ${SEARCH_BUTTON('admin')}
             
+        ${RESET_BUTTON}
+    </section>
+</div>
+<md-divider></md-divider>
+`;
+export const PARCEL_TEMPLATE = ` 
+<div class="rv-panel-content" ng-controller="SearchPanel as ctrl">
+    <section layout="column" class="input-section"> 
+      
+        ${SELECT_PROVINCE}
+
+        ${SELECT_RESERVE}
+
+        ${INPUT_PLAN}
+        ${INPUT_PARCEL}
+
+    </section>
+    
+    <section layout="row" layout-align="center left" layout-wrap>
+        ${SEARCH_BUTTON('parcel')}
+        
         ${RESET_BUTTON}
     </section>
 </div>
@@ -245,6 +334,10 @@ export const MENU_BUTTON = `
                 <label>
                     <input type="radio" ng-model="user.name" value="project" ng-click="getSearchInfo($event.target.value); openSideMenu()">
                     {{ 'plugins.clssPlugin.sidePanel.survey' | translate }}
+                </label><br/>
+                <label>
+                    <input type="radio" ng-model="user.name" value="parcel" ng-click="getSearchInfo($event.target.value); openSideMenu()">
+                    {{ 'plugins.clssPlugin.sidePanel.parcel' | translate }}
                 </label><br/>
             </form>
 
@@ -424,6 +517,73 @@ export const TABS_TEMPLATE = `
 </div>
 `;*/
 
+export const TYPE = {
+    'fr-CA' : [
+        ['Aire protégée', 0],
+        ['Arpentage en cours', 3],
+        ['Communauté', 1],
+        ['Cri-Naskapi', 4],
+        ['Limite municipale', 5],
+        ['Lotissement', 6],
+        ['Parc national', 7],
+        ['Parcelle', 8],
+        ["Plan d'arpentage", 2],
+        ['Qadrilatère', 9],
+        ['Réserve indienne', 10],
+        ['Township', 11],
+        ['Coordonnées', 12]
+    ],
+    'en-CA': [
+        ['Community', 1],
+        ['Cree-Naskapi', 4],
+        ['Indian Reserve', 10],
+        ['Municipal Boundary', 5],
+        ['National Park', 7],
+        ['Parcel', 8],
+        ['Protected Area', 0],
+        ['Quad', 9],
+        ['Subdivision', 6],
+        ['Survey Plan', 2],
+        ['Survey in Progress', 3],
+        ['Township', 11],
+        ['Coordinates', 12],
+    ]
+}
+
+export const TYPE1 = {
+    'fr-CA' : {
+        'Aire protégée': 0,
+        'Arpentage en cours': 3,
+        'Communauté': 1,
+        'Cri-Naskapi': 4,
+        'Limite municipale': 5,
+        'Lotissement': 6,
+        'Parc national': 7,
+        'Parcelle': 8,
+        "Plan d'arpentage": 2,
+        'Qadrilatère': 9,
+        'Réserve indienne': 10,
+        'Township': 11,
+        'Coordonnées': 12
+    },
+    'en-CA': {
+        'Community': 1,
+        'Cree-Naskapi': 4,
+        'Indian Reserve': 10,
+        'Municipal Boundary': 5,
+        'National Park': 7,
+        'Parcel': 8,
+        'Protected Area': 0,
+        'Quad': 9,
+        'Subdivision': 6,
+        'Survey Plan': 2,
+        'Survey in Progress': 3,
+        'Township': 11,
+        'Coordinates': 12
+    }
+}
+
+
 export const PROVINCE = {
     'fr-CA' : {
         'Canada': 'CA',
@@ -457,4 +617,4 @@ export const PROVINCE = {
         'Saskatchewan': 'SK',
         'Yukon': 'YT'
     }    
-} 
+}

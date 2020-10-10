@@ -77,7 +77,6 @@ export class TableLoader {
         }])
         titleElem.append(this.compileTemplate(MENU_BUTTON_RESULT));
 
-
         this.mapApi.agControllerRegister('TabController', ['$scope', function($scope) {
             
             $scope.openSelectedTab = function(tabName) {
@@ -97,32 +96,26 @@ export class TableLoader {
 
         }])
 
-        const test1 = `<md-button id='parcelTab' ng-controller="TabController as ctrl"; ng-click="openSelectedTab('parcel')"; name="test1" style="padding:0px; margin:0px;">Parcel</md-button>`
-        const test2 = `<md-button id='surveyTab' ng-controller="TabController as ctrl"; ng-click="openSelectedTab('survey')"; name="test2" style="padding:0px; margin:0px;">Survey</md-button>`
-        const test3 = `<md-button id='planTab' ng-controller="TabController as ctrl"; ng-click="openSelectedTab('plan')";name="test3" style="padding:0px; margin:0px;">Plan</md-button>`;
-        const test4 = `<md-button id='townTab' ng-controller="TabController as ctrl"; ng-click="openSelectedTab('town')";name="test4" style="padding:0px; margin:0px;">Township</md-button>`;
+        const test1 = `<md-button id='parcelTab' ng-controller="TabController as ctrl"; ng-click="openSelectedTab('parcel')"; name="test1" style="">Parcel</md-button>`
+        const test2 = `<md-button id='surveyTab' ng-controller="TabController as ctrl"; ng-click="openSelectedTab('survey')"; name="test2" style="">Survey Project</md-button>`
+        const test3 = `<md-button id='planTab' ng-controller="TabController as ctrl"; ng-click="openSelectedTab('plan')";name="test3" style="">Survey Plan</md-button>`;
+        const test4 = `<md-button id='townTab' ng-controller="TabController as ctrl"; ng-click="openSelectedTab('town')";name="test4" style="">Township</md-button>`;
         const test5 = `<md-button id='adminTab' ng-controller="TabController as ctrl"; ng-click="openSelectedTab('admin')";name="test5" style="padding:0px 6px 0px 20px; margin:0px;">Administrative</md-button>`;
-        const test6 = `<md-button ng-controller="TabController as ctrl"; ng-click="openSelectedTab('projectGrid')";name="test6" style="padding:0px; margin:0px;">Info</md-button>`;
-
+        //const test6 = `<md-button ng-controller="TabController as ctrl"; ng-click="openSelectedTab('projectGrid')";name="test6" style="">Info</md-button>`;
 
         titleElem.append(this.compileTemplate(test1));
         titleElem.append(this.compileTemplate(test2));
         titleElem.append(this.compileTemplate(test3));
         titleElem.append(this.compileTemplate(test4));
         titleElem.append(this.compileTemplate(test5));
-        titleElem.append(this.compileTemplate(test6));
+        //titleElem.append(this.compileTemplate(test6));
 
-        //titleElem.append(this.compileTemplate(titleText));
-        //this.panel.header.toggleButton
-        //this.panel.header.title = this.legendBlock.name;
         this.panel.element.addClass('draggable');
         const draggable = new Draggabilly(this.panel.element.get(0), {handle: '.rv-header'});
         
         const close = this.panel.header.closeButton;
         close.removeClass('primary');
         close.addClass('black md-ink-ripple');
-
-
     }
 
     open() {
@@ -145,11 +138,8 @@ export class TableLoader {
         this.panel.body = this.compileTemplate(GRID_TEMPLATE);
     }
 
-
-
     setSpatialGrid(results) {
         let mapApi = this.mapApi;
-        //this.panel.body = this.compileTemplate(GRID_TEMPLATE);
         let tabElement = document.getElementById('parcelTab')
         
         if (results.length >= 1000) {
@@ -189,10 +179,12 @@ export class TableLoader {
                 parcelDesignator: result.attributes['PARCELDESIGNATOR'], 
                 planNumber: result.attributes['PLANNO'],
                 parceltype: result.attributes['PARCELFC_ENG'],
-                planDetail: 'View',
                 remainder: result.attributes['REMAINDERIND_ENG'],
-                globalid: result.attributes['GlobalID'],
-                //province: result.attributes['PROVINCE'],
+                //globalid: result.attributes['GlobalID'],
+                province: result.attributes['PROVINCE'],
+                planDetail: "View",
+                globalid_PAR: result.attributes['GlobalID_PAR'],
+                globalid_PLA: result.attributes['GlobalID_PLA'],
 
            })
         })
@@ -209,12 +201,14 @@ export class TableLoader {
             
             eDiv.onmouseover=function() {
                 let delay = setTimeout(function() {
-                    new ZoomNoProv(mapApi, params.data.globalid, 'mouseover');
+                   //new ZoomNoProv(mapApi, params.data.globalid_PAR, 'mouseover');
+                    new ZoomToElement(mapApi, params.data.globalid_PAR, params.data.province, 'mouseover');
                 }, 500);
                 eDiv.onmouseout = function() {clearTimeout(delay);};
             };
             eDiv.addEventListener('click', function() {
-                new ZoomNoProv(mapApi, params.data.globalid, 'click')
+                //new ZoomNoProv(mapApi, params.data.globalid_PAR, 'click')
+                new ZoomToElement(mapApi, params.data.globalid_PAR, params.data.province, 'click')
             });
             eDiv.addEventListener('mouseout', function() {
                 mapApi.esriMap.graphics.clear();
@@ -231,12 +225,12 @@ export class TableLoader {
             
             eDiv.onmouseover=function() {
                 let delay = setTimeout(function() {
-                    new ZoomNoProv(mapApi, params.data.globalid, 'mouseover');
+                    new ZoomToElement(mapApi, params.data.globalid_PLA, params.data.province, 'mouseover');
                 }, 500);
                 eDiv.onmouseout = function() {clearTimeout(delay);};
             };
             eDiv.addEventListener('click', function() {
-                new ZoomNoProv(mapApi, params.data.globalid, 'click')
+                new ZoomToElement(mapApi, params.data.globalid_PLA, params.data.province, 'click')
             });
             eDiv.addEventListener('mouseout', function() {
                 mapApi.esriMap.graphics.clear();
@@ -247,12 +241,18 @@ export class TableLoader {
             return eDiv;
         }
 
+        gridOptions.columnDefs[2].cellRenderer = function(params) {
+            let eDiv = document.createElement('div');
+            eDiv.innerHTML= '<span class="my-css-class"><a href="' + 'https://clss.nrcan-rncan.gc.ca/plan-fra.php?id=' + params.data.planNumber.replace(/\s/g, '%20') + '"target=_blank>' + params.value + '</a></span>';
+            return eDiv
+        }
+
+
         new Grid(gridDiv, gridOptions);
     }
 
     setSpatialGridSIP(results) {
         let mapApi = this.mapApi;
-        //this.panel.body = this.compileTemplate(GRID_TEMPLATE);
         let tabElement = document.getElementById('surveyTab')
         
         if (results.length >= 1000) {
@@ -268,22 +268,22 @@ export class TableLoader {
                 {headerName: 'Project Number', field:'projectNumber', headerTooltip: 'Project Number', cellRenderer: function(cell){return cell.value}},
                 {headerName: 'Description', field:'description', headerTooltip: 'Description'},
                 //{headerName: 'Global ID', field:'globalID', headerTooltip: 'Global ID'},
-                {headerName: 'Project Detail', field:'url', headerTooltip: 'Project Detail'},
+                {headerName: 'Project Detail', field:'detail', headerTooltip: 'Project Detail'},
                 //{headerName: 'Province', field:'province', headerTooltip: 'Province'},
             ],
 
             rowData: [],
 
-            //onGridReady: function(params) {
-            //    params.api.sizeColumnsToFit();
-            //},
+            onGridReady: function(params) {
+                params.api.sizeColumnsToFit();
+            },
 
             rowStyle: {
                 background: 'white'
             },
 
-            //pagination: true,
             enableColResize: true,
+
             enableSorting: true,
         };
         
@@ -292,9 +292,9 @@ export class TableLoader {
                 projectNumber: result.attributes['PROJECTNUMBER'], 
                 description: result.attributes['DESCRIPTION'],
                 globalid: result.attributes['GlobalID'],
-                url: result.attributes['URL'],
+                urlUse: result.attributes['URL'],
+                detail: "View",
                 province: result.attributes['PROVINCE'],
-
            })
         })
 
@@ -319,10 +319,18 @@ export class TableLoader {
             
             return eDiv;
         }
+        gridOptions.columnDefs[2].cellRenderer = function(params) {
+            let eDiv = document.createElement('div');
+            eDiv.innerHTML= '<span class="my-css-class"><a href="' + 'https://clss.nrcan-rncan.gc.ca/project-projet/detail?id=' + params.data.urlUse + '"target=_blank>' + params.value + '</a></span>';
+            
+            //https://clss.nrcan-rncan.gc.ca/satc/project-projet/detail?id=45146
+            //https://clss.nrcan-rncan.gc.ca/clss/project-projet/detail?id=45146
+            return eDiv
+        }
 
         new Grid(gridDiv, gridOptions);
     }
-
+    /*
     setSpatialGridSIP2(results) {
         let mapApi = this.mapApi;
         //this.panel.body = this.compileTemplate(GRID_TEMPLATE);
@@ -347,9 +355,9 @@ export class TableLoader {
 
             rowData: [],
 
-            //onGridReady: function(params) {
-            //    params.api.sizeColumnsToFit();
-            //},
+            onGridReady: function(params) {
+                params.api.sizeColumnsToFit();
+            },
 
             rowStyle: {
                 background: 'white'
@@ -401,320 +409,245 @@ export class TableLoader {
         }
 
         new Grid(gridDiv, gridOptions);
-    }
+    }*/
     
     setSpatialGridPlan(results) {
         let mapApi = this.mapApi;
-                //const self = this;
-                //this.panel.body = this.compileTemplate(GRID_TEMPLATE);
         
-                let tabElement = document.getElementById('planTab')
+        let tabElement = document.getElementById('planTab')
         
-                if (results.length >= 1000) {
-                    tabElement.innerHTML = tabElement.innerText + ' (1000+) '
-                } else {
-                    tabElement.innerHTML = tabElement.innerText + ' (' + results.length + ')';
-                }
+        if (results.length >= 1000) {
+            tabElement.innerHTML = tabElement.innerText + ' (1000+) '
+        } else {
+            tabElement.innerHTML = tabElement.innerText + ' (' + results.length + ')';
+        }
                 
-                let gridOptions = {
-                    columnDefs: [
-                        {
-                            headerName: 'Plan Number', 
-                            field:'planNumber',
-                            headerTooltip: 'Plan Number', 
-                            cellEditor: 'agRichSelectCellEditor',
-                            unSortIcon: true,
-                            width: 160,
-                            cellRenderer: function (cell) {
-                                return cell.value
-                            },
-                        },
-                        {headerName: 'Description', field:'description', headerTooltip: 'Description', width: 300, },
-                        {headerName: 'Date of Survey', field:'dateSurvey', headerTooltip: 'Date of Survey',  width: 150},
-                        {headerName: 'Detail', field:'planDetail', headerTooltip: 'Detail', width: 100},
-                        {headerName: 'LTO', field:'lto', headerTooltip: 'List of survey document (plan) results from the attributes and map searches'},
-                    ],
-        
-                    rowSelection: 'multiple',
-        
-                    rowData:[],
-        
-                    onGridReady: function(params) {
-                        params.api.sizeColumnsToFit();
-                        //params.api.refreshCells(params);
-                        
+        let gridOptions = {
+            columnDefs: [
+                {
+                    headerName: 'Plan Number', 
+                    field:'planNumber',
+                    headerTooltip: 'Plan Number', 
+                    cellEditor: 'agRichSelectCellEditor',
+                    unSortIcon: true,
+                    width: 160,
+                    cellRenderer: function (cell) {
+                        return cell.value
                     },
+                },
+                {headerName: 'Description', field:'description', headerTooltip: 'Description', width: 300, },
+                {headerName: 'Date of Survey', field:'dateSurvey', headerTooltip: 'Date of Survey',  width: 150},
+                {headerName: 'Detail', field:'planDetail', headerTooltip: 'Detail', width: 100},
+                {headerName: 'LTO', field:'lto', headerTooltip: 'List of survey document (plan) results from the attributes and map searches'},
+            ],
         
-                    rowStyle: {
-                        background: 'white'
-                    },
+            rowSelection: 'multiple',
         
-                    //pagination: true,
+            rowData:[],
+        
+            onGridReady: function(params) {
+                params.api.sizeColumnsToFit();
+                //params.api.refreshCells(params);    
+            },
+        
+            rowStyle: {
+                background: 'white'
+            },
+        
+            //pagination: true,
                     
-                    enableColResize: true,
-                    enableSorting: true,
+            enableColResize: true,
+            enableSorting: true,
         
-                    //allowContextMenuWithControlKey: true,
-                }
+            //allowContextMenuWithControlKey: true,
+        }
         
-                
-                results.forEach(function(result) {
-                    let date = result.attributes['P3_DATESURVEYED'];
-                    let newDate = date.substr(0,4) + '-' + date.substr(4,2) + '-' + date.substr(6,2);
+        results.forEach(function(result) {
+            let date = result.attributes['P3_DATESURVEYED'];
+            let newDate = date.substr(0,4) + '-' + date.substr(4,2) + '-' + date.substr(6,2);
         
-                    gridOptions.rowData.push({
-                        planNumber: result.attributes['PLANNO'],
-                        description: result.attributes['P2_DESCRIPTION'],
-                        dateSurvey: newDate,
-                        planDetail: 'View',
-                        lto: result.attributes['ALTERNATEPLANNO'],
-                        globalid: result.attributes['GlobalID'],
-                        province:result.attributes['PROVINCE']
-                    })
-                })
+            gridOptions.rowData.push({
+                planNumber: result.attributes['PLANNO'],
+                description: result.attributes['P2_DESCRIPTION'],
+                dateSurvey: newDate,
+                planDetail: 'View',
+                lto: result.attributes['ALTERNATEPLANNO'],
+                globalid: result.attributes['GlobalID'],
+                province:result.attributes['PROVINCE']
+            })
+        })
         
-                gridOptions.columnDefs[0].cellRenderer = function(params) {
-                    var eDiv = document.createElement('div');
-                    eDiv.onmouseover=function() {
-                        let delay = setTimeout(function() {
-                            new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'mouseover');
-                            console.log('a')
-                        }, 500);
-                        eDiv.onmouseout = function() {clearTimeout(delay);
-                        };
-                    };
-                    
-                    eDiv.innerHTML = '<span class="my-css-class" style="cursor:pointer"><a href="#">' + params.value + '</a></span>';
-                    //eDiv.innerHTML = '<span class="my-css-class"><button class="btn-simple">Push Me</button></span>';
-                    //var eButton = eDiv.querySelectorAll('.btn-simple')[0];
-                    eDiv.addEventListener('click', function() {
-                        new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'click')
-                    });
-                    eDiv.addEventListener('mouseout', function() {
-                        mapApi.esriMap.graphics.clear();
-                    });
-                    return eDiv;
-                }
-        
-                gridOptions.columnDefs[3].cellRenderer = function(params) {
-                    let eDiv = document.createElement('div');
-                    eDiv.innerHTML= '<span class="my-css-class"><a href="' + 'https://clss.nrcan-rncan.gc.ca/plan-fra.php?id=' + params.data.planNumber.replace(/\s/g, '%20') + '"target=_blank>' + params.value + '</a></span>';
-                    return eDiv
-                }
-        
-                let gridDiv = <HTMLElement>document.querySelector('#plan')
-                //let gridDiv1 = <HTMLElement>document.querySelector('#admin')
-        
-                new Grid(gridDiv, gridOptions);
-                //new Grid(gridDiv1, gridOptions);
-            }
-
-            setSpatialGridTown(results) {
-                let mapApi = this.mapApi;
-                //this.panel.body = this.compileTemplate(GRID_TEMPLATE);
-                let tabElement = document.getElementById('townTab')
-        
-                if (results.length >= 1000) {
-                    tabElement.innerHTML = tabElement.innerText + ' (1000+) '
-                } else {
-                    tabElement.innerHTML = tabElement.innerText + ' (' + results.length + ')';
-                }
-
-                let gridDiv = <HTMLElement>document.querySelector('#town')
-                let gridOptions = {
-                    columnDefs: [
-                        {headerName: 'Section', field:'townshipSection', headerTooltip: 'Section', cellRenderer: function(cell){return cell.value}},
-                        {headerName: 'Township', field:'township', headerTooltip: 'Township'},
-                        //{headerName: 'TP', field:'tP', headerTooltip: 'TP'},
-                        {headerName: 'Range', field:'range', headerTooltip: 'Range'},
-                        //{headerName: 'Direction', field:'direction', headerTooltip: 'Direction'},
-                        {headerName: 'Meridian', field:'meridian', headerTooltip: 'Meridian'},
-                        //{headerName: 'Global ID', field:'globalID', headerTooltip: 'Global ID'},
-                        //{headerName: 'Province', field:'province', headerTooltip: 'Province'},
-                    ],
-        
-                    rowData: [],
-        
-                    onGridReady: function(params) {
-                        params.api.sizeColumnsToFit();
-                    },
-        
-                    rowStyle: {
-                        background: 'white'
-                    },
-        
-                    //pagination: true,
-                    enableColResize: true,
-                    enableSorting: true,
+        gridOptions.columnDefs[0].cellRenderer = function(params) {
+            var eDiv = document.createElement('div');
+            eDiv.onmouseover=function() {
+                let delay = setTimeout(function() {
+                    new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'mouseover');
+                    console.log('a')
+                }, 500);
+                eDiv.onmouseout = function() {clearTimeout(delay);
                 };
-                results.forEach(function(result) {
-                    gridOptions.rowData.push({
-                        townshipSection: result.attributes['TOWNSHIPSECTION'], 
-                        //tP: result.attributes['TP'],
-                        township: result.attributes['TP'],
-                        range: result.attributes['RANGE'],
-                        //direction: result.attributes['DIRECTION'],
-                        meridian: result.attributes['DIRECTION']+ result.attributes['MERIDIAN'],
-                        globalid: result.attributes['GlobalID'],
-                        province: result.attributes['PROVINCE'],
-        
-                   })
-                })
-        
-                gridOptions.columnDefs[0].cellRenderer = function(params) {
+            };
                     
-                    var eDiv = document.createElement('div');
-                    eDiv.onmouseover=function() {
-                        let delay = setTimeout(function() {
-                            new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'mouseover');
-                            console.log('a')
-                        }, 500);
-                        eDiv.onmouseout = function() {clearTimeout(delay);
-                        };
-                    };
+            eDiv.innerHTML = '<span class="my-css-class" style="cursor:pointer"><a href="#">' + params.value + '</a></span>';
+            //eDiv.innerHTML = '<span class="my-css-class"><button class="btn-simple">Push Me</button></span>';
+            //var eButton = eDiv.querySelectorAll('.btn-simple')[0];
+            eDiv.addEventListener('click', function() {
+                new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'click')
+            });
+            eDiv.addEventListener('mouseout', function() {
+                mapApi.esriMap.graphics.clear();
+            });
+            return eDiv;
+        }
         
-                    eDiv.innerHTML = '<span class="my-css-class" style="cursor:pointer"><a href="#">' + params.value + '</a></span>';
-                    eDiv.addEventListener('click', function() {
-                        new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'click')
-                    });
-                    eDiv.addEventListener('mouseout', function() {
-                        mapApi.esriMap.graphics.clear();
-                    });
-                    return eDiv;
-                }
+        gridOptions.columnDefs[3].cellRenderer = function(params) {
+            let eDiv = document.createElement('div');
+            eDiv.innerHTML= '<span class="my-css-class"><a href="' + 'https://clss.nrcan-rncan.gc.ca/plan-fra.php?id=' + params.data.planNumber.replace(/\s/g, '%20') + '"target=_blank>' + params.value + '</a></span>';
+            return eDiv
+        }
+        
+        let gridDiv = <HTMLElement>document.querySelector('#plan')
+        //let gridDiv1 = <HTMLElement>document.querySelector('#admin')
+        
+        new Grid(gridDiv, gridOptions);
+        //new Grid(gridDiv1, gridOptions);
+    }
 
-                gridOptions.columnDefs[1].cellRenderer = function(params) {
-                    
-                    var eDiv = document.createElement('div');
-                    eDiv.onmouseover=function() {
-                        let delay = setTimeout(function() {
-                            new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'mouseover');
-                            console.log('a')
-                        }, 500);
-                        eDiv.onmouseout = function() {clearTimeout(delay);
-                        };
-                    };
+    setSpatialGridTown(results) {
+        let mapApi = this.mapApi;
+        //this.panel.body = this.compileTemplate(GRID_TEMPLATE);
+        let tabElement = document.getElementById('townTab')
         
-                    eDiv.innerHTML = '<span class="my-css-class" style="cursor:pointer"><a href="#">' + params.value + '</a></span>';
-                    eDiv.addEventListener('click', function() {
-                        new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'click')
-                    });
-                    eDiv.addEventListener('mouseout', function() {
-                        mapApi.esriMap.graphics.clear();
-                    });
-                    return eDiv;
-                }
+        if (results.length >= 1000) {
+            tabElement.innerHTML = tabElement.innerText + ' (1000+) '
+        } else {
+            tabElement.innerHTML = tabElement.innerText + ' (' + results.length + ')';
+        }
 
-                gridOptions.columnDefs[2].cellRenderer = function(params) {
-                    
-                    var eDiv = document.createElement('div');
-                    eDiv.onmouseover=function() {
-                        let delay = setTimeout(function() {
-                            new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'mouseover');
-                            console.log('a')
-                        }, 500);
-                        eDiv.onmouseout = function() {clearTimeout(delay);
-                        };
-                    };
+        let gridDiv = <HTMLElement>document.querySelector('#town')
+        let gridOptions = {
+            columnDefs: [
+                {headerName: 'Section', field:'townshipSection', headerTooltip: 'Section', cellRenderer: function(cell){return cell.value}},
+                {headerName: 'Township', field:'township', headerTooltip: 'Township'},
+                //{headerName: 'TP', field:'tP', headerTooltip: 'TP'},
+                {headerName: 'Range', field:'range', headerTooltip: 'Range'},
+                //{headerName: 'Direction', field:'direction', headerTooltip: 'Direction'},
+                {headerName: 'Meridian', field:'meridian', headerTooltip: 'Meridian'},
+                //{headerName: 'Global ID', field:'globalID', headerTooltip: 'Global ID'},
+                //{headerName: 'Province', field:'province', headerTooltip: 'Province'},
+            ],
         
-                    eDiv.innerHTML = '<span class="my-css-class" style="cursor:pointer"><a href="#">' + params.value + '</a></span>';
-                    eDiv.addEventListener('click', function() {
-                        new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'click')
-                    });
-                    eDiv.addEventListener('mouseout', function() {
-                        mapApi.esriMap.graphics.clear();
-                    });
-                    return eDiv;
-                }
+            rowData: [],
         
-                gridOptions.columnDefs[3].cellRenderer = function(params) {
-                    
-                    var eDiv = document.createElement('div');
-                    eDiv.onmouseover=function() {
-                        let delay = setTimeout(function() {
-                            new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'mouseover');
-                            console.log('a')
-                        }, 500);
-                        eDiv.onmouseout = function() {clearTimeout(delay);
-                        };
-                    };
+            onGridReady: function(params) {
+                params.api.sizeColumnsToFit();
+            },
         
-                    eDiv.innerHTML = '<span class="my-css-class" style="cursor:pointer"><a href="#">' + params.value + '</a></span>';
-                    eDiv.addEventListener('click', function() {
-                        new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'click')
-                    });
-                    eDiv.addEventListener('mouseout', function() {
-                        mapApi.esriMap.graphics.clear();
-                    });
-                    return eDiv;
-                }
-                new Grid(gridDiv, gridOptions);
-            }
+            rowStyle: {
+                background: 'white'
+            },
         
-            setSpatialGridAdminArea(results) {
-                let mapApi = this.mapApi;
-                //this.panel.body = this.compileTemplate(GRID_TEMPLATE);
-                let tabElement = document.getElementById('adminTab')
+            //pagination: true,
+            enableColResize: true,
+            enableSorting: true,
+        };
+        results.forEach(function(result) {
+            gridOptions.rowData.push({
+                townshipSection: result.attributes['TOWNSHIPSECTION'], 
+                //tP: result.attributes['TP'],
+                township: result.attributes['TOWNSHIP'],
+                range: result.attributes['RANGE'],
+                //direction: result.attributes['DIRECTION'],
+                meridian: result.attributes['MERIDIAN'],
+                //globalid: result.attributes['GlobalID'],
+                //province: result.attributes['PROVINCE'],
+            })
+        })
         
-                if (results.length >= 1000) {
-                    tabElement.innerHTML = tabElement.innerText + ' (1000+) '
-                } else {
-                    tabElement.innerHTML = tabElement.innerText + ' (' + results.length + ')';
-                }
-                let gridDiv = <HTMLElement>document.querySelector('#admin')
-                let gridOptions = {
-                    columnDefs: [
-                        {headerName: 'Name', field:'name', headerTooltip: 'name', cellRenderer: function(cell){return cell.value}},
-                       // {headerName: 'Province', field:'province', headerTooltip: 'Province'},
-                       // {headerName: 'Global ID', field:'globalID', headerTooltip: 'Global ID'},
-                    ],
+        gridOptions.columnDefs[0].cellRenderer = function(params) {
+            var eDiv = document.createElement('div');
+            eDiv.onmouseover=function() {
+                let delay = setTimeout(function() {
+                    new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'mouseover');
+                }, 500);
+                eDiv.onmouseout = function() {clearTimeout(delay);};
+            };
+            eDiv.addEventListener('click', function() {
+                new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'click')
+            });
+            eDiv.addEventListener('mouseout', function() {
+                mapApi.esriMap.graphics.clear();
+            });
+    
+            eDiv.innerHTML = '<span class="my-css-class" style="cursor:pointer"><a href="#">' + params.value + '</a></span>';
+            return eDiv;
+        }
+
+        new Grid(gridDiv, gridOptions);
+    }
         
-                    rowData: [],
+    setSpatialGridAdminArea(results) {
+        let mapApi = this.mapApi;
+        //this.panel.body = this.compileTemplate(GRID_TEMPLATE);
+        let tabElement = document.getElementById('adminTab')
         
-                    //onGridReady: function(params) {
-                    //    params.api.sizeColumnsToFit();
-                    //},
+        if (results.length >= 1000) {
+            tabElement.innerHTML = tabElement.innerText + ' (1000+) '
+        } else {
+            tabElement.innerHTML = tabElement.innerText + ' (' + results.length + ')';
+        }
+        let gridDiv = <HTMLElement>document.querySelector('#admin')
+        let gridOptions = {
+            columnDefs: [
+                {headerName: 'Name', field:'name', headerTooltip: 'name', cellRenderer: function(cell){return cell.value}},
+                // {headerName: 'Province', field:'province', headerTooltip: 'Province'},
+                 // {headerName: 'Global ID', field:'globalID', headerTooltip: 'Global ID'},
+            ],
         
-                    rowStyle: {
-                        background: 'white'
-                    },
+            rowData: [],
         
-                    //pagination: true,
-                    enableColResize: true,
-                    enableSorting: true,
+            onGridReady: function(params) {
+                params.api.sizeColumnsToFit();
+            },
+        
+            rowStyle: {
+                background: 'white'
+            },
+        
+            //pagination: true,
+            enableColResize: true,
+            enableSorting: true,
+        };
+        results.forEach(function(result) {
+            gridOptions.rowData.push({
+                name: result.attributes['ENGLISHNAME'], 
+                province: result.attributes['PROVINCE'],
+                globalid: result.attributes['GlobalID'],
+            })
+        })
+        
+        gridOptions.columnDefs[0].cellRenderer = function(params) {
+            var eDiv = document.createElement('div');
+            eDiv.onmouseover=function() {
+                let delay = setTimeout(function() {
+                    new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'mouseover');
+                }, 500);
+                eDiv.onmouseout = function() {clearTimeout(delay);
                 };
-                results.forEach(function(result) {
-                    gridOptions.rowData.push({
-                        name: result.attributes['ENGLISHNAME'], 
-                        province: result.attributes['PROVINCE'],
-                        globalid: result.attributes['GlobalID'],
-                   })
-                })
+            };
         
-                gridOptions.columnDefs[0].cellRenderer = function(params) {
-                    
-                    var eDiv = document.createElement('div');
-                    eDiv.onmouseover=function() {
-                        let delay = setTimeout(function() {
-                            new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'mouseover');
-                            console.log('a')
-                        }, 500);
-                        eDiv.onmouseout = function() {clearTimeout(delay);
-                        };
-                    };
-        
-                    eDiv.innerHTML = '<span class="my-css-class" style="cursor:pointer"><a href="#">' + params.value + '</a></span>';
-                    eDiv.addEventListener('click', function() {
-                        new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'click')
-                    });
-                    eDiv.addEventListener('mouseout', function() {
-                        mapApi.esriMap.graphics.clear();
-                    });
-                    return eDiv;
-                }
-        
-                new Grid(gridDiv, gridOptions);
-            }
+            eDiv.innerHTML = '<span class="my-css-class" style="cursor:pointer"><a href="#">' + params.value + '</a></span>';
+            eDiv.addEventListener('click', function() {
+                new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'click')
+            });
+            eDiv.addEventListener('mouseout', function() {
+                mapApi.esriMap.graphics.clear();
+            });
+            return eDiv;
+        }
+    
+        new Grid(gridDiv, gridOptions);
+    }
 
     setFieldInfo(value) {
 
@@ -738,61 +671,21 @@ export class TableLoader {
             township: { headerName: "Township", field: "township", headerToolTip: "Township"}
         };
 
-        
-        /*const FIELD_LIST = [
-            'Parcel Designator', 
-            'Remainder',
-            'Plan Number', 
-            'Plan Detail', 
-            'Parcel Type', 
-            'Project Number',
-            'Description', 
-            'Project Detail', 
-            'Date of Survey', 
-            'LTO', 
-            'Section', 
-            'Township', 
-            'Range',
-            'Meridian', 
-            'Name', 
-            'Additional Info'
-        ];*/
-
-        /*let field_object = {};
-        FIELD_LIST.forEach(function(element,i) {
-            let name = element.replace(/\s/g, '').toLowerCase()
-            field_object[name] = {headerName:element, field:element.replace(/\s/g, '').toLowerCase(), headerToolTip:element}
-        })*/
-
-        //let value = 'plan';
         let columnDefs =[];
         switch(value) {
             case 'parcel':
-                //columnDefs["parceldesignator"] =  { headerName: "Parcel Designator", field: "parceldesignator", headerToolTip: "Parcel Designator"};
-                //columnDefs["remainder"] = {headerName: "Remainder", field: "remainder", headerToolTip: "Remainder"};
-                //columnDefs["plannumber"] = {headerName: "Plan Number", field: "plannumber", headerToolTip: "Plan Number", cellRenderer: function (cell) {return cell.value}};
-                //columnDefs["plandetail"] = {headerName: "Plan Detail", field: "plandetail", headerToolTip: "Plan Detail"};
-                //columnDefs["parceltype"] = {headerName: "Parcel Type", field: "parceltype", headerToolTip: "Parcel Type"};
                 columnDefs.push(fieldInfo['parceldesignator']);
-                columnDefs.push(fieldInfo['remainder']);
                 columnDefs.push(fieldInfo['plannumber']);
                 columnDefs.push(fieldInfo['plandetail']);
+                columnDefs.push(fieldInfo['remainder']);
                 columnDefs.push(fieldInfo['parceltype']);
                 break;
             case 'survey':
-                //columnDefs["projectnumber"] = {headerName: "Project Detail", field: "projectdetail", headerToolTip: "Project Detail"};
-                //columnDefs["description"] = {headerName: "Description", field: "description", headerToolTip: "Description"};
-                //columnDefs["projectdetail"] = {headerName: "Project Detail", field: "projectdetail", headerToolTip: "Project Detail"};
                 columnDefs.push(fieldInfo['projectnumber']);
                 columnDefs.push(fieldInfo['description']);
                 columnDefs.push(fieldInfo['projectdetail']);
                 break;
             case 'plan':
-                //columnDefs["plannumber"] = {headerName: "Plan Number", field: "plannumber", headerToolTip: "Plan Number", cellRenderer: function (cell) {return cell.value}};
-                //columnDefs["description"] = {headerName: "Description", field: "description", headerToolTip: "Description"};
-                //columnDefs["dateofsurvey"] = {headerName: "Date of Survey", field: "dateofsurvey",headerToolTip: "Date of Survey"};
-               // columnDefs["plandetail"] = {headerName: "Plan Detail", field: "plandetail", headerToolTip: "Plan Detail"};
-                //columnDefs["lto"] = {headerName: "LTO", field: "lto", headerToolTip: "LTO"};
                 columnDefs.push(fieldInfo['plannumber']);
                 columnDefs.push(fieldInfo['description']);
                 columnDefs.push(fieldInfo['dateofsurvey']);
@@ -800,24 +693,18 @@ export class TableLoader {
                 columnDefs.push(fieldInfo['lto']);
                 break;
             case 'town': 
-                //columnDefs["section"] = {headerName: "Section", field: "section", headerToolTip: "Section"};
-                //columnDefs["township"] = {headerName: "Township", field: "township", headerToolTip: "Township"};
-                //columnDefs["range"] = {headerName: "Range", field: "range", headerToolTip: "Range"};
-                //columnDefs["meridian"] = {headerName: "Meridian", field: "meridian", headerToolTip: "Meridian"};
                 columnDefs.push(fieldInfo['section']);
                 columnDefs.push(fieldInfo['township']);
                 columnDefs.push(fieldInfo['ranger']);
                 columnDefs.push(fieldInfo['meridian']);
                 break;
             case 'admin':
-                //columnDefs["name"] = {headerName: "Name", field: "name", headerToolTip: "Name"};
                 columnDefs.push(fieldInfo['name']);
                 columnDefs.push(fieldInfo["description"]);
                 columnDefs.push(fieldInfo["province"]);
                 break;
             case 'info':
-                /*columnDefs["additionalinfo"]= {headerName: "Additional Info", field: "additionalinfo", headerToolTip: "Additional Info"};
-                columnDefs.push(fieldInfo['additionalinfo']);*/
+                columnDefs.push(fieldInfo['additionalinfo']);
                 break;
         }
         return columnDefs;
@@ -836,49 +723,20 @@ export class TableLoader {
         }
 
         let gridDiv = <HTMLElement>document.querySelector('#' + type[0])
-
-
-        //this.panel.body = this.compileTemplate(GRID_TEMPLATE);
-        /*let tabElement = document.getElementsByName('plan')[0]
-
-        if (results.length >= 1000) {
-            tabElement.innerHTML = tabElement.innerText + ' (1000+) '
-        } else {
-            tabElement.innerHTML = tabElement.innerText + ' (' + results.length + ')';
-        }*/
-
-        /*width: 300*width: 150;width: 100*/
         
         let gridOptions = {
             columnDefs: [],
-            /*columnDefs: [
-                {headerName: 'Plan Number', field:'planNumber', headerTooltip: 'Plan Number', cellRenderer: function (cell) {return cell.value}},
-                {headerName: 'Description', field:'description', headerTooltip: 'Description', },
-                {headerName: 'Date of Survey', field:'dateSurvey', headerTooltip: 'Date of Survey',},
-                {headerName: 'Detail', field:'planDetail', headerTooltip: 'Detail'},
-                {headerName: 'LTO', field:'lto', headerTooltip: 'List of survey document (plan) results from the attributes and map searches'},
-            ],*/
-
             rowSelection: 'multiple',
-
             rowData:[],
-
             onGridReady: function(params) {
                 params.api.sizeColumnsToFit();
-                params.api.refreshCells(params);
-                
             },
-
             rowStyle: {
                 background: 'white'
             },
-
             //pagination: true,
-            
             enableColResize: true,
             enableSorting: true,
-
-            //allowContextMenuWithControlKey: true,
         }
 
         fieldInfo.forEach(function (elem) {
@@ -949,6 +807,46 @@ export class TableLoader {
                 return eDiv
             }
         }
+        else if (type=='parcel') {
+
+            results.forEach(function(result) {
+                gridOptions.rowData.push({
+                    parceldesignator: result.attributes['PARCELDESIGNATOR'], 
+                    planNumber: result.attributes['PLANNO'],
+                    parceltype: result.attributes['PARCELFC_ENG'],
+                    planDetail: "View",
+                    remainder: result.attributes['REMAINDERIND_ENG'],
+                    globalid: result.attributes['GlobalID_PAR'],
+                    globalid_PLA: result.attributes['GlobalID_PLA'],
+                    province: result.attributes['PROVINCE'],
+                })
+            })
+            gridOptions.columnDefs[1].cellRenderer = function(params) {
+                var eDiv = document.createElement('div');
+                eDiv.onmouseover=function() {
+                    let delay = setTimeout(function() {
+                        new ZoomToElement(mapApi, params.data.globalid_PLA, params.data.province, 'mouseover');
+                    }, 500);
+                    eDiv.onmouseout = function() {clearTimeout(delay);
+                    };
+                };
+                
+                eDiv.innerHTML = '<span class="my-css-class" style="cursor:pointer"><a href="#">' + params.value + '</a></span>';
+    
+                eDiv.addEventListener('click', function() {
+                    new ZoomToElement(mapApi, params.data.globalid_PLA, params.data.province, 'click')
+                });
+                eDiv.addEventListener('mouseout', function() {
+                    mapApi.esriMap.graphics.clear();
+                });
+                return eDiv;
+            }
+            gridOptions.columnDefs[2].cellRenderer = function(params) {
+                let eDiv = document.createElement('div');
+                eDiv.innerHTML= '<span class="my-css-class"><a href="' + 'https://clss.nrcan-rncan.gc.ca/plan-fra.php?id=' + params.data.planNumber.replace(/\s/g, '%20') + '"target=_blank>' + params.value + '</a></span>';
+                return eDiv
+            }
+        }
 
         gridOptions.columnDefs[0].cellRenderer = function(params) {
             var eDiv = document.createElement('div');
@@ -960,10 +858,9 @@ export class TableLoader {
                 };
             };
             
+
             eDiv.innerHTML = '<span class="my-css-class" style="cursor:pointer"><a href="#">' + params.value + '</a></span>';
 
-            //eDiv.innerHTML = '<span class="my-css-class"><button class="btn-simple">Push Me</button></span>';
-            //var eButton = eDiv.querySelectorAll('.btn-simple')[0];
             eDiv.addEventListener('click', function() {
                 new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'click')
             });
@@ -972,31 +869,13 @@ export class TableLoader {
             });
             return eDiv;
         }
-
-        /*gridOptions.columnDefs[3].cellRenderer = function(params) {
-            let eDiv = document.createElement('div');
-            eDiv.innerHTML= '<span class="my-css-class"><a href="' + 'https://clss.nrcan-rncan.gc.ca/plan-fra.php?id=' + params.data.planNumber.replace(/\s/g, '%20') + '"target=_blank>' + params.value + '</a></span>';
-            return eDiv
-        }*/
-
-        //let gridDiv = '<div id ="planGrid" class="hidden" style="height: 100%;"></div>';
-        //let gridDiv2 = '<div id ="projectGrid" class="hidden" style="height: 100%;"></div>';
         
 
+        //let gridDiv = '<div id ="planGrid" class="hidden" style="height: 100%;"></div>';
         //this.panel.body = this.compileTemplate(gridDiv);
-        //this.panel.body.append(this.compileTemplate(gridDiv2));
         //let gridDivHtml = <HTMLElement>document.querySelector('#planGrid')
-        //let gridDivHtml2 = <HTMLElement>document.querySelector('#projectGrid')
-
 
         new Grid(gridDiv, gridOptions);
-        //new Grid(gridDivHtml2, gridOptions);
-
-
-        //let gridDiv = <HTMLElement>document.querySelector('#plan')
-        //let gridDiv1 = <HTMLElement>document.querySelector('#admin')
-        //new Grid(gridDiv, gridOptions);
-
     }
 
     compileTemplate(template): JQuery<HTMLElement> {

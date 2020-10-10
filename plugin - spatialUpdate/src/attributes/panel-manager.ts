@@ -1,4 +1,4 @@
-import { SEARCH_PLAN_TEMPLATE, PROTECTED_AREA_TEMPLATE, COMMUNITY_TEMPLATE, SURVEY_PROGRESS_TEMPLATE, PROVINCE, MENU_BUTTON } from '../templates/template';
+import { SEARCH_PLAN_TEMPLATE, PROTECTED_AREA_TEMPLATE, COMMUNITY_TEMPLATE, SURVEY_PROGRESS_TEMPLATE, PARCEL_TEMPLATE, PROVINCE, MENU_BUTTON } from '../templates/template';
 import { MakeQuery } from './layer-query';
 import * as data from '../resources/admin_area.json'
 import { _ } from 'ag-grid-community';
@@ -6,7 +6,6 @@ const ADMIN_DATA = data
 
 const Draggabilly = require('draggabilly');
 const PANEL_OPTIONS_CSS = {top: '35%', left: '35%', width:'550px', height: '375px', right: '52px',}
-//const SIDEPANEL_OPTIONS_CSS = {top: '10%', left: '20%',  right: '52px', height: '360px',};
 
 export class PanelManager {
 
@@ -32,32 +31,7 @@ export class PanelManager {
 
         this.setHeader(customPanel, "searchPlanPanel");
 
-        /*
-        this.mapApi.agControllerRegister('SelectTabMenu', ['$scope', '$mdSidenav', function($scope, $mdSidenav) {
-            $scope.toggleLeft = buildToggler('leftPanel');
 
-            function buildToggler(componentId) {
-              return function() {
-                $mdSidenav(componentId).toggle();
-              }
-            }
-            
-            $scope.getSearchInfo = function(tabName) {
-                
-                let tabContent = <HTMLElement>document.getElementById(tabName);
-                let tabContentActive = document.getElementsByClassName(' active') as HTMLCollectionOf<HTMLElement>
-
-                if (tabContentActive.length >0) {
-                    tabContentActive[0].style.display = "none";
-                    tabContentActive[0].classList.remove("active")
-                }
-
-                tabContent.className += ' active';
-                tabContent.style.display = "block";
-            }
-            
-            
-        }])*/
         this.mapApi.agControllerRegister('SearchPanel',  ['$scope', function($scope) {
             this.provinces = Object.keys(PROVINCE[configLang]);
 
@@ -112,7 +86,7 @@ export class PanelManager {
         }]);
 
 
-        this.mapApi.agControllerRegister('ResultsTabsCtrl', ['$scope','$mdSidenav', function($scope, $mdSidenav) {
+        /*this.mapApi.agControllerRegister('ResultsTabsCtrl', ['$scope','$mdSidenav', function($scope, $mdSidenav) {
         
             this.tabs = {
                 parcel: {
@@ -157,7 +131,7 @@ export class PanelManager {
                 tabContent.style.display = "block";
             }
 
-        }])
+        }])*/
 
         this.setBody(customPanel);
 
@@ -231,6 +205,10 @@ export class PanelManager {
                     }
                     case 'project':{
                         this.template = SURVEY_PROGRESS_TEMPLATE;
+                        break;
+                    }
+                    case 'parcel':{
+                        this.template = PARCEL_TEMPLATE;
                         break;
                     }
                 }
