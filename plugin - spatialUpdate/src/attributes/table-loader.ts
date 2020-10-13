@@ -140,6 +140,7 @@ export class TableLoader {
 
     setSpatialGrid(results) {
         let mapApi = this.mapApi;
+        //this.panel.body = this.compileTemplate(GRID_TEMPLATE);
         let tabElement = document.getElementById('parcelTab')
         
         if (results.length >= 1000) {
@@ -179,12 +180,11 @@ export class TableLoader {
                 parcelDesignator: result.attributes['PARCELDESIGNATOR'], 
                 planNumber: result.attributes['PLANNO'],
                 parceltype: result.attributes['PARCELFC_ENG'],
+                planDetail: 'View',
                 remainder: result.attributes['REMAINDERIND_ENG'],
-                //globalid: result.attributes['GlobalID'],
+                globalid: result.attributes['GlobalID'],
                 province: result.attributes['PROVINCE'],
-                planDetail: "View",
-                globalid_PAR: result.attributes['GlobalID_PAR'],
-                globalid_PLA: result.attributes['GlobalID_PLA'],
+                globalidPLA: result.attributes['GlobalID_PLA'],
 
            })
         })
@@ -195,20 +195,19 @@ export class TableLoader {
             return eDiv
         }
 
+
         gridOptions.columnDefs[0].cellRenderer = function(params) {
             
             var eDiv = document.createElement('div');
             
             eDiv.onmouseover=function() {
                 let delay = setTimeout(function() {
-                   //new ZoomNoProv(mapApi, params.data.globalid_PAR, 'mouseover');
-                    new ZoomToElement(mapApi, params.data.globalid_PAR, params.data.province, 'mouseover');
+                    new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'mouseover');
                 }, 500);
                 eDiv.onmouseout = function() {clearTimeout(delay);};
             };
             eDiv.addEventListener('click', function() {
-                //new ZoomNoProv(mapApi, params.data.globalid_PAR, 'click')
-                new ZoomToElement(mapApi, params.data.globalid_PAR, params.data.province, 'click')
+                new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'click')
             });
             eDiv.addEventListener('mouseout', function() {
                 mapApi.esriMap.graphics.clear();
@@ -218,6 +217,7 @@ export class TableLoader {
             
             return eDiv;
         }
+
 
         gridOptions.columnDefs[1].cellRenderer = function(params) {
             
@@ -225,12 +225,12 @@ export class TableLoader {
             
             eDiv.onmouseover=function() {
                 let delay = setTimeout(function() {
-                    new ZoomToElement(mapApi, params.data.globalid_PLA, params.data.province, 'mouseover');
+                    new ZoomToElement(mapApi, params.data.globalidPLA, params.data.province, 'mouseover');
                 }, 500);
                 eDiv.onmouseout = function() {clearTimeout(delay);};
             };
             eDiv.addEventListener('click', function() {
-                new ZoomToElement(mapApi, params.data.globalid_PLA, params.data.province, 'click')
+                new ZoomToElement(mapApi, params.data.globalidPLA, params.data.province, 'click')
             });
             eDiv.addEventListener('mouseout', function() {
                 mapApi.esriMap.graphics.clear();
@@ -241,16 +241,9 @@ export class TableLoader {
             return eDiv;
         }
 
-        gridOptions.columnDefs[2].cellRenderer = function(params) {
-            let eDiv = document.createElement('div');
-            eDiv.innerHTML= '<span class="my-css-class"><a href="' + 'https://clss.nrcan-rncan.gc.ca/plan-fra.php?id=' + params.data.planNumber.replace(/\s/g, '%20') + '"target=_blank>' + params.value + '</a></span>';
-            return eDiv
-        }
-
-
         new Grid(gridDiv, gridOptions);
     }
-
+    
     setSpatialGridSIP(results) {
         let mapApi = this.mapApi;
         let tabElement = document.getElementById('surveyTab')
