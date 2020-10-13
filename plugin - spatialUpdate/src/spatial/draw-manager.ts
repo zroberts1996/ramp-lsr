@@ -148,7 +148,7 @@ export class DrawManager {
                     createIcon: () => { that.createIcon(this.controls.help) },
                     selected: () => this.controls.help.active,
                     action: () => {
-                        window.open("https://www.youtube.com/");
+                        window.open("https://lucid-bardeen-026634.netlify.app/");
                     }
                 },
                 measure: {
