@@ -384,7 +384,7 @@
       "clssPlugin": {
         "description": "This is my clss plugin description",
         "open": true,
-        "tools": [ "extent", "polyline", "polygon", "measure"]
+        "tools": [ "extent", "polyline", "polygon", "measure", "help"]
       },
       "tablebuilder": {
         "open": true
