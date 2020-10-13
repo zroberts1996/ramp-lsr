@@ -588,14 +588,18 @@ export class DrawToolbar {
 
         //selects polygons within the extent of drawing tools polygon
         const parcelQuery = new (<any>window).RAMP.GAPI.esriBundle.Query();
-        const parcelQueryURL = "https://proxyinternet.nrcan.gc.ca/arcgis/rest/services/MB-NC/WMB_Query_CA/MapServer/1"
+        //const parcelQueryURL = "http://proxyinternet.nrcan.gc.ca/arcgis/rest/services/MB-NC/WMB_Query_CA/MapServer/1";
+        //const parcelQueryURL = "https://proxyinternet.nrcan.gc.ca/arcgis/rest/services/MB-NC/NRCan_SGB_Business_LCC/MapServer/69"
+        const parcelQueryURL = "https://proxyinternet.nrcan.gc.ca/arcgis/rest/services/CLSS-SATC/Parcel_Query_Can/MapServer/0"
         const parcelQueryTask = new (<any>window).RAMP.GAPI.esriBundle.QueryTask(parcelQueryURL);
         parcelQuery.geometry = ext;
         parcelQuery.where = this.whereclause;
         parcelQuery.returnGeometry = false;
-        parcelQuery.outFields = ["PARCELDESIGNATOR", "PLANNO", "PARCELFC_ENG", "REMAINDERIND_ENG", "GlobalID_PAR", "GlobalID_PLA", "PROVINCE"];
+        parcelQuery.outFields = ["PARCELDESIGNATOR", "PLANNO", "PARCELFC_ENG", "REMAINDERIND_ENG", "GlobalID", "GlobalID_PLA", "PROVINCE"];
         //parcelQueryTask.execute(parcelQuery, this.createTable(this.panel))
         parcelQueryTask.execute(parcelQuery, this.createTable(this.loadingPanel))
+        //var updatedInput = parcelQueryTask.execute(parcelQuery, this.createTable(this.panel))
+        //console.log(updatedInput[0])
     }
 
     QueryLayerSIP(ext) {
