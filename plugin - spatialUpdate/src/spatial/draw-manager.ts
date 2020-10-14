@@ -148,7 +148,7 @@ export class DrawManager {
                     createIcon: () => { that.createIcon(this.controls.help) },
                     selected: () => this.controls.help.active,
                     action: () => {
-                        window.open("https://keen-bohr-eceea7.netlify.app");
+                        window.open("https://admiring-nobel-9a6de4.netlify.app");
                     }
                 },
                 measure: {
