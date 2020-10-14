@@ -121,6 +121,7 @@ ClssPlugin.prototype.translations = {
             extent: 'Select by rectangle',
             write: 'Save graphics file',
             read: 'Upload graphics file',
+            help: 'Open HTML help page'
         },
 
         sidePanel: {
@@ -177,6 +178,7 @@ ClssPlugin.prototype.translations = {
             extent: 'Sélection par rectangle',
             write: 'Sauvegarder le fichier de graphiques',
             read: 'Charger le fichier de graphiques',
+            help: "Ouvrir la page d'aide HTML"
         },
     
         sidePanel: {
