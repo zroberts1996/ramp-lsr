@@ -614,7 +614,7 @@ export class DrawToolbar {
 
         //selects polygons within the extent of drawing tools polygon
         const parcelQuery = new (<any>window).RAMP.GAPI.esriBundle.Query();
-        const parcelQueryURL = "https://proxyinternet.nrcan.gc.ca/arcgis/rest/services/MB-NC/WMB_Query_CA/MapServer/9"
+        const parcelQueryURL = "https://proxyinternet.nrcan.gc.ca/arcgis/rest/services/CLSS-SATC/Project_Query_Can/MapServer/0"
         const parcelQueryTask = new (<any>window).RAMP.GAPI.esriBundle.QueryTask(parcelQueryURL);
         parcelQuery.geometry = ext;
         parcelQuery.where = this.whereclause;
@@ -636,7 +636,7 @@ export class DrawToolbar {
 
         //selects polygons within the extent of drawing tools polygon
         const parcelQuery = new (<any>window).RAMP.GAPI.esriBundle.Query();
-        const parcelQueryURL = "https://proxyinternet.nrcan.gc.ca/arcgis/rest/services/MB-NC/WMB_Query_CA/MapServer/0"
+        const parcelQueryURL = "https://proxyinternet.nrcan.gc.ca/arcgis/rest/services/CLSS-SATC/Plan_Query_Can/MapServer/0"
         const parcelQueryTask = new (<any>window).RAMP.GAPI.esriBundle.QueryTask(parcelQueryURL);
         parcelQuery.geometry = ext;
         parcelQuery.where = this.whereclause;
