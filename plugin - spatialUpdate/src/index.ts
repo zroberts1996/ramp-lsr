@@ -77,6 +77,7 @@ export default class ClssPlugin {
             this.button.isActive = !this.button.isActive;
             this.button.isActive ? this.searchPanel.addButton() : this.searchPanel.removeButton();
             this.button.isActive ? this.panelManager.showPanel() : this.panelManager.closePanel();
+            //this.button.isActive ? this.drawManager.setActive() : this.drawManager.setInactive();
         };
     }
 }

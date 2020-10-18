@@ -29,17 +29,21 @@ export class MakeQuery {
         this._searchInfo = searchInfo;
         this.queryOptions = searchInfo.option;
         this.loadingPanel = panel;
-
         this.result = null;
 
+        if (searchInfo.other == 'parcel') {
+            this.setquery(this._searchInfo);
 
+            this._searchInfo.type = 'parcel'
+            this.setquery(this._searchInfo);
+        }
+        else {
+           this.setquery(this._searchInfo); 
+        }
+        
         //this.openLoadingPanel();
-        this.setquery(this._searchInfo);
-
         //this.setQueryInfo(this.queryOptions);
         //this.setQueryPlan();
-
-
         //this.setQueryPlan()
         //this.executeQuery();
     }
@@ -65,12 +69,17 @@ export class MakeQuery {
         }
     }
 
-    setWhereClause(type) {
+    setWhereClause(type, other) {
         if (type == 'reserve') {
             return "ENGLISHNAME like '%@input%'";
         }
         else if (type == 'parcel') {
-            return "PARCELDESIGNATOR like '%@input%'";
+            if (other == 'parcel') {
+                return "planno like '%@input%'" ;
+            }
+            else {
+                return "PARCELDESIGNATOR like '%@input%'";
+            }
         }
         else if (type == 'plan') {
             return "planno like '%@input%'" 
@@ -82,11 +91,11 @@ export class MakeQuery {
 
     setquery(info) {
 
-        this.layer = SEARCH_LAYERS[info.option];
-        this.fields =  PROXY_FIELDS[info.option];
+        this.layer = SEARCH_LAYERS[info.type];
+        this.fields =  PROXY_FIELDS[info.type];
         this.orderByField = this.fields[0];
 
-        this.clause = this.setWhereClause(info.option).replace('@input', info.input);
+        this.clause = this.setWhereClause(info.type, info.other).replace('@input', info.input);
         if (info.reserve) {
             this.clause += " AND GEOADMINCODE LIKE '%" + info.reserve + "%'";
         }
@@ -95,7 +104,6 @@ export class MakeQuery {
         }
 
         this.setProvince(this._searchInfo.province);
-
         let query = new (<any>window).RAMP.GAPI.esriBundle.Query();
         let queryURL = this.baseURL + "WMB_Query_" + this.getProvince() + "/MapServer/" + this.layer;
         let queryTask = new (<any>window).RAMP.GAPI.esriBundle.QueryTask(queryURL);
@@ -104,9 +112,9 @@ export class MakeQuery {
         query.returnGeometry = false;
         query.outFields = this.fields
         query.orderByFields = [this.orderByField];
-        let type = [this.queryOptions];
+        //let type = [this.queryOptions];
         
-        queryTask.execute(query, this.createTable(this.loadingPanel, type));
+        queryTask.execute(query, this.createTable(this.loadingPanel, [info.type]));
     };
 
     /*changeObj = (obj, info) => {

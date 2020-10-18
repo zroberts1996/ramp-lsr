@@ -94,10 +94,10 @@ export class TableLoader {
         }])
 
         const test1 = `<md-button id='parcelTab' ng-controller="TabController as ctrl"; ng-click="openSelectedTab('parcel')"; name="test1" style="">Parcel</md-button>`
-        const test2 = `<md-button id='surveyTab' ng-controller="TabController as ctrl"; ng-click="openSelectedTab('survey')"; name="test2" style="">Survey Project</md-button>`
+        const test2 = `<md-button id='projectTab' ng-controller="TabController as ctrl"; ng-click="openSelectedTab('project')"; name="test2" style="">Survey Project</md-button>`
         const test3 = `<md-button id='planTab' ng-controller="TabController as ctrl"; ng-click="openSelectedTab('plan')";name="test3" style="">Survey Plan</md-button>`;
         const test4 = `<md-button id='townTab' ng-controller="TabController as ctrl"; ng-click="openSelectedTab('town')";name="test4" style="">Township</md-button>`;
-        const test5 = `<md-button id='adminTab' ng-controller="TabController as ctrl"; ng-click="openSelectedTab('admin')";name="test5" style="padding:0px 6px 0px 20px; margin:0px;">Administrative</md-button>`;
+        const test5 = `<md-button id='reserveTab' ng-controller="TabController as ctrl"; ng-click="openSelectedTab('reserve')";name="test5" style="padding:0px 6px 0px 20px; margin:0px;">Administrative</md-button>`;
         //const test6 = `<md-button ng-controller="TabController as ctrl"; ng-click="openSelectedTab('projectGrid')";name="test6" style="">Info</md-button>`;
 
         titleElem.append(this.compileTemplate(test1));
@@ -261,7 +261,7 @@ export class TableLoader {
     
     setSpatialGridSIP(results) {
         let mapApi = this.mapApi;
-        let tabElement = document.getElementById('surveyTab')
+        let tabElement = document.getElementById('projectTab')
         
         if (results.length >= 1000) {
             tabElement.innerHTML = tabElement.innerText + ' (1000+) '
@@ -269,7 +269,7 @@ export class TableLoader {
             tabElement.innerHTML = tabElement.innerText + ' (' + results.length + ')';
         }
 
-        let isValidDiv = this.validateDiv("survey");
+        let isValidDiv = this.validateDiv("project");
         
         if (!isValidDiv) {
             this.changeBody();
@@ -335,7 +335,7 @@ export class TableLoader {
             return eDiv
         }
 
-        const GRID = new Grid(this.getGridDiv("survey"), gridOptions);
+        const GRID = new Grid(this.getGridDiv("project"), gridOptions);
     }
     
     setSpatialGridPlan(results) {
@@ -582,7 +582,7 @@ export class TableLoader {
         
     setSpatialGridAdminArea(results) {
         let mapApi = this.mapApi;
-        let tabElement = document.getElementById('adminTab')
+        let tabElement = document.getElementById('reserveTab')
         
         if (results.length >= 1000) {
             tabElement.innerHTML = tabElement.innerText + ' (1000+) '
@@ -590,7 +590,7 @@ export class TableLoader {
             tabElement.innerHTML = tabElement.innerText + ' (' + results.length + ')';
         }
 
-        let isValidDiv = this.validateDiv("admin");
+        let isValidDiv = this.validateDiv("reserve");
         
         if (!isValidDiv) {
             this.changeBody();
@@ -647,7 +647,7 @@ export class TableLoader {
             return eDiv;
         }
     
-        const GRID = new Grid(this.getGridDiv('admin'), gridOptions);
+        const GRID = new Grid(this.getGridDiv('reserve'), gridOptions);
     }
 
     setFieldInfo(value) {
@@ -681,7 +681,7 @@ export class TableLoader {
                 columnDefs.push(fieldInfo['remainder']);
                 columnDefs.push(fieldInfo['parceltype']);
                 break;
-            case 'survey':
+            case 'project':
                 columnDefs.push(fieldInfo['projectnumber']);
                 columnDefs.push(fieldInfo['description']);
                 columnDefs.push(fieldInfo['projectdetail']);
@@ -764,7 +764,7 @@ export class TableLoader {
             }
         })
 
-        if (type == 'admin') {
+        if (type == 'reserve') {
             results.forEach(function(result) {
 
                 gridOptions.rowData.push({
@@ -804,7 +804,7 @@ export class TableLoader {
                 return eDiv;
             }
         }
-        else if (type=='survey') {
+        else if (type=='project') {
 
             results.forEach(function(result) {
                 gridOptions.rowData.push({
@@ -812,12 +812,13 @@ export class TableLoader {
                     description: result.attributes['DESCRIPTION'],
                     projectdetail: 'View',
                     globalid: result.attributes['GlobalID'],
-                    province:result.attributes['PROVINCE']
+                    province: result.attributes['PROVINCE'],
+                    urlUse: result.attributes['URL']
                 })
             })
             gridOptions.columnDefs[2].cellRenderer = function(params) {
                 let eDiv = document.createElement('div');
-                eDiv.innerHTML= '<span class="my-css-class"><a href="' + 'https://clss.nrcan-rncan.gc.ca/plan-fra.php?id=' + params.data.projectnumber.replace(/\s/g, '%20') + '"target=_blank>' + params.value + '</a></span>';
+                eDiv.innerHTML= '<span class="my-css-class"><a href="' + 'https://clss.nrcan-rncan.gc.ca/project-projet/detail?id=' + params.data.urlUse + '"target=_blank>' + params.value + '</a></span>';
                 return eDiv
             }
         }

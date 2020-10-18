@@ -81,8 +81,20 @@ export class PanelManager {
                         $scope.user.type = "";
                         this.user = $scope.user;
                         $scope.user.type = oid;
+                        $scope.user.option = oid;
                         let loadingPanel = new TableLoader(mapApi, 'TEST');
-                        const query = new MakeQuery(mapApi, configLang, $scope.user, loadingPanel);
+                        loadingPanel.prepareHeader(mapApi);
+                        loadingPanel.prepareBody();
+                        //const query = new MakeQuery(mapApi, configLang, $scope.user, loadingPanel);
+
+                        if ($scope.user.option == 'plan') {
+                            $scope.user.other = 'parcel';
+                            const queryPlan = new MakeQuery(mapApi, configLang, $scope.user, loadingPanel);
+                        }
+                        else {
+                            $scope.user.other = '';
+                            const query = new MakeQuery(mapApi, configLang, $scope.user, loadingPanel);
+                        }
                     }
                 }
             }

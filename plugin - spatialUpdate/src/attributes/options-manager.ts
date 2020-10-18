@@ -232,7 +232,7 @@ export class OptionsManager {
                     resultsGrid.remove();
                 }
             }
-            
+
             this.launchSearchAction = function(oid:string) {
                 if ($scope.user) {
                     if (Object.keys($scope.user).length!=0) {
@@ -244,7 +244,14 @@ export class OptionsManager {
                         this.loadingPanel.prepareHeader(mapApi);
                         this.loadingPanel.prepareBody();
 
-                        const query = new MakeQuery(mapApi, language, $scope.user, this.loadingPanel);
+                        if ($scope.user.option == 'plan') {
+                            $scope.user.other = 'parcel';
+                            const queryPlan = new MakeQuery(mapApi, language, $scope.user, this.loadingPanel);
+                        }
+                        else {
+                            $scope.user.other = '';
+                            const query = new MakeQuery(mapApi, language, $scope.user, this.loadingPanel);
+                        }
                     }
                 }
             }
