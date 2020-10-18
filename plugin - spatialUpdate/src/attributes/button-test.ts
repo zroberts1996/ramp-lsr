@@ -29,6 +29,25 @@ export class ZoomToElement {
         }
     };
 
+    zoomToExtent(extent) {
+        const esriBundle = this._esriBundle;
+        const mapApi = this.mapApi;
+
+        let hiddenMapPartTopLeft = mapApi.esriMap.toMap(new esriBundle.ScreenPoint(0, 0));//,
+            //hiddenMapPartBottomRight = mapApi.esriMap.toMap(new esriBundle.ScreenPoint(panel.position.width, mapApi.esriMap.container.offsetHeight));
+      
+        let dx = new esriBundle.Extent({
+          xmin: hiddenMapPartTopLeft.x,
+          //ymin: hiddenMapPartBottomRight.y,
+          //xmax: hiddenMapPartBottomRight.x,
+          ymax: hiddenMapPartTopLeft.y,
+          spatialReference: mapApi.esriMap.spatialReference
+        }).getWidth();
+      
+        extent = extent.offset(-dx, 0);
+        mapApi.esriMap.setExtent(extent);
+      }
+
     zoomFeature() {
         const esriBundle = this._esriBundle;
         const mapApi = this.mapApi;
@@ -41,6 +60,16 @@ export class ZoomToElement {
                       
                 if (curfeaturegeom.type == "polygon" || curfeaturegeom.type == "extent") {
                     let ext = new esriBundle.Extent(curfeature.geometry.getExtent().xmin, curfeature.geometry.getExtent().ymin, curfeature.geometry.getExtent().xmax, curfeature.geometry.getExtent().ymax, new esriBundle.SpatialReference({ wkid: 3978 }));
+                    
+                    //this.zoomToExtent(ext);
+                    /*let dx = new esriBundle.Extent({
+                        xmin: hiddenMapPartTopLeft.x,
+                        ymin: hiddenMapPartBottomRight.y,
+                        xmax: hiddenMapPartBottomRight.x,
+                        ymax: hiddenMapPartTopLeft.y,
+                        spatialReference: map.spatialReference
+                      }).getWidth();*/
+
                     mapApi.esriMap.setExtent(ext, true);
                 }
                 else if ((curfeaturegeom.type == "point" || curfeaturegeom.type == "multipoint")

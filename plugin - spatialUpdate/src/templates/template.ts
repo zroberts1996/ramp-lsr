@@ -167,8 +167,8 @@ export const SEARCH_TEMPLATE = ` 
                 </md-select>
             </md-input-container>
             <md-input-container class="md-container" style="width:40%; padding=2px; margin:0px; font-size: 14px">
-                <md-select ng-model="user.type" id=selectType  placeholder="Type">
-                    <md-option ng-repeat="type in ctrl.types" value="{{type[1]}}" ng-click="ctrl.setSelectedType(type[1])">{{type[0]}}</md-option>
+                <md-select ng-model="user.option" id=selectOption  placeholder="Type">
+                    <md-option ng-repeat="option in ctrl.options" value="{{option[0]}}" ng-click="ctrl.setSelectedType(option[0])">{{option[1]}}</md-option>
                 </md-select>
             </md-input-container>
         </div>

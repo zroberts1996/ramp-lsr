@@ -1,4 +1,6 @@
 import { SEARCH_TEMPLATE, PROVINCE, TYPE } from '../templates/template';
+import { PROVINCE_NAME, SEARCH_OPTIONS } from '../templates/constants';
+import { TableLoader } from './table-loader';
 import { MakeQuery } from './layer-query';
 import * as adminData from '../resources/admin_area.json'
 import { queue } from 'rxjs/internal/scheduler/queue';
@@ -190,9 +192,9 @@ export class OptionsManager {
         let mapApi = this._mapApi;        
 
         this._mapApi.agControllerRegister('SearchPanel',  ['$scope', function($scope) {
-            this.provinces = Object.keys(PROVINCE[language]);
+            this.provinces = Object.keys(PROVINCE_NAME[language]);
 
-            this.types = TYPE[language];
+            this.options = SEARCH_OPTIONS[language];
 
             this.isDisabled = true;
 
@@ -227,16 +229,22 @@ export class OptionsManager {
 
                 let resultsGrid =  <HTMLElement>document.getElementById("resultsPanel");
                 if (resultsGrid) {
-                    resultsGrid.remove()
+                    resultsGrid.remove();
                 }
             }
+            
             this.launchSearchAction = function(oid:string) {
                 if ($scope.user) {
                     if (Object.keys($scope.user).length!=0) {
                         $scope.user.type = "";
-                        this.user = $scope.user
-                        $scope.user.type = oid
-                        new MakeQuery(mapApi, language, $scope.user)
+                        this.user = $scope.user;
+                        $scope.user.type = oid;
+                        
+                        this.loadingPanel = new TableLoader(mapApi, 'Test');
+                        this.loadingPanel.prepareHeader(mapApi);
+                        this.loadingPanel.prepareBody();
+
+                        const query = new MakeQuery(mapApi, language, $scope.user, this.loadingPanel);
                     }
                 }
             }

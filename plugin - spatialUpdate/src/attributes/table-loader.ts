@@ -34,15 +34,13 @@ export class TableLoader {
     createPanel(panelID) {
         this.panelId = panelID;
         this.panel = this.mapApi.panels.create(panelID);
-        this.panel.element.css({top: '50%', left: '20%', right: '52px', bottom: '30px'});  //
+        this.panel.element.css({top: '55%', left: '410px', bottom: '0', right: '45px',});  // left: '410px', bottom: '32px
         this.panel.element.addClass('ag-theme-material mobile-fullscreen tablet-fullscreen');
         this.panel.allowUnderlay = true;
         this.panel.allowOffscreen = true;
 
         this.panel.closing.subscribe(this.onHideResultPanel.bind(this));
-        
-        this.prepareHeader(this.mapApi);
-        this.prepareBody();
+
         this.open()
     }
 
@@ -65,7 +63,7 @@ export class TableLoader {
         headerElem.getElementsByClassName("tagline")[0].remove();
         headerElem.getElementsByClassName("md-title")[0].remove();
 
-        this.mapApi.agControllerRegister('MenuPanel2', ['$scope','$mdSidenav', function($scope ,$mdSidenav) {
+        /*this.mapApi.agControllerRegister('MenuPanel2', ['$scope','$mdSidenav', function($scope ,$mdSidenav) {
             
             $scope.openSideMenu = buildToggler('sideMenu');
 
@@ -74,8 +72,8 @@ export class TableLoader {
                     $mdSidenav(componentId).toggle();
                 }
             }
-        }])
-        titleElem.append(this.compileTemplate(MENU_BUTTON_RESULT));
+        }])*/
+        //titleElem.append(this.compileTemplate(MENU_BUTTON_RESULT));
 
         this.mapApi.agControllerRegister('TabController', ['$scope', function($scope) {
             
@@ -93,7 +91,6 @@ export class TableLoader {
                 tabContent.className += ' active';
                 tabContent.style.display = "block";
             }
-
         }])
 
         const test1 = `<md-button id='parcelTab' ng-controller="TabController as ctrl"; ng-click="openSelectedTab('parcel')"; name="test1" style="">Parcel</md-button>`
@@ -108,7 +105,6 @@ export class TableLoader {
         titleElem.append(this.compileTemplate(test3));
         titleElem.append(this.compileTemplate(test4));
         titleElem.append(this.compileTemplate(test5));
-        //titleElem.append(this.compileTemplate(test6));
 
         this.panel.element.addClass('draggable');
         const draggable = new Draggabilly(this.panel.element.get(0), {handle: '.rv-header'});
@@ -132,15 +128,17 @@ export class TableLoader {
         }
     }; 
 
+    changeBody() {
+        this.panel.body = this.compileTemplate(GRID_TEMPLATE)
+    }
+
     prepareBody() {
         let template = TABLE_LOADING_TEMPLATE2(this.legendBlock);
         this.panel.body = template;
-        this.panel.body = this.compileTemplate(GRID_TEMPLATE);
     }
 
     setSpatialGrid(results) {
         let mapApi = this.mapApi;
-        //this.panel.body = this.compileTemplate(GRID_TEMPLATE);
         let tabElement = document.getElementById('parcelTab')
         
         if (results.length >= 1000) {
@@ -148,15 +146,20 @@ export class TableLoader {
         } else {
             tabElement.innerHTML = tabElement.innerText + ' (' + results.length + ')';
         }
-        let gridDiv = <HTMLElement>document.querySelector('#parcel')
+
+        let isValidDiv = this.validateDiv("parcel");
+        
+        if (!isValidDiv) {
+            this.changeBody();
+        }
 
         let gridOptions = {
             columnDefs: [
-                {headerName: 'Plan Designator', field:'parcelDesignator', headerTooltip: 'Plan Designator', cellRenderer: function(cell){return cell.value}},
+                {headerName: 'Designator', field:'parcelDesignator', headerTooltip: 'Parcel Designator', cellRenderer: function(cell){return cell.value}},
                 {headerName: 'Plan Number', field:'planNumber', headerTooltip: 'Plan Number'},
-                {headerName: 'Plan Detail', field:'planDetail', headerTooltip: 'Plan Detail'},
+                {headerName: 'Detail', field:'planDetail', headerTooltip: 'Plan Detail'},
                 {headerName: 'Remainder', field:'remainder', headerTooltip: 'Remainder'},
-                {headerName: 'Parcel Type', field:'parceltype', headerTooltip: 'Parcel Type'},
+                {headerName: 'Type', field:'parceltype', headerTooltip: 'Parcel Type'},
             ],
 
             rowData: [],
@@ -172,7 +175,6 @@ export class TableLoader {
             //pagination: true,
             enableColResize: true,
             enableSorting: true,
-
         };
         
         results.forEach(function(result) {
@@ -194,7 +196,6 @@ export class TableLoader {
             eDiv.innerHTML= '<span class="my-css-class"><a href="' + 'https://clss.nrcan-rncan.gc.ca/plan-fra.php?id=' + params.data.planNumber.replace(/\s/g, '%20') + '"target=_blank>' + params.value + '</a></span>';
             return eDiv
         }
-
 
         gridOptions.columnDefs[0].cellRenderer = function(params) {
             
@@ -218,7 +219,6 @@ export class TableLoader {
             return eDiv;
         }
 
-
         gridOptions.columnDefs[1].cellRenderer = function(params) {
             
             var eDiv = document.createElement('div');
@@ -241,7 +241,22 @@ export class TableLoader {
             return eDiv;
         }
 
-        new Grid(gridDiv, gridOptions);
+        const GRID = new Grid(this.getGridDiv('parcel'), gridOptions);
+    }
+
+    validateDiv(gridID) {
+        let div = <HTMLElement>document.querySelector('#' + gridID);
+
+        if (div == null) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
+    getGridDiv(gridID) {
+        return <HTMLElement>document.querySelector('#' + gridID);
     }
     
     setSpatialGridSIP(results) {
@@ -254,15 +269,17 @@ export class TableLoader {
             tabElement.innerHTML = tabElement.innerText + ' (' + results.length + ')';
         }
 
-        let gridDiv = <HTMLElement>document.querySelector('#survey')
+        let isValidDiv = this.validateDiv("survey");
+        
+        if (!isValidDiv) {
+            this.changeBody();
+        }
 
         let gridOptions = {
             columnDefs: [
                 {headerName: 'Project Number', field:'projectNumber', headerTooltip: 'Project Number', cellRenderer: function(cell){return cell.value}},
                 {headerName: 'Description', field:'description', headerTooltip: 'Description'},
-                //{headerName: 'Global ID', field:'globalID', headerTooltip: 'Global ID'},
-                {headerName: 'Project Detail', field:'detail', headerTooltip: 'Project Detail'},
-                //{headerName: 'Province', field:'province', headerTooltip: 'Province'},
+                {headerName: 'Detail', field:'detail', headerTooltip: 'Project Detail'},
             ],
 
             rowData: [],
@@ -315,94 +332,11 @@ export class TableLoader {
         gridOptions.columnDefs[2].cellRenderer = function(params) {
             let eDiv = document.createElement('div');
             eDiv.innerHTML= '<span class="my-css-class"><a href="' + 'https://clss.nrcan-rncan.gc.ca/project-projet/detail?id=' + params.data.urlUse + '"target=_blank>' + params.value + '</a></span>';
-            
-            //https://clss.nrcan-rncan.gc.ca/satc/project-projet/detail?id=45146
-            //https://clss.nrcan-rncan.gc.ca/clss/project-projet/detail?id=45146
             return eDiv
         }
 
-        new Grid(gridDiv, gridOptions);
+        const GRID = new Grid(this.getGridDiv("survey"), gridOptions);
     }
-    /*
-    setSpatialGridSIP2(results) {
-        let mapApi = this.mapApi;
-        //this.panel.body = this.compileTemplate(GRID_TEMPLATE);
-        let tabElement = document.getElementById('surveyTab')
-        
-        if (results.length >= 1000) {
-            tabElement.innerHTML = tabElement.innerText + ' (1000+) '
-        } else {
-            tabElement.innerHTML = tabElement.innerText + ' (' + results.length + ')';
-        }
-
-        let gridDiv = <HTMLElement>document.querySelector('#survey')
-
-        let gridOptions = {
-            columnDefs: [
-                {headerName: 'Project Number', field:'projectNumber', headerTooltip: 'Project Number', cellRenderer: function(cell){return cell.value}},
-                {headerName: 'Description', field:'description', headerTooltip: 'Description'},
-                //{headerName: 'Global ID', field:'globalID', headerTooltip: 'Global ID'},
-                {headerName: 'Project Detail', field:'url', headerTooltip: 'Project Detail'},
-                //{headerName: 'Province', field:'province', headerTooltip: 'Province'},
-            ],
-
-            rowData: [],
-
-            onGridReady: function(params) {
-                params.api.sizeColumnsToFit();
-            },
-
-            rowStyle: {
-                background: 'white'
-            },
-
-            //pagination: true,
-            enableColResize: true,
-            enableSorting: true,
-        };
-        
-        results.forEach(function(result) {
-            gridOptions.rowData.push({
-                projectNumber: result.attributes['PROJECTNUMBER'], 
-                description: result.attributes['DESCRIPTION'],
-                globalid: result.attributes['GlobalID'],
-                urlUse: result.attributes['URL'],
-                url: 'View',
-                province: result.attributes['PROVINCE'],
-
-           })
-        })
-
-        gridOptions.columnDefs[2].cellRenderer = function(params) {
-            let eDiv = document.createElement('div');
-            eDiv.innerHTML= '<span class="my-css-class"><a href="' + 'https://clss.nrcan-rncan.gc.ca/project-projet/detail?id=' + params.data.urlUse.replace(/\s/g, '%20') + '"target=_blank>' + params.value + '</a></span>';
-            return eDiv
-        }
-
-        gridOptions.columnDefs[0].cellRenderer = function(params) {
-            
-            var eDiv = document.createElement('div');
-            
-            eDiv.onmouseover=function() {
-                let delay = setTimeout(function() {
-                    new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'mouseover');
-                }, 500);
-                eDiv.onmouseout = function() {clearTimeout(delay);};
-            };
-            eDiv.addEventListener('click', function() {
-                new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'click')
-            });
-            eDiv.addEventListener('mouseout', function() {
-                mapApi.esriMap.graphics.clear();
-            });
-            
-            eDiv.innerHTML = '<span class="my-css-class" style="cursor:pointer"><a href="#">' + params.value + '</a></span>';
-            
-            return eDiv;
-        }
-
-        new Grid(gridDiv, gridOptions);
-    }*/
     
     setSpatialGridPlan(results) {
         let mapApi = this.mapApi;
@@ -429,7 +363,7 @@ export class TableLoader {
                     },
                 },
                 {headerName: 'Description', field:'description', headerTooltip: 'Description', width: 300, },
-                {headerName: 'Date of Survey', field:'dateSurvey', headerTooltip: 'Date of Survey',  width: 150},
+                {headerName: 'Date', field:'dateSurvey', headerTooltip: 'Date of Survey',  width: 150},
                 {headerName: 'Detail', field:'planDetail', headerTooltip: 'Detail', width: 100},
                 {headerName: 'LTO', field:'lto', headerTooltip: 'List of survey document (plan) results from the attributes and map searches'},
             ],
@@ -451,8 +385,6 @@ export class TableLoader {
                     
             enableColResize: true,
             enableSorting: true,
-        
-            //allowContextMenuWithControlKey: true,
         }
         
         results.forEach(function(result) {
@@ -475,15 +407,13 @@ export class TableLoader {
             eDiv.onmouseover=function() {
                 let delay = setTimeout(function() {
                     new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'mouseover');
-                    console.log('a')
                 }, 500);
                 eDiv.onmouseout = function() {clearTimeout(delay);
                 };
             };
                     
             eDiv.innerHTML = '<span class="my-css-class" style="cursor:pointer"><a href="#">' + params.value + '</a></span>';
-            //eDiv.innerHTML = '<span class="my-css-class"><button class="btn-simple">Push Me</button></span>';
-            //var eButton = eDiv.querySelectorAll('.btn-simple')[0];
+
             eDiv.addEventListener('click', function() {
                 new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'click')
             });
@@ -498,17 +428,19 @@ export class TableLoader {
             eDiv.innerHTML= '<span class="my-css-class"><a href="' + 'https://clss.nrcan-rncan.gc.ca/plan-fra.php?id=' + params.data.planNumber.replace(/\s/g, '%20') + '"target=_blank>' + params.value + '</a></span>';
             return eDiv
         }
+
+        let isValidDiv = this.validateDiv("plan");
         
-        let gridDiv = <HTMLElement>document.querySelector('#plan')
-        //let gridDiv1 = <HTMLElement>document.querySelector('#admin')
-        
-        new Grid(gridDiv, gridOptions);
-        //new Grid(gridDiv1, gridOptions);
+        if (!isValidDiv) {
+            this.changeBody();
+        }
+
+        const GRID = new Grid(this.getGridDiv('plan'), gridOptions);
     }
 
     setSpatialGridTown(results) {
         let mapApi = this.mapApi;
-        //this.panel.body = this.compileTemplate(GRID_TEMPLATE);
+
         let tabElement = document.getElementById('townTab')
 
         if (results.length >= 1000) {
@@ -517,7 +449,12 @@ export class TableLoader {
             tabElement.innerHTML = tabElement.innerText + ' (' + results.length + ')';
         }
 
-        let gridDiv = <HTMLElement>document.querySelector('#town')
+        let isValidDiv = this.validateDiv("town");
+        
+        if (!isValidDiv) {
+            this.changeBody();
+        }
+
         let gridOptions = {
             columnDefs: [
                 {headerName: 'Section', field:'townshipSection', headerTooltip: 'Section', cellRenderer: function(cell){return cell.value}},
@@ -544,6 +481,7 @@ export class TableLoader {
             enableColResize: true,
             enableSorting: true,
         };
+
         results.forEach(function(result) {
             gridOptions.rowData.push({
                 townshipSection: result.attributes['TOWNSHIPSECTION'], 
@@ -559,12 +497,10 @@ export class TableLoader {
         })
 
         gridOptions.columnDefs[0].cellRenderer = function(params) {
-            
             var eDiv = document.createElement('div');
             eDiv.onmouseover=function() {
                 let delay = setTimeout(function() {
                     new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'mouseover');
-                    console.log('a')
                 }, 500);
                 eDiv.onmouseout = function() {clearTimeout(delay);
                 };
@@ -581,12 +517,10 @@ export class TableLoader {
         }
 
         gridOptions.columnDefs[1].cellRenderer = function(params) {
-            
             var eDiv = document.createElement('div');
             eDiv.onmouseover=function() {
                 let delay = setTimeout(function() {
                     new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'mouseover');
-                    console.log('a')
                 }, 500);
                 eDiv.onmouseout = function() {clearTimeout(delay);
                 };
@@ -603,12 +537,10 @@ export class TableLoader {
         }
 
         gridOptions.columnDefs[2].cellRenderer = function(params) {
-            
             var eDiv = document.createElement('div');
             eDiv.onmouseover=function() {
                 let delay = setTimeout(function() {
                     new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'mouseover');
-                    console.log('a')
                 }, 500);
                 eDiv.onmouseout = function() {clearTimeout(delay);
                 };
@@ -630,7 +562,6 @@ export class TableLoader {
             eDiv.onmouseover=function() {
                 let delay = setTimeout(function() {
                     new ZoomToElement(mapApi, params.data.globalid, params.data.province, 'mouseover');
-                    console.log('a')
                 }, 500);
                 eDiv.onmouseout = function() {clearTimeout(delay);
                 };
@@ -645,12 +576,12 @@ export class TableLoader {
             });
             return eDiv;
         }
-        new Grid(gridDiv, gridOptions);
+        
+        const GRID = new Grid(this.getGridDiv('town'), gridOptions);
     }
         
     setSpatialGridAdminArea(results) {
         let mapApi = this.mapApi;
-        //this.panel.body = this.compileTemplate(GRID_TEMPLATE);
         let tabElement = document.getElementById('adminTab')
         
         if (results.length >= 1000) {
@@ -658,12 +589,19 @@ export class TableLoader {
         } else {
             tabElement.innerHTML = tabElement.innerText + ' (' + results.length + ')';
         }
-        let gridDiv = <HTMLElement>document.querySelector('#admin')
+
+        let isValidDiv = this.validateDiv("admin");
+        
+        if (!isValidDiv) {
+            this.changeBody();
+        }
+
         let gridOptions = {
             columnDefs: [
                 {headerName: 'Name', field:'name', headerTooltip: 'name', cellRenderer: function(cell){return cell.value}},
-                // {headerName: 'Province', field:'province', headerTooltip: 'Province'},
-                 // {headerName: 'Global ID', field:'globalID', headerTooltip: 'Global ID'},
+                {headerName: 'Description', field:'description', headerTooltip: 'Description'},
+                {headerName: 'Province', field:'province', headerTooltip: 'Province'},
+                //{headerName: 'Global ID', field:'globalID', headerTooltip: 'Global ID'},
             ],
         
             rowData: [],
@@ -683,8 +621,9 @@ export class TableLoader {
         results.forEach(function(result) {
             gridOptions.rowData.push({
                 name: result.attributes['ENGLISHNAME'], 
-                province: result.attributes['PROVINCE'],
+                province: result.attributes['PROVINCE'].substr(0,2),
                 globalid: result.attributes['GlobalID'],
+                description: result.attributes['ADMINAREAID'],
             })
         })
         
@@ -708,27 +647,27 @@ export class TableLoader {
             return eDiv;
         }
     
-        new Grid(gridDiv, gridOptions);
+        const GRID = new Grid(this.getGridDiv('admin'), gridOptions);
     }
 
     setFieldInfo(value) {
 
         let fieldInfo = {
             additionalinfo: {headerName: "Additional Info", field: "additionalinfo", headerToolTip: "Additional Info"},
-            dateofsurvey: {headerName: "Date of Survey", field: "dateSurvey",headerToolTip: "Date of Survey"},
-            description: {headerName: "Description", field: "description", headerToolTip: "Description"},
+            dateofsurvey: {headerName: "Date", field: "dateSurvey", headerToolTip: "Date of Survey", width:117},
+            description: {headerName: "Description", field: "description", headerToolTip: "Description", width:151},
             lto: {headerName: "LTO", field: "lto", headerToolTip: "LTO"},
             meridian: {headerName: "Meridian", field: "meridian", headerToolTip: "Meridian"},
-            name: {headerName: "Name", field: "name", headerToolTip: "Name"},
-            parceldesignator: { headerName: "Parcel Designator", field: "parceldesignator", headerToolTip: "Parcel Designator"},
-            parceltype: {headerName: "Parcel Type", field: "parceltype", headerToolTip: "Parcel Type"},
-            plandetail: { headerName: "Plan Detail", field: "planDetail", headerToolTip: "Plan Detail"},
-            plannumber: {headerName: "Plan Number", field: "planNumber", headerToolTip: "Plan Number", cellRenderer: function (cell) {return cell.value}},
-            projectdetail: {headerName: "Project Detail", field: "projectdetail", headerToolTip: "Project Detail"},
-            projectnumber: {headerName: "Project Number", field: "projectnumber", headerToolTip: "Project Number"},
+            name: {headerName: "Name", field: "name", headerToolTip: "Name", width:316},
+            parceldesignator: { headerName: "Designator", field: "parceldesignator", headerToolTip: "Parcel Designator"},
+            parceltype: {headerName: "Type", field: "parceltype", headerToolTip: "Parcel Type"},
+            plandetail: { headerName: "Detail", field: "planDetail", headerToolTip: "Plan Detail", width:100},
+            plannumber: {headerName: "Plan Number", field: "planNumber", headerToolTip: "Plan Number", width:155}, //cellRenderer: function (cell) {return cell.value}
+            projectdetail: {headerName: "Detail", field: "projectdetail", headerToolTip: "Project Detail", width:100},
+            projectnumber: {headerName: "Project Number", field: "projectnumber", headerToolTip: "Project Number", width:158},
             province: {headerName: "Province", field: "province", headerToolTip: "Province"},
             range: { headerName: "Range", field: "range", headerToolTip: "Range"},
-            remainder: { headerName: "Remainder", field: "remainder", headerToolTip: "Remainder"},
+            remainder: { headerName: "Remainder", field: "remainder", headerToolTip: "Remainder", width:138},
             section: { headerName: "Section", field: "section", headerToolTip: "Section"},
             township: { headerName: "Township", field: "township", headerToolTip: "Township"}
         };
@@ -779,20 +718,24 @@ export class TableLoader {
         let tabElement = document.getElementById(type[0] + 'Tab')
         
         if (results.length >= 1000) {
-            tabElement.innerHTML = tabElement.innerText + ' (1000+) '
+            tabElement.innerHTML += ' (1000+) '
         } else {
-            tabElement.innerHTML = tabElement.innerText + ' (' + results.length + ')';
+            tabElement.innerHTML += ' (' + results.length + ')';
         }
+        //let gridDiv = <HTMLElement>document.querySelector('#' + type[0])
 
-        let gridDiv = <HTMLElement>document.querySelector('#' + type[0])
+        let isValidDiv = this.validateDiv(type[0]);
+        
+        if (!isValidDiv) {
+            this.changeBody();
+        }
         
         let gridOptions = {
             columnDefs: [],
-            rowSelection: 'multiple',
             rowData:[],
-            onGridReady: function(params) {
-                params.api.sizeColumnsToFit();
-            },
+            //onGridReady: function(params) {
+            //    params.api.sizeColumnsToFit();
+            //},
             rowStyle: {
                 background: 'white'
             },
@@ -808,13 +751,15 @@ export class TableLoader {
                     headerName: elem.headerName,
                     field: elem.field,
                     headerTooltip:elem.headerToolTip,
-                    cellRenderer: elem.cellRenderer
+                    cellRenderer: elem.cellRenderer,
+                    width: elem.width,
                 });
             } else {
                 gridOptions.columnDefs.push({
                     headerName: elem.headerName,
                     field: elem.field,
                     headerTooltip:elem.headerToolTip,
+                    width: elem.width,
                 });
             }
         })
@@ -848,8 +793,15 @@ export class TableLoader {
             })
             gridOptions.columnDefs[3].cellRenderer = function(params) {
                 let eDiv = document.createElement('div');
+                //let eDiv1 = document.createElement('button');
+                //eDiv1.innerHTML = '<md-icon class="ng-scope material-icons" role="img" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" fit="" height="100%" width="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24" focusable="false"><g id="drawiconhelp" ng-init="control.createIcon()"><path id="pathhelp" d="M19 5v14H5V5h14m1.1-2H3.9c-.5 0-.9.4-.9.9v16.2c0 .4.4.9.9.9h16.2c.4 0 .9-.5.9-.9V3.9c0-.5-.5-.9-.9-.9zM11 7h6v2h-6V7zm0 4h6v2h-6v-2zm0 4h6v2h-6zM7 7h2v2H7zm0 4h2v2H7zm0 4h2v2H7z"></path></g></svg></md-icon>';
+                //<button style="margin-bottom: 20px" class="md-icon-button black md-button ng-scope md-ink-ripple" type="button" aria-label="CLSS Search" ng-click="ctrl.launchSearchAction(user.type)">
+                //    <md-tooltip md-direction="bottom">Find</md-tooltip>
+                //    <md-icon md-svg-src="action:search" class="ng-scope" role="img" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" fit="" height="100%" width="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24" focusable="false"><g id="search"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></g></svg></md-icon>
+                //</button>
+                
                 eDiv.innerHTML= '<span class="my-css-class"><a href="' + 'https://clss.nrcan-rncan.gc.ca/plan-fra.php?id=' + params.data.planNumber.replace(/\s/g, '%20') + '"target=_blank>' + params.value + '</a></span>';
-                return eDiv
+                return eDiv;
             }
         }
         else if (type=='survey') {
@@ -919,7 +871,6 @@ export class TableLoader {
                 eDiv.onmouseout = function() {clearTimeout(delay);
                 };
             };
-            
 
             eDiv.innerHTML = '<span class="my-css-class" style="cursor:pointer"><a href="#">' + params.value + '</a></span>';
 
@@ -931,13 +882,8 @@ export class TableLoader {
             });
             return eDiv;
         }
-        
 
-        //let gridDiv = '<div id ="planGrid" class="hidden" style="height: 100%;"></div>';
-        //this.panel.body = this.compileTemplate(gridDiv);
-        //let gridDivHtml = <HTMLElement>document.querySelector('#planGrid')
-
-        new Grid(gridDiv, gridOptions);
+        const GRID = new Grid(this.getGridDiv(type[0]), gridOptions);
     }
 
     compileTemplate(template): JQuery<HTMLElement> {

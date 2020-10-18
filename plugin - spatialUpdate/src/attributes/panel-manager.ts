@@ -1,5 +1,7 @@
 import { SEARCH_PLAN_TEMPLATE, PROTECTED_AREA_TEMPLATE, COMMUNITY_TEMPLATE, SURVEY_PROGRESS_TEMPLATE, PARCEL_TEMPLATE, PROVINCE, MENU_BUTTON } from '../templates/template';
 import { MakeQuery } from './layer-query';
+import { TableLoader } from './table-loader';
+
 import * as data from '../resources/admin_area.json'
 import { _ } from 'ag-grid-community';
 const ADMIN_DATA = data
@@ -77,9 +79,10 @@ export class PanelManager {
                 if ($scope.user) {
                     if (Object.keys($scope.user).length!=0) {
                         $scope.user.type = "";
-                        this.user = $scope.user
-                        $scope.user.type = oid
-                        new MakeQuery(mapApi, configLang, $scope.user)
+                        this.user = $scope.user;
+                        $scope.user.type = oid;
+                        let loadingPanel = new TableLoader(mapApi, 'TEST');
+                        const query = new MakeQuery(mapApi, configLang, $scope.user, loadingPanel);
                     }
                 }
             }

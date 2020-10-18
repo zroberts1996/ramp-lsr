@@ -5,10 +5,9 @@ import { GRID_TEMPLATE } from '../templates/template';
 import { Grid } from 'ag-grid-community';
 import { GridApi } from "ag-grid-community";
 import { map } from 'rxjs/operators';
-//import { TableLoader } from './draw-grid'
 import { TableLoader } from '../attributes/table-loader';
-const Draggabilly = require('draggabilly');
 
+const Draggabilly = require('draggabilly');
 
 // create observable so plugin user can subscribe to plugin events like for the viewer api
 import { Subject } from 'rxjs';
@@ -526,53 +525,43 @@ export class DrawToolbar {
 
     createTable(panel) {
         return function(queryResults) {  
-            const columns = ['Parcel Designator', 'Plan Number', 'Plan Detail', 'Remainder']
-            //let a = queryResults.features
-            //console.log(a)
-            //panel.makeTable(a)
             panel.setSpatialGrid(queryResults.features);
-            //this.changePanel(a);
         }
 
     }
 
     createTableSIP(panel) {
         return function(queryResults) {  
-            const columns = ['Project Number', 'Description', 'Global ID', 'Url', 'Province']
-            //panel.setSpatialGridSIP2(queryResults.features);
             panel.setSpatialGridSIP(queryResults.features);
-            console.log(queryResults.features)
+            //console.log(queryResults.features)
         }
 
     }
 
     createTablePlan(panel) {
         return function(queryResults) {  
-            const columns = ['Planno', 'P2_Description', 'P3_Date Surveyed', 'Global ID', 'Province', "Surveyor", "Alternate Planno"]
             let a = queryResults.features
             if (a.length >= 1000){
-            alert('Selected polygons exceed 1000. Not all of the selection will be displayed. \n Les polygones sélectionnés dépassent 1 000. Toutes les sélections ne seront pas affichées.')
-             }
+                alert('Selected polygons exceed 1000. Not all of the selection will be displayed. \n Les polygones sélectionnés dépassent 1 000. Toutes les sélections ne seront pas affichées.')
+            }
             panel.setSpatialGridPlan(queryResults.features);
-            console.log(queryResults.features)
+            //console.log(queryResults.features)
         }
 
     }
 
     createTableTownship(panel) {
         return function(queryResults) {  
-            const columns = ['Township Section', 'TP', 'Range', 'Direction', 'Meridian', "Township", "Global ID", 'Province']
             panel.setSpatialGridTown(queryResults.features);
-            console.log(queryResults.features)
+            //console.log(queryResults.features)
         }
 
     }
 
     createTableAdminArea(panel) {
         return function(queryResults) {  
-            const columns = ['English Name', 'Province', 'Global ID']
             panel.setSpatialGridAdminArea(queryResults.features);
-            console.log(queryResults.features)
+            //console.log(queryResults.features)
         }
     }
 
@@ -584,22 +573,15 @@ export class DrawToolbar {
             formattedData:''
         }
 
-        this.loadingPanel = new TableLoader(this._mapApi, legendBlock);
-
         //selects polygons within the extent of drawing tools polygon
         const parcelQuery = new (<any>window).RAMP.GAPI.esriBundle.Query();
-        //const parcelQueryURL = "http://proxyinternet.nrcan.gc.ca/arcgis/rest/services/MB-NC/WMB_Query_CA/MapServer/1";
-        //const parcelQueryURL = "https://proxyinternet.nrcan.gc.ca/arcgis/rest/services/MB-NC/NRCan_SGB_Business_LCC/MapServer/69"
         const parcelQueryURL = "https://proxyinternet.nrcan.gc.ca/arcgis/rest/services/CLSS-SATC/Parcel_Query_Can/MapServer/0"
         const parcelQueryTask = new (<any>window).RAMP.GAPI.esriBundle.QueryTask(parcelQueryURL);
         parcelQuery.geometry = ext;
         parcelQuery.where = this.whereclause;
         parcelQuery.returnGeometry = false;
         parcelQuery.outFields = ["PARCELDESIGNATOR", "PLANNO", "PARCELFC_ENG", "REMAINDERIND_ENG", "GlobalID", "GlobalID_PLA", "PROVINCE"];
-        //parcelQueryTask.execute(parcelQuery, this.createTable(this.panel))
         parcelQueryTask.execute(parcelQuery, this.createTable(this.loadingPanel))
-        //var updatedInput = parcelQueryTask.execute(parcelQuery, this.createTable(this.panel))
-        //console.log(updatedInput[0])
     }
 
     QueryLayerSIP(ext) {
@@ -610,8 +592,6 @@ export class DrawToolbar {
             formattedData:''
         }
 
-        this.loadingPanel = new TableLoader(this._mapApi, legendBlock);
-
         //selects polygons within the extent of drawing tools polygon
         const parcelQuery = new (<any>window).RAMP.GAPI.esriBundle.Query();
         const parcelQueryURL = "https://proxyinternet.nrcan.gc.ca/arcgis/rest/services/CLSS-SATC/Project_Query_Can/MapServer/0"
@@ -621,7 +601,6 @@ export class DrawToolbar {
         parcelQuery.returnGeometry = false;
         parcelQuery.outFields = ["PROJECTNUMBER", "DESCRIPTION", "GlobalID", "URL", "PROVINCE"];
         parcelQueryTask.execute(parcelQuery, this.createTableSIP(this.loadingPanel))
-        
     }
 
     QueryLayerPlan(ext) {
@@ -632,8 +611,6 @@ export class DrawToolbar {
             formattedData:''
         }
 
-        this.loadingPanel = new TableLoader(this._mapApi, legendBlock);
-
         //selects polygons within the extent of drawing tools polygon
         const parcelQuery = new (<any>window).RAMP.GAPI.esriBundle.Query();
         const parcelQueryURL = "https://proxyinternet.nrcan.gc.ca/arcgis/rest/services/CLSS-SATC/Plan_Query_Can/MapServer/0"
@@ -643,7 +620,6 @@ export class DrawToolbar {
         parcelQuery.returnGeometry = false;
         parcelQuery.outFields = ["PLANNO", "P2_DESCRIPTION", "P3_DATESURVEYED", "GlobalID", "PROVINCE", "SURVEYOR", "ALTERNATEPLANNO"];
         parcelQueryTask.execute(parcelQuery, this.createTablePlan(this.loadingPanel))
-        
     }
 
     QueryLayerTownship(ext) {
@@ -654,8 +630,6 @@ export class DrawToolbar {
             formattedData:''
         }
 
-        this.loadingPanel = new TableLoader(this._mapApi, legendBlock);
-
         //selects polygons within the extent of drawing tools polygon
         const parcelQuery = new (<any>window).RAMP.GAPI.esriBundle.Query();
         const parcelQueryURL = "https://proxyinternet.nrcan.gc.ca/arcgis/rest/services/MB-NC/NRCan_SGB_Business_LCC/MapServer/94"
@@ -665,7 +639,6 @@ export class DrawToolbar {
         parcelQuery.returnGeometry = false;
         parcelQuery.outFields = ["TOWNSHIPSECTION", "TP", "RANGE", "DIRECTION", "MERIDIAN", "TOWNSHIP", "GlobalID", "PROVINCE"];
         parcelQueryTask.execute(parcelQuery, this.createTableTownship(this.loadingPanel))
-        
     }
 
     QueryLayerAdminArea(ext) {
@@ -676,8 +649,6 @@ export class DrawToolbar {
             formattedData:''
         }
 
-        this.loadingPanel = new TableLoader(this._mapApi, legendBlock);
-
         //selects polygons within the extent of drawing tools polygon
         const parcelQuery = new (<any>window).RAMP.GAPI.esriBundle.Query();
         const parcelQueryURL = "https://proxyinternet.nrcan.gc.ca/arcgis/rest/services/MB-NC/WMB_Query_CA/MapServer/3"
@@ -685,11 +656,10 @@ export class DrawToolbar {
         parcelQuery.geometry = ext;
         parcelQuery.where = this.whereclause;
         parcelQuery.returnGeometry = false;
-        parcelQuery.outFields = ["ENGLISHNAME", "PROVINCE", "GlobalID"];
+        parcelQuery.outFields = ["ENGLISHNAME", "PROVINCE", "GlobalID", "ADMINAREAID"];
         parcelQueryTask.execute(parcelQuery, this.createTableAdminArea(this.loadingPanel))
         
     }
-
 
     /**
      * Add geometry to map
@@ -735,13 +705,17 @@ export class DrawToolbar {
             case 'extent':
                 // trigger observable
                 (<any>window).drawObs.subsDrawExtent(evt.geometry);
+
+                this.loadingPanel = new TableLoader(this._mapApi, 'Test');
+                this.loadingPanel.prepareHeader(this._mapApi);
+                this.loadingPanel.prepareBody();
+
                 this.QueryLayer(evt.geometry)
                 this.QueryLayerSIP(evt.geometry)
                 this.QueryLayerPlan(evt.geometry)
                 this.QueryLayerTownship(evt.geometry)
                 this.QueryLayerAdminArea(evt.geometry)
                 this.deleteGraphics(evt.geometry)
-
                 this.deleteGraphics(evt.geometry);
                 break;
         }
