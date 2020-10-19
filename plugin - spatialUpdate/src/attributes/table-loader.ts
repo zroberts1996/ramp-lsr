@@ -97,7 +97,7 @@ export class TableLoader {
         const test2 = `<md-button id='projectTab' ng-controller="TabController as ctrl"; ng-click="openSelectedTab('project')"; name="test2" style="">Survey Project</md-button>`
         const test3 = `<md-button id='planTab' ng-controller="TabController as ctrl"; ng-click="openSelectedTab('plan')";name="test3" style="">Survey Plan</md-button>`;
         const test4 = `<md-button id='townTab' ng-controller="TabController as ctrl"; ng-click="openSelectedTab('town')";name="test4" style="">Township</md-button>`;
-        const test5 = `<md-button id='reserveTab' ng-controller="TabController as ctrl"; ng-click="openSelectedTab('reserve')";name="test5" style="padding:0px 6px 0px 20px; margin:0px;">Administrative</md-button>`;
+        const test5 = `<md-button id='adminTab' ng-controller="TabController as ctrl"; ng-click="openSelectedTab('admin')";name="test5" style="padding:0px 6px 0px 20px; margin:0px;">Administrative</md-button>`;
         //const test6 = `<md-button ng-controller="TabController as ctrl"; ng-click="openSelectedTab('projectGrid')";name="test6" style="">Info</md-button>`;
 
         titleElem.append(this.compileTemplate(test1));
@@ -582,7 +582,7 @@ export class TableLoader {
         
     setSpatialGridAdminArea(results) {
         let mapApi = this.mapApi;
-        let tabElement = document.getElementById('reserveTab')
+        let tabElement = document.getElementById('adminTab')
         
         if (results.length >= 1000) {
             tabElement.innerHTML = tabElement.innerText + ' (1000+) '
@@ -590,7 +590,7 @@ export class TableLoader {
             tabElement.innerHTML = tabElement.innerText + ' (' + results.length + ')';
         }
 
-        let isValidDiv = this.validateDiv("reserve");
+        let isValidDiv = this.validateDiv("admin");
         
         if (!isValidDiv) {
             this.changeBody();
@@ -647,7 +647,7 @@ export class TableLoader {
             return eDiv;
         }
     
-        const GRID = new Grid(this.getGridDiv('reserve'), gridOptions);
+        const GRID = new Grid(this.getGridDiv('admin'), gridOptions);
     }
 
     setFieldInfo(value) {
@@ -764,7 +764,7 @@ export class TableLoader {
             }
         })
 
-        if (type == 'reserve') {
+        if (type == 'admin') {
             results.forEach(function(result) {
 
                 gridOptions.rowData.push({

@@ -32,9 +32,12 @@ export class MakeQuery {
         this.result = null;
 
         if (searchInfo.other == 'parcel') {
+            //this._searchInfo.main = 'plan'
             this.setquery(this._searchInfo);
 
             this._searchInfo.type = 'parcel'
+            this._searchInfo.main = 'parcel'
+
             this.setquery(this._searchInfo);
         }
         else {
@@ -70,9 +73,12 @@ export class MakeQuery {
     }
 
     setWhereClause(type, other) {
-        if (type == 'reserve') {
+        if (type == 'reserve' || type == 'community' || type == 'park' || type == 'cree' || type == 'municipal') {
             return "ENGLISHNAME like '%@input%'";
         }
+        //if (type == 'admin') {
+        //    return "ENGLISHNAME like '%@input%'";
+        //}
         else if (type == 'parcel') {
             if (other == 'parcel') {
                 return "planno like '%@input%'" ;
@@ -95,9 +101,16 @@ export class MakeQuery {
         this.fields =  PROXY_FIELDS[info.type];
         this.orderByField = this.fields[0];
 
-        this.clause = this.setWhereClause(info.type, info.other).replace('@input', info.input);
+        this.clause = this.setWhereClause(info.type, info.other).replace('@input', (info.input).toUpperCase());
+
         if (info.reserve) {
-            this.clause += " AND GEOADMINCODE LIKE '%" + info.reserve + "%'";
+            if (info.type == 'plan' || info.type == 'parcel' ) {
+                this.clause += " AND GEOADMINCODE LIKE '%" + info.reserve + "%'";
+            }
+            else {
+                this.clause += " AND ADMINAREAID LIKE '%" + info.reserve + "%'";
+            }
+            
         }
         if (info.band) {
             this.clause += " AND FIRSTNATION like '%" + info.band + "%'";
@@ -110,21 +123,12 @@ export class MakeQuery {
 
         query.where = this.clause;
         query.returnGeometry = false;
-        query.outFields = this.fields
+        query.outFields = this.fields;
         query.orderByFields = [this.orderByField];
-        //let type = [this.queryOptions];
-        
-        queryTask.execute(query, this.createTable(this.loadingPanel, [info.type]));
+        queryTask.execute(query, this.createTable(this.loadingPanel, [info.main]));
     };
 
     /*changeObj = (obj, info) => {
-
-        let input = info.toUpperCase().replace("'", "''");
-        
-        let type = info
-        info.reserve
-        info.province
-
         obj = {
             adminArea: {
                 layer: 3,
@@ -151,16 +155,8 @@ export class MakeQuery {
                 optionClause: " AND GEOADMINCODE LIKE '%" + this._searchInfo.reserve + "%'"
             },
         }
-
-        obj.type.layer
-        obj.type.field
-        obj.type.clause
-        obj.type.optionClause
-
-        return obj.type.field
     }*/
     
-
     /*
     setQueryAdmin() {
         let type = "admin";

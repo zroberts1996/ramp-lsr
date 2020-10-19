@@ -26,6 +26,7 @@ export class OptionsManager {
     private isPanelActive: boolean;
     private baseURL: string = "https://proxyinternet.nrcan.gc.ca/arcgis/rest/services/MB-NC/";
     private queryResults;
+    private mainType: any;
 
 
     constructor (mapApi: any, language: any) {
@@ -232,19 +233,28 @@ export class OptionsManager {
                     resultsGrid.remove();
                 }
             }
+            this.setMainType = function(main) {
+                this.mainType = main;
+            }
 
-            this.launchSearchAction = function(oid:string) {
+            this.setSearchType = function(search) {
+                $scope.user.type = search;
+            }
+
+            this.launchSearchAction = function(searchType:string) {
                 if ($scope.user) {
                     if (Object.keys($scope.user).length!=0) {
-                        $scope.user.type = "";
+                        $scope.user.main = "";
                         this.user = $scope.user;
-                        $scope.user.type = oid;
+                        $scope.user.type = searchType;
+                        $scope.user.main = this.mainType;
+
                         
                         this.loadingPanel = new TableLoader(mapApi, 'Test');
                         this.loadingPanel.prepareHeader(mapApi);
                         this.loadingPanel.prepareBody();
 
-                        if ($scope.user.option == 'plan') {
+                        if ($scope.user.type == 'plan') {
                             $scope.user.other = 'parcel';
                             const queryPlan = new MakeQuery(mapApi, language, $scope.user, this.loadingPanel);
                         }

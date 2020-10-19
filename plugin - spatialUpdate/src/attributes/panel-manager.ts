@@ -73,6 +73,13 @@ export class PanelManager {
                     resultsGrid.remove()
                 }
             }
+            this.setMainType = function(main) {
+                this.mainType = main;
+            }
+
+            this.setSearchType = function(search) {
+                $scope.user.type = search;
+            }
 
             this.launchSearchAction = function(oid:string) {
                 
@@ -82,6 +89,9 @@ export class PanelManager {
                         this.user = $scope.user;
                         $scope.user.type = oid;
                         $scope.user.option = oid;
+                        
+                        $scope.user.main = this.mainType;
+
                         let loadingPanel = new TableLoader(mapApi, 'TEST');
                         loadingPanel.prepareHeader(mapApi);
                         loadingPanel.prepareBody();

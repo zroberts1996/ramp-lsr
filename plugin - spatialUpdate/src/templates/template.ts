@@ -168,7 +168,7 @@ export const SEARCH_TEMPLATE = ` 
             </md-input-container>
             <md-input-container class="md-container" style="width:40%; padding=2px; margin:0px; font-size: 14px">
                 <md-select ng-model="user.option" id=selectOption  placeholder="Type">
-                    <md-option ng-repeat="option in ctrl.options" value="{{option[0]}}" ng-click="ctrl.setSelectedType(option[0])">{{option[1]}}</md-option>
+                    <md-option ng-repeat="type in ctrl.options" value="{{type[0]}}" ng-click="ctrl.setMainType(type[1]);ctrl.setSearchType(type[0])">{{type[2]}}</md-option>
                 </md-select>
             </md-input-container>
         </div>
@@ -353,7 +353,7 @@ export const GRID_TEMPLATE = `
     <div id="project" class="hidden" style="height: 100%;display:none"></div>
     <div id="plan" class="hidden" style="height: 100%;display:none"></div>
     <div id="town" class="hidden" style="height: 100%;display:none"></div>
-    <div id="reserve" class=" active" style="height: 100%;display:block"></div>
+    <div id="admin" class=" active" style="height: 100%;display:block"></div>
     <div id="info" class="hidden" style="height: 100%;display:none"></div>
 </div>
 `;
