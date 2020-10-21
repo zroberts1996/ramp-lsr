@@ -134,7 +134,7 @@ export class OptionsManager {
         let mapApi = this._mapApi;
 
         this.panel = this._mapApi.panels.create('optionsPanel');
-        this.panel.element.addClass('ag-theme-material mobile-fullscreen tablet-fullscreen');
+        //this.panel.element.addClass('ag-theme-material mobile-fullscreen tablet-fullscreen');
         //this.panel.element.addClass('mobile-fullscreen-new');
 
         this.panel.element.css(PANEL_OPTIONS_CSS);
