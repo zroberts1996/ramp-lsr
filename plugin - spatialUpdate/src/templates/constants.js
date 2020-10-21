@@ -66,6 +66,26 @@ export const SEARCH_OPTIONS = {
     ]
 }
 
+export const GRID_FIELDS = {
+    additionalinfo: {headerName: "Additional Info", field: "additionalinfo", headerToolTip: "Additional Info"},
+    dateofsurvey: {headerName: "Date", field: "dateSurvey", headerToolTip: "Date of Survey", width:117},
+    description: {headerName: "Description", field: "description", headerToolTip: "Description", width:151},
+    lto: {headerName: "LTO", field: "lto", headerToolTip: "LTO"},
+    meridian: {headerName: "Meridian", field: "meridian", headerToolTip: "Meridian"},
+    name: {headerName: "Name", field: "name", headerToolTip: "Name", width:316},
+    parceldesignator: { headerName: "Designator", field: "parceldesignator", headerToolTip: "Parcel Designator"},
+    parceltype: {headerName: "Type", field: "parceltype", headerToolTip: "Parcel Type"},
+    plandetail: { headerName: "Detail", field: "planDetail", headerToolTip: "Plan Detail", width:100},
+    plannumber: {headerName: "Plan Number", field: "planNumber", headerToolTip: "Plan Number", width:155},
+    projectdetail: {headerName: "Detail", field: "projectdetail", headerToolTip: "Project Detail", width:100},
+    projectnumber: {headerName: "Project Number", field: "projectnumber", headerToolTip: "Project Number", width:158},
+    province: {headerName: "Province", field: "province", headerToolTip: "Province"},
+    range: { headerName: "Range", field: "range", headerToolTip: "Range"},
+    remainder: { headerName: "Remainder", field: "remainder", headerToolTip: "Remainder", width:138},
+    section: { headerName: "Section", field: "section", headerToolTip: "Section"},
+    township: { headerName: "Township", field: "township", headerToolTip: "Township"}
+};
+
 export const PROXY_FIELDS = {
     community: ["ENGLISHNAME", "ADMINAREAID", "FRENCHNAME", "PROVINCE", "GlobalID"],
     reserve: ["ENGLISHNAME", "ADMINAREAID", "FRENCHNAME", "PROVINCE", "GlobalID"],

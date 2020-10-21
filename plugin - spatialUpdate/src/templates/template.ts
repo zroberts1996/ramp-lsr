@@ -59,7 +59,7 @@ const INPUT_PROJECT = `
 const INPUT_PARCEL = `
 <md-input-container class="md-container">
     <label> Enter Parcel </label>
-    <input type="text" ng-model="user.input" required="" md-maxlength="10" id="parcelInput">
+    <input type="text" ng-model="user.input2" required="" md-maxlength="10" id="parcelInput">
 </md-input-container>
 `;
 
@@ -135,13 +135,32 @@ export const SEARCH_PLAN_TEMPLATE = ` 
             </md-item-template>
         </md-autocomplete>`
 
+
+export const EXTEND = `
+<div layout="column" ng-cloak>
+  <md-content class="md-padding" layout="column">
+
+    <div class="lock-size" layout="row" layout-align="center center">
+      <md-fab-speed-dial md-open="demo.isOpen" md-direction="{{demo.selectedDirection}}" ng-class="demo.selectedMode">
+        <md-fab-trigger>
+          <md-button aria-label="menu" class="md-fab md-warn">
+            <md-icon md-svg-src="action:expand" class="ng-scope" role="img" aria-hidden="true"></md-icon>
+          </md-button>
+        </md-fab-trigger>
+
+      </md-fab-speed-dial>
+    </div>
+
+  </md-content>
+</div>`;
+
 export const SEARCH_TEMPLATE = ` 
 
 <div class="rv-clss-top-filters" style="padding:0px; box-sizing: border-box;letter-spacing: .01em" ng-controller="SearchPanel as ctrl">
 
     <div layout-gt-sm="row" style="padding-bottom: 0px; padding-top: 10px;padding-left: 10px;height: 50px"; display:flex>
         
-        <md-input-container md-no-float="" style="margin:0px;width: 70%;">
+        <md-input-container md-no-float="" style="margin:0px;width: 68%;">
             <md-tooltip md-direction="bottom">Text</md-tooltip>
             <input ng-model="user.input" placeholder="Search" aria-label="Search" id='inputClss'>
         </md-input-container>
@@ -181,10 +200,13 @@ export const SEARCH_TEMPLATE = ` 
             </md-input-container>
             
         </div>
+
+
     </div>
 
-</div>
 
+
+</div>
 `;
 
 export const PROTECTED_AREA_TEMPLATE = ` 
@@ -219,7 +241,7 @@ export const SURVEY_PROGRESS_TEMPLATE = ` 
     </section>
     
     <section layout="row" layout-align="center left" layout-wrap>
-        ${SEARCH_BUTTON('survey')}
+        ${SEARCH_BUTTON('project')}
         
         ${RESET_BUTTON}
     </section>
@@ -238,7 +260,7 @@ export const COMMUNITY_TEMPLATE = ` 
     </section>
     
     <section layout="row" layout-align="center left" layout-wrap>
-        ${SEARCH_BUTTON('admin')}
+        ${SEARCH_BUTTON('community')}
             
         ${RESET_BUTTON}
     </section>
@@ -252,7 +274,6 @@ export const PARCEL_TEMPLATE = ` 
         ${SELECT_PROVINCE}
 
         ${SELECT_RESERVE}
-
         ${INPUT_PLAN}
         ${INPUT_PARCEL}
 
@@ -547,6 +568,21 @@ export const TYPE = {
         ['Township', 11],
         ['Coordinates', 12],
     ]
+}
+export const MAIN_TAB = {
+    'community': 'admin',
+    'cree': 'admin',
+    'reserve': 'admin',
+    'municipal': 'admin',
+    'park': 'admin',
+    'parcel': 'parcel',
+    'protected': 'parcel',
+    'quad': 'quad',
+    'subdivision': 'subdivision',
+    'plan': 'plan',
+    'project': 'project',
+    'town': 'town',
+    'coords': 'parcel'
 }
 
 export const TYPE1 = {

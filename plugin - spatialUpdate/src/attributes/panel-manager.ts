@@ -1,4 +1,5 @@
-import { SEARCH_PLAN_TEMPLATE, PROTECTED_AREA_TEMPLATE, COMMUNITY_TEMPLATE, SURVEY_PROGRESS_TEMPLATE, PARCEL_TEMPLATE, PROVINCE, MENU_BUTTON } from '../templates/template';
+import { SEARCH_PLAN_TEMPLATE, PROTECTED_AREA_TEMPLATE, COMMUNITY_TEMPLATE, SURVEY_PROGRESS_TEMPLATE, PARCEL_TEMPLATE, PROVINCE, MENU_BUTTON, MAIN_TAB } from '../templates/template';
+import { PROVINCE_NAME, SEARCH_OPTIONS } from '../templates/constants';
 import { MakeQuery } from './layer-query';
 import { TableLoader } from './table-loader';
 
@@ -35,7 +36,7 @@ export class PanelManager {
 
 
         this.mapApi.agControllerRegister('SearchPanel',  ['$scope', function($scope) {
-            this.provinces = Object.keys(PROVINCE[configLang]);
+            this.provinces = Object.keys(PROVINCE_NAME[configLang]);
 
             this.isDisabled = true;
 
@@ -48,7 +49,7 @@ export class PanelManager {
                 } 
                 else {
                     this.selectedProvince = province;
-                    this.abbrevProvince = PROVINCE[configLang][province];
+                    this.abbrevProvince = PROVINCE_NAME[configLang][province];
                     
                     let reserveBox = <HTMLElement>document.getElementById("selectReserve");
                     
@@ -74,7 +75,7 @@ export class PanelManager {
                 }
             }
             this.setMainType = function(main) {
-                this.mainType = main;
+                this.mainType = MAIN_TAB[main];
             }
 
             this.setSearchType = function(search) {
@@ -84,12 +85,15 @@ export class PanelManager {
             this.launchSearchAction = function(oid:string) {
                 
                 if ($scope.user) {
+                    let a = MAIN_TAB[oid]
                     if (Object.keys($scope.user).length!=0) {
                         $scope.user.type = "";
                         this.user = $scope.user;
                         $scope.user.type = oid;
                         $scope.user.option = oid;
-                        
+
+
+                        this.mainType = MAIN_TAB[oid];
                         $scope.user.main = this.mainType;
 
                         let loadingPanel = new TableLoader(mapApi, 'TEST');

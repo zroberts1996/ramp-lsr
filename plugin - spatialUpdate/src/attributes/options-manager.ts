@@ -135,6 +135,8 @@ export class OptionsManager {
 
         this.panel = this._mapApi.panels.create('optionsPanel');
         this.panel.element.addClass('ag-theme-material mobile-fullscreen tablet-fullscreen');
+        //this.panel.element.addClass('mobile-fullscreen-new');
+
         this.panel.element.css(PANEL_OPTIONS_CSS);
         this.panel.allowOffscreen = true;
         
@@ -208,7 +210,7 @@ export class OptionsManager {
                 } 
                 else {
                     this.selectedProvince = province;
-                    this.abbrevProvince = PROVINCE[language][province];
+                    this.abbrevProvince = PROVINCE_NAME[language][province];
                     
                     let reserveBox = <HTMLElement>document.getElementById("selectReserve");
                     
@@ -242,7 +244,7 @@ export class OptionsManager {
             }
 
             this.launchSearchAction = function(searchType:string) {
-                if ($scope.user) {
+                if ($scope.user.type) {
                     if (Object.keys($scope.user).length!=0) {
                         $scope.user.main = "";
                         this.user = $scope.user;
